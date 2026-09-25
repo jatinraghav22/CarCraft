@@ -1,0 +1,23 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments and local secrets
+venv/
+.venv/
+.env
+.env.*
+!.env.example
+
+# Local databases and test outputs
+*.sqlite3
+.coverage
+htmlcov/
+
+# User-uploaded media
+media/vehicles/*
+!media/vehicles/.gitkeeps
+
+# Django collected static files
+staticfiles/

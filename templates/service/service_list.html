@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Service Management - CarCraft</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    {% include 'includes/style_link.html' %}
+</head>
+
+<body class="app-page">
+{% include 'includes/app_chrome.html' %}
+
+<nav class="navbar navbar-dark bg-dark">
+
+    <div class="container">
+
+        <a class="navbar-brand" href="/">
+            CarCraft
+        </a>
+
+    </div>
+
+</nav>
+
+
+<div class="container mt-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>Service Management</h2>
+
+        <a
+            href="{% url 'service_add' %}"
+            class="btn btn-primary"
+        >
+            + Add Service
+        </a>
+
+    </div>
+
+
+    <form method="GET" class="row g-2 align-items-end mb-4">
+        <div class="col-sm-5 col-md-4">
+            <label for="service-status" class="form-label">Status</label>
+            <select id="service-status" name="status" class="form-select">
+                <option value="all" {% if selected_status == 'all' %}selected{% endif %}>All</option>
+                <option value="scheduled" {% if selected_status == 'scheduled' %}selected{% endif %}>Scheduled</option>
+                <option value="in_progress" {% if selected_status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                <option value="completed" {% if selected_status == 'completed' %}selected{% endif %}>Completed</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-dark">Apply</button>
+        </div>
+    </form>
+
+
+    <!-- Service Table -->
+
+    <div class="card shadow">
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-striped table-hover align-middle">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th>Customer</th>
+
+                            <th>Vehicle</th>
+
+                            <th>Appointment Date</th>
+
+                            <th>Description</th>
+
+                            <th>Status</th>
+
+                            <th>Cost</th>
+
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for service in services %}
+
+                        <tr>
+
+                            <td>
+                                <a href="{% url 'service_detail' service.id %}">
+                                    {{ service.customer.full_name }}
+                                </a>
+                            </td>
+
+                            <td>
+
+                                {% if service.vehicle %}
+
+                                    {{ service.vehicle.make }}
+                                    {{ service.vehicle.model }}
+
+                                {% else %}
+
+                                    N/A
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                {{ service.scheduled_for|date:"d M Y, h:i A" }}
+                            </td>
+
+                            <td>
+                                {{ service.description }}
+                            </td>
+
+                            <td>
+
+                                {% if service.status == 'scheduled' %}
+
+                                    <span class="badge bg-warning text-dark">
+                                        Scheduled
+                                    </span>
+
+                                {% elif service.status == 'in_progress' %}
+
+                                    <span class="badge bg-primary">
+                                        In Progress
+                                    </span>
+
+                                {% elif service.status == 'completed' %}
+
+                                    <span class="badge bg-success">
+                                        Completed
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                ₹{{ service.cost }}
+                            </td>
+
+                            <td>
+
+                                <a
+                                    href="{% url 'service_detail' service.id %}"
+                                    class="btn btn-sm btn-info text-white"
+                                >
+                                    View
+                                </a>
+
+                                <a
+                                    href="{% url 'service_edit' service.id %}"
+                                    class="btn btn-sm btn-warning"
+                                >
+                                    Edit
+                                </a>
+
+                                <a
+                                    href="{% url 'service_delete' service.id %}"
+                                    class="btn btn-sm btn-danger"
+                                >
+                                    Delete
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="text-center py-4"
+                            >
+                                No service appointments found.
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

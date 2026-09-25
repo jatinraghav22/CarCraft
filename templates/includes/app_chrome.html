@@ -1,0 +1,66 @@
+{% load static %}
+<div class="sidebar-scrim"></div>
+<aside class="app-sidebar">
+    <a class="app-brand" href="{% url 'dashboard:home' %}">
+        <span class="app-brand-mark" aria-hidden="true">🚗</span>
+        <span>
+            <span class="app-brand-name">CARCRAFT</span>
+            <span class="app-brand-subtitle">DEALERSHIP OPERATIONS</span>
+        </span>
+    </a>
+
+    <p class="app-nav-label">Workspace</p>
+    <nav class="app-nav-list" aria-label="Main navigation">
+        <a class="app-nav-link{% if request.path == '/' %} is-active{% endif %}" href="{% url 'dashboard:home' %}">
+            <span class="app-nav-icon" aria-hidden="true">⌂</span>Dashboard
+        </a>
+        <a class="app-nav-link{% if '/inventory/' in request.path %} is-active{% endif %}" href="{% url 'vehicle_list' %}">
+            <span class="app-nav-icon" aria-hidden="true">▦</span>Inventory
+        </a>
+        <a class="app-nav-link{% if '/customers/' in request.path %} is-active{% endif %}" href="{% url 'customer_list' %}">
+            <span class="app-nav-icon" aria-hidden="true">♙</span>Customers
+        </a>
+        <a class="app-nav-link{% if '/sales/' in request.path %} is-active{% endif %}" href="{% url 'sale_list' %}">
+            <span class="app-nav-icon" aria-hidden="true">↗</span>Sales
+        </a>
+        <a class="app-nav-link{% if '/service/' in request.path %} is-active{% endif %}" href="{% url 'service_list' %}">
+            <span class="app-nav-icon" aria-hidden="true">⚙</span>Service
+        </a>
+        <a class="app-nav-link{% if '/parts/' in request.path %} is-active{% endif %}" href="{% url 'part_list' %}">
+            <span class="app-nav-icon" aria-hidden="true">◈</span>Parts
+        </a>
+    </nav>
+
+    <div class="app-sidebar-bottom">
+        <a class="app-nav-link" href="/admin/">
+            <span class="app-nav-icon" aria-hidden="true">⚙</span>Settings
+        </a>
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button class="app-nav-link w-100 border-0 bg-transparent text-start" type="submit">
+                <span class="app-nav-icon" aria-hidden="true">↪</span>Logout
+            </button>
+        </form>
+    </div>
+</aside>
+
+<header class="app-topbar">
+    <button class="app-mobile-toggle" type="button" data-sidebar-toggle aria-label="Open navigation" aria-expanded="false">
+        <span aria-hidden="true">☰</span>
+    </button>
+    <div class="app-topbar-title">CarCraft</div>
+    <details class="app-admin-menu">
+        <summary>
+            <span class="app-admin-avatar" aria-hidden="true">{{ request.user.username|default:"A"|first|upper }}</span>
+            <span class="app-admin-name">{{ request.user.username|default:"Admin" }} ▼</span>
+        </summary>
+        <div class="app-admin-panel">
+            <a href="/admin/">Settings</a>
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        </div>
+    </details>
+</header>
+<script src="{% static 'js/main.js' %}" defer></script>
