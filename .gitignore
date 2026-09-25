@@ -1,23 +1,30 @@
-# Python artifacts
+# Virtual environment
+venv/
+env/
+
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Virtual environments and local secrets
-venv/
-.venv/
-.env
-.env.*
-!.env.example
-
-# Local databases and test outputs
+# Django
 *.sqlite3
-.coverage
-htmlcov/
+db.sqlite3
 
-# User-uploaded media
-media/vehicles/*
-!media/vehicles/.gitkeeps
+# Environment variables
+.env
 
-# Django collected static files
+# Static/media
+media/
 staticfiles/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

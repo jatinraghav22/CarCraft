@@ -57,4 +57,80 @@
     </div>
 </div>
 
+<section class="mt-5" aria-labelledby="recent-sales-heading">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 id="recent-sales-heading" class="h4 mb-0">Recent Sales</h2>
+        <a href="{% url 'sale_list' %}" class="btn btn-sm btn-outline-success">All Sales</a>
+    </div>
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Customer</th>
+                        <th>Vehicle</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in recent_sales %}
+                        <tr>
+                            <td>{{ sale.customer.full_name }}</td>
+                            <td>{{ sale.vehicle.year }} {{ sale.vehicle.make }} {{ sale.vehicle.model }}</td>
+                            <td>₹{{ sale.amount|floatformat:2 }}</td>
+                            <td>{{ sale.get_stage_display }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4">No sales recorded.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<section class="mt-5" aria-labelledby="upcoming-services-heading">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 id="upcoming-services-heading" class="h4 mb-0">Upcoming Services</h2>
+        <a href="{% url 'service_list' %}" class="btn btn-sm btn-outline-success">All Services</a>
+    </div>
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Customer</th>
+                        <th>Vehicle</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in upcoming_services %}
+                        <tr>
+                            <td>{{ service.customer.full_name }}</td>
+                            <td>
+                                {% if service.vehicle %}
+                                    {{ service.vehicle.year }} {{ service.vehicle.make }} {{ service.vehicle.model }}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                            <td>{{ service.scheduled_for|date:"d M Y, h:i A" }}</td>
+                            <td>{{ service.get_status_display }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4">No upcoming services scheduled.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
 {% endblock %}
