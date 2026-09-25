@@ -134,6 +134,12 @@ WSGI_APPLICATION = "carcraft.wsgi.application"
 #
 # RENDER:
 # If DATABASE_URL exists, Django uses PostgreSQL from Render.
+# ============================================================
+# DATABASE CONFIGURATION
+# ============================================================
+
+# Render provides DATABASE_URL.
+# Local development uses MySQL from .env.
 
 if os.environ.get("DATABASE_URL"):
 
@@ -149,16 +155,17 @@ else:
 
     DATABASES = {
         "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "NAME": "carcraft_db",
-            "USER": "root",
-            "PASSWORD": os.environ.get("MYSQL_PASSWORD", ""),
-            "HOST": "localhost",
-            "PORT": "3306",
+            "ENGINE": os.getenv(
+                "DB_ENGINE",
+                "django.db.backends.mysql"
+            ),
+            "NAME": os.getenv("DB_NAME", "carcraft_db"),
+            "USER": os.getenv("DB_USER", "root"),
+            "PASSWORD": os.getenv("DB_PASSWORD", ""),
+            "HOST": os.getenv("DB_HOST", "localhost"),
+            "PORT": os.getenv("DB_PORT", "3306"),
         }
     }
-
-
 # ============================================================
 # PASSWORD VALIDATION
 # ============================================================
@@ -273,21 +280,16 @@ CSRF_TRUSTED_ORIGINS = [
 # These settings are activated when DEBUG=False.
 # They are suitable for HTTPS deployment on Render.
 
+# ============================================================
+# PRODUCTION SECURITY SETTINGS
+# ============================================================
+
 if not DEBUG:
-
-    SECURE_PROXY_SSL_HEADER = (
-        "HTTP_X_FORWARDED_PROTO",
-        "https",
-    )
-
-    SESSION_COOKIE_SECURE = True
-
-    CSRF_COOKIE_SECURE = True
-
     SECURE_SSL_REDIRECT = True
 
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
     SECURE_HSTS_SECONDS = 31536000
-
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-
     SECURE_HSTS_PRELOAD = True
