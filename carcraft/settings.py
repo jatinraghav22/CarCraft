@@ -39,12 +39,14 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 # ============================================================
 
 ALLOWED_HOSTS = [
-    "localhost",
     "127.0.0.1",
-    "carcraft.onrender.com",
+    "localhost",
 ]
 
-
+if os.environ.get("RENDER_EXTERNAL_HOSTNAME"):
+    ALLOWED_HOSTS.append(
+        os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+    )
 # ============================================================
 # APPLICATIONS
 # ============================================================
