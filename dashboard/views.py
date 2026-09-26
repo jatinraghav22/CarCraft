@@ -1,10 +1,40 @@
-from django.shortcuts import render
+from django.contrib.auth import login as auth_login
+from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import redirect, render
 from django.utils import timezone
 
 from inventory.models import Vehicle
 from customers.models import Customer
 from sales.models import Sale
 from service.models import ServiceAppointment
+
+
+def register(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard:home')
+
+    form = UserCreationForm(
+        data=request.POST if request.method == 'POST' else None,
+    )
+    for name, field in form.fields.items():
+        field.widget.attrs.update({'class': 'form-control'})
+        field.widget.attrs['autocomplete'] = (
+            'username' if name == 'username' else 'new-password'
+        )
+        if name == 'username':
+            field.widget.attrs.update({
+                'autofocus': True,
+                'placeholder': 'Choose a username',
+            })
+        else:
+            field.widget.attrs['placeholder'] = 'Enter password'
+
+    if request.method == 'POST' and form.is_valid():
+        user = form.save()
+        auth_login(request, user)
+        return redirect('dashboard:home')
+
+    return render(request, 'registration/register.html', {'form': form})
 
 
 def home(request):

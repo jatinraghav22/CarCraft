@@ -37,6 +37,30 @@ class AuthenticationWorkflowTests(TestCase):
 		self.assertTrue(response.context['form'].errors)
 		self.assertNotIn('_auth_user_id', self.client.session)
 
+	def test_registration_creates_and_logs_in_regular_user(self):
+		response = self.client.post(reverse('register'), {
+			'username': 'new-account',
+			'password1': 'distinct-password-918',
+			'password2': 'distinct-password-918',
+		})
+
+		self.assertRedirects(response, reverse('dashboard:home'))
+		user = get_user_model().objects.get(username='new-account')
+		self.assertIn('_auth_user_id', self.client.session)
+		self.assertFalse(user.is_staff)
+		self.assertFalse(user.is_superuser)
+
+	def test_registration_rejects_existing_username(self):
+		response = self.client.post(reverse('register'), {
+			'username': self.user.username,
+			'password1': 'distinct-password-918',
+			'password2': 'distinct-password-918',
+		})
+
+		self.assertEqual(response.status_code, 200)
+		self.assertTrue(response.context['form'].errors)
+		self.assertNotIn('_auth_user_id', self.client.session)
+
 	def test_logout_ends_authenticated_session(self):
 		self.client.force_login(self.user)
 

@@ -24,6 +24,95 @@ body {
     min-height: 100vh;
 }
 
+.auth-page {
+    align-items: center;
+    background-color: var(--cc-paper);
+    background-image:
+        linear-gradient(rgba(23, 107, 85, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23, 107, 85, 0.035) 1px, transparent 1px);
+    background-size: 32px 32px;
+    display: flex;
+    justify-content: center;
+    padding: 24px;
+}
+
+.auth-shell {
+    max-width: 440px;
+    width: 100%;
+}
+
+.auth-card {
+    background: var(--cc-white);
+    border: 1px solid var(--cc-line);
+    border-radius: 7px;
+    box-shadow: 0 16px 42px rgba(24, 39, 34, 0.1);
+    padding: 36px;
+}
+
+.auth-heading {
+    margin-bottom: 28px;
+    text-align: center;
+}
+
+.auth-mark {
+    align-items: center;
+    background: var(--cc-lime);
+    border-radius: 7px;
+    color: var(--cc-green-dark);
+    display: inline-flex;
+    font-family: "Barlow Semi Condensed", sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    height: 44px;
+    justify-content: center;
+    margin-bottom: 12px;
+    width: 44px;
+}
+
+.auth-heading h1 {
+    font-size: 30px;
+    margin: 0;
+}
+
+.auth-heading p {
+    color: var(--cc-muted);
+    margin: 5px 0 0;
+}
+
+.auth-form .form-control {
+    min-height: 48px;
+}
+
+.auth-form .form-control:focus {
+    border-color: var(--cc-green);
+    box-shadow: 0 0 0 0.2rem rgba(23, 107, 85, 0.16);
+}
+
+.auth-form .btn {
+    min-height: 48px;
+}
+
+.auth-switch {
+    border-top: 1px solid var(--cc-line);
+    color: var(--cc-muted);
+    margin: 24px 0 0;
+    padding-top: 20px;
+    text-align: center;
+}
+
+.auth-switch a {
+    color: var(--cc-green);
+    font-weight: 700;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+}
+
+@media (max-width: 575.98px) {
+    .auth-card {
+        padding: 28px 22px;
+    }
+}
+
 h1,
 h2,
 h3,
