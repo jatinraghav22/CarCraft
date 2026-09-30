@@ -1,5 +1,5 @@
 import { formatINR } from '../../utils/currency';
-import { handlePartImageError } from '../../utils/imageFallback';
+import { handlePartImageError, formatImageUrl } from '../../utils/imageFallback';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useToast } from '../../context/ToastContext';
 import { mockParts } from '../../data/parts';
 import orderApi from '../../api/orderApi';
 import cartApi from '../../api/cartApi';
@@ -31,15 +32,15 @@ import './Cart.css';
 export default function Cart() {
   const navigate = useNavigate();
   const { 
-    cart, 
-    cartCount, 
-    cartSubtotal, 
-    discountAmount, 
-    shippingFee, 
-    estimatedTax, 
-    cartTotal, 
-    promoCode, 
-    shippingMethod,
+    cart = [], 
+    cartCount = 0, 
+    cartSubtotal = 0, 
+    discountAmount = 0, 
+    shippingFee = 0, 
+    estimatedTax = 0, 
+    cartTotal = 0, 
+    promoCode = '', 
+    shippingMethod = 'standard',
     setShippingMethod,
     applyPromo, 
     removePromo, 
@@ -49,7 +50,7 @@ export default function Cart() {
     addToCart
   } = useCart();
 
-  const { toggleWishlist, isInWishlist } = useWishlist();
+  const { toggleWishlist } = useWishlist() || {};
   const { addToast } = useToast();
 
   const [inputPromo, setInputPromo] = useState('');
@@ -64,14 +65,14 @@ export default function Cart() {
     address: '',
     city: '',
     zip: '',
-    country: 'United States',
+    country: 'India',
     paymentMethod: 'card' // 'card' | 'wire' | 'crypto' | 'apple'
   });
 
   const handleApplyPromo = (e) => {
     e.preventDefault();
     if (!inputPromo.trim()) return;
-    const res = applyPromo(inputPromo);
+    const res = applyPromo ? applyPromo(inputPromo) : { success: false, message: 'Promo invalid' };
     if (res.success) {
       addToast(res.message, 'success');
       setInputPromo('');
@@ -81,19 +82,20 @@ export default function Cart() {
   };
 
   const handleMoveToWishlist = (item) => {
-    removeFromCart(item.id);
-    toggleWishlist(item);
-    addToast(`${item.name} moved to Wishlist`, 'info');
+    if (!item) return;
+    if (removeFromCart) removeFromCart(item.id);
+    if (toggleWishlist) toggleWishlist(item);
+    addToast(`${item.name || 'Component'} moved to Wishlist`, 'info');
   };
 
   const handleCheckoutSubmit = async (e) => {
     e.preventDefault();
     let generatedId = '';
     try {
-      // 1. Synchronize current cart items into backend database Cart
+      // 1. Synchronize current cart items into backend database Cart if logged in
       try {
         await cartApi.clearCart();
-        for (const item of cart) {
+        for (const item of (cart || [])) {
           const partId = item.rawId || (!isNaN(Number(item.id)) ? Number(item.id) : null);
           if (partId) {
             await cartApi.addToCart(partId, item.quantity || 1);
@@ -103,7 +105,7 @@ export default function Cart() {
         console.warn('Backend cart pre-sync notice:', syncErr.message);
       }
 
-      // 2. Perform authoritative atomic checkout in Django SQLite database
+      // 2. Perform authoritative checkout
       const res = await orderApi.checkout({
         shipping_address: checkoutForm.address || 'Flagship Atelier Address',
         shipping_city: checkoutForm.city || 'Mumbai',
@@ -125,13 +127,13 @@ export default function Cart() {
 
     setOrderId(generatedId);
     setOrderConfirmed(true);
-    clearCart();
+    if (clearCart) clearCart();
     addToast(`Order ${generatedId} placed successfully!`, 'success');
   };
 
-
   // 3 Recommended add-on parts for quick-add at the bottom
-  const quickAddParts = mockParts.slice(0, 3);
+  const quickAddParts = Array.isArray(mockParts) ? mockParts.slice(0, 3) : [];
+  const safeCart = Array.isArray(cart) ? cart : [];
 
   return (
     <div className="cart-page">
@@ -151,12 +153,12 @@ export default function Cart() {
         </section>
 
         {/* Conditional Rendering: Cart Items vs Empty State */}
-        {cart.length === 0 && !orderConfirmed ? (
+        {safeCart.length === 0 && !orderConfirmed ? (
           <div className="cart-empty-state">
             <div className="cart-empty-icon">
               <ShoppingCart size={36} />
             </div>
-            <h2 className="cart-empty-title">YOUR GARAGE IS EMPTY</h2>
+            <h2 className="cart-empty-title">YOUR CART IS EMPTY</h2>
             <p className="cart-empty-subtitle">
               No performance parts, aerodynamic kits, or accessories have been added to your build order yet.
             </p>
@@ -194,76 +196,95 @@ export default function Cart() {
                 </button>
               </div>
 
-              {cart.map((item) => (
-                <div key={item.id} className="cart-item-card">
-                  {/* Thumbnail */}
-                  <Link to={`/parts/${item.id}`} className="cart-item-thumb-link">
-                    <img src={item.image} alt={item.name} className="cart-item-img" onError={(e) => handlePartImageError(e, item.category, item.name)} />
-                  </Link>
+              {safeCart.map((item, idx) => {
+                const itemKey = item?.id || `cart-item-${idx}`;
+                const itemName = item?.name || 'Automotive Component';
+                const itemBrand = item?.brand || 'CARCRAFT';
+                const itemSku = item?.sku || `SKU-${itemKey}`;
+                const itemPrice = Number(item?.price) || 0;
+                const itemQty = Math.max(1, Number(item?.quantity) || 1);
+                const itemImage = formatImageUrl(item?.image) || '';
 
-                  {/* Info */}
-                  <div className="cart-item-info">
-                    <div className="cart-item-brand-row">
-                      <span className="cart-item-brand">{item.brand}</span>
-                      <span className="cart-item-sku">SKU: {item.sku}</span>
-                    </div>
-
-                    <Link to={`/parts/${item.id}`} className="cart-item-title">
-                      {item.name}
+                return (
+                  <div key={itemKey} className="cart-item-card">
+                    {/* Thumbnail */}
+                    <Link to={item?.id ? `/parts/${item.id}` : '/parts'} className="cart-item-thumb-link">
+                      <img
+                        src={itemImage}
+                        alt={itemName}
+                        className="cart-item-img"
+                        onError={(e) => handlePartImageError(e, item?.category, itemName)}
+                      />
                     </Link>
 
-                    <div className="cart-item-unit-price">
-                      {formatINR(item.price)} each
-                    </div>
-
-                    {/* Stepper & Action Buttons */}
-                    <div className="cart-item-controls-row">
-                      <div className="cart-item-stepper">
-                        <button
-                          className="cart-stepper-btn"
-                          onClick={() => updateQuantity(item.id, -1)}
-                          title="Decrease quantity"
-                        >
-                          <Minus size={14} />
-                        </button>
-                        <span className="cart-stepper-val">{item.quantity}</span>
-                        <button
-                          className="cart-stepper-btn"
-                          onClick={() => updateQuantity(item.id, 1)}
-                          title="Increase quantity"
-                        >
-                          <Plus size={14} />
-                        </button>
+                    {/* Info */}
+                    <div className="cart-item-info">
+                      <div className="cart-item-brand-row">
+                        <span className="cart-item-brand">{itemBrand}</span>
+                        <span className="cart-item-sku">SKU: {itemSku}</span>
                       </div>
 
-                      <div className="cart-item-actions">
-                        <button
-                          className="cart-item-action-btn"
-                          onClick={() => handleMoveToWishlist(item)}
-                          title="Save item for later"
-                        >
-                          <Heart size={14} />
-                          Save for Later
-                        </button>
+                      <Link to={item?.id ? `/parts/${item.id}` : '/parts'} className="cart-item-title">
+                        {itemName}
+                      </Link>
 
-                        <button
-                          className="cart-item-action-btn delete"
-                          onClick={() => removeFromCart(item.id)}
-                          title="Remove from cart"
-                        >
-                          <Trash2 size={14} />
-                          Remove
-                        </button>
+                      <div className="cart-item-unit-price">
+                        {formatINR(itemPrice)} each
+                      </div>
+
+                      {/* Stepper & Action Buttons */}
+                      <div className="cart-item-controls-row">
+                        <div className="cart-item-stepper">
+                          <button
+                            type="button"
+                            className="cart-stepper-btn"
+                            onClick={() => updateQuantity(item.id, -1)}
+                            title="Decrease quantity"
+                          >
+                            <Minus size={14} />
+                          </button>
+                          <span className="cart-stepper-val">{itemQty}</span>
+                          <button
+                            type="button"
+                            className="cart-stepper-btn"
+                            onClick={() => updateQuantity(item.id, 1)}
+                            title="Increase quantity"
+                          >
+                            <Plus size={14} />
+                          </button>
+                        </div>
+
+                        <div className="cart-item-actions">
+                          <button
+                            type="button"
+                            className="cart-item-action-btn"
+                            onClick={() => handleMoveToWishlist(item)}
+                            title="Save item for later"
+                          >
+                            <Heart size={14} />
+                            Save for Later
+                          </button>
+
+                          <button
+                            type="button"
+                            className="cart-item-action-btn delete"
+                            onClick={() => removeFromCart(item.id)}
+                            title="Remove from cart"
+                          >
+                            <Trash2 size={14} />
+                            Remove
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Line Total */}
-                  <div className="cart-item-total">
-                    {formatINR(item.price * item.quantity)}
+                    {/* Line Total */}
+                    <div className="cart-item-total">
+                      {formatINR(itemPrice * itemQty)}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
 
               {/* Continue Shopping Link */}
               <div style={{ marginTop: '16px' }}>

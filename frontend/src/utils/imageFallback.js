@@ -171,4 +171,94 @@ export function handleVehicleImageError(e, brand = '', model = '') {
   }
 }
 
+/**
+ * Returns clean backend base URL without /api or trailing slash
+ */
+export function getBackendBaseUrl() {
+  const raw = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) || 'https://car-craft.onrender.com';
+  return raw.replace(/\/api\/?$/, '').replace(/\/$/, '');
+}
+
+/**
+ * Converts relative backend media URLs (e.g. /media/...) to full absolute URLs,
+ * and fixes any stale localhost / 127.0.0.1 references in production.
+ */
+export function formatImageUrl(url) {
+  if (!url || typeof url !== 'string') return '';
+  const trimmed = url.trim();
+  if (!trimmed) return '';
+
+  const backendBase = getBackendBaseUrl();
+
+  // If it's a relative path starting with /media/ or /
+  if (trimmed.startsWith('/media/') || (trimmed.startsWith('/') && !trimmed.startsWith('//'))) {
+    // If it is a local public asset path (like /images/ or /carcraft-image-fallback.svg), don't prepend backend URL
+    if (trimmed.startsWith('/images/') || trimmed.endsWith('.svg') || trimmed.endsWith('.ico') || trimmed.endsWith('.png')) {
+      return trimmed;
+    }
+    return `${backendBase}${trimmed}`;
+  }
+
+  // If in production it has localhost/127.0.0.1 and backendBase is not localhost
+  if (
+    (trimmed.includes('127.0.0.1:8000') || trimmed.includes('localhost:8000')) &&
+    !backendBase.includes('127.0.0.1') &&
+    !backendBase.includes('localhost')
+  ) {
+    return trimmed.replace(/http:\/\/(127\.0\.0\.1|localhost):8000/, backendBase);
+  }
+
+  return trimmed;
+}
+
+/**
+ * Extracts and formats the user's profile avatar URL from user object.
+ * Returns null if no valid image is set.
+ */
+export function getUserAvatarUrl(user) {
+  if (!user) return null;
+  const rawUrl =
+    user.avatar ||
+    user.profile_image ||
+    user.profileImage ||
+    user.photo ||
+    user.image ||
+    user.customerProfile?.avatar ||
+    user.customerProfile?.profile_image ||
+    user.customer_profile?.avatar ||
+    user.customer_profile?.profile_image ||
+    user.profile?.avatar ||
+    user.profile?.profile_image ||
+    null;
+
+  if (!rawUrl || typeof rawUrl !== 'string' || !rawUrl.trim()) {
+    return null;
+  }
+  return formatImageUrl(rawUrl);
+}
+
+/**
+ * Derives uppercase user initials (e.g. "JR", "RS", "AV") from user profile.
+ */
+export function getUserInitials(user) {
+  if (!user) return 'CC';
+  const rawName =
+    user.name ||
+    [user.first_name, user.last_name].filter(Boolean).join(' ') ||
+    user.username ||
+    user.email?.split('@')[0] ||
+    '';
+
+  const name = String(rawName).trim();
+  if (!name) return 'CC';
+
+  const parts = name.split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) {
+    const first = parts[0][0] || '';
+    const last = parts[parts.length - 1][0] || '';
+    return (first + last).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+}
+
 export default handleImageError;

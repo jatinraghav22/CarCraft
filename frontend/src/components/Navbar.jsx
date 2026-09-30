@@ -18,6 +18,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { useCompare } from '../context/CompareContext';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import UserAvatar from './UserAvatar';
 
 export default function Navbar() {
   const location = useLocation();
@@ -459,20 +460,7 @@ export default function Navbar() {
                   e.currentTarget.style.boxShadow = 'none';
                 }}
               >
-                <img
-                  src={user?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80'}
-                  alt={user?.name || 'Member'}
-                  onError={(e) => {
-                    e.currentTarget.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80';
-                  }}
-                  style={{
-                    width: '26px',
-                    height: '26px',
-                    borderRadius: '50%',
-                    objectFit: 'cover',
-                    border: '1px solid #bef264',
-                  }}
-                />
+                <UserAvatar user={user} size={26} fontSize="0.72rem" />
                 <span style={{ color: '#bef264' }}>
                   {user?.name ? user.name.split(' ')[0] : 'MEMBER'}
                 </span>
@@ -600,14 +588,7 @@ export default function Navbar() {
                   textDecoration: 'none',
                 }}
               >
-                <img
-                  src={user?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80'}
-                  alt={user?.name || 'Member'}
-                  onError={(e) => {
-                    e.currentTarget.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80';
-                  }}
-                  style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover' }}
-                />
+                <UserAvatar user={user} size={22} fontSize="0.65rem" />
                 MEMBER GARAGE: {user?.name || 'MEMBER'}
               </Link>
             ) : (

@@ -1,6 +1,25 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from './ToastContext';
 import authApi from '../api/authApi';
+import { formatImageUrl } from '../utils/imageFallback';
+
+const extractUserAvatar = (apiUser, fallback = '') => {
+  if (!apiUser) return fallback;
+  const raw =
+    apiUser.avatar ||
+    apiUser.profile_image ||
+    apiUser.profileImage ||
+    apiUser.photo ||
+    apiUser.image ||
+    apiUser.customer_profile?.avatar ||
+    apiUser.customer_profile?.profile_image ||
+    apiUser.customerProfile?.avatar ||
+    apiUser.customerProfile?.profile_image ||
+    apiUser.profile?.avatar ||
+    apiUser.profile?.profile_image ||
+    '';
+  return raw ? formatImageUrl(raw) : fallback;
+};
 
 const AuthContext = createContext(null);
 
@@ -66,19 +85,26 @@ export const AuthProvider = ({ children }) => {
         .then((res) => {
           if (res?.user) {
             const apiUser = res.user;
-            setUser((prev) => ({
-              ...prev,
-              id: apiUser.id,
-              username: apiUser.username,
-              name: [apiUser.first_name, apiUser.last_name].filter(Boolean).join(' ') || apiUser.username,
-              email: apiUser.email,
-              role: apiUser.role,
-              phone: apiUser.phone || '',
-              customerProfile: apiUser.customer_profile || {},
-              tier: prev?.tier || 'Apex VIP',
-              badge: prev?.badge || 'VERIFIED CLIENT',
-              avatar: prev?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
-            }));
+            const resolvedAvatar = extractUserAvatar(apiUser, '');
+            setUser((prev) => {
+              const updated = {
+                ...prev,
+                id: apiUser.id,
+                username: apiUser.username,
+                name: [apiUser.first_name, apiUser.last_name].filter(Boolean).join(' ') || apiUser.username,
+                first_name: apiUser.first_name || '',
+                last_name: apiUser.last_name || '',
+                email: apiUser.email,
+                role: apiUser.role,
+                phone: apiUser.phone || '',
+                customerProfile: apiUser.customer_profile || apiUser.profile || {},
+                tier: prev?.tier || 'Apex VIP',
+                badge: prev?.badge || (apiUser.role === 'DEALER' ? 'PRINCIPAL DEALER' : 'VERIFIED MEMBER'),
+                avatar: resolvedAvatar || prev?.avatar || '',
+              };
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+              return updated;
+            });
           }
         })
         .catch(() => {
@@ -106,17 +132,20 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('carcraft_refresh_token', res.tokens.refresh);
 
         const apiUser = res.user;
+        const resolvedAvatar = extractUserAvatar(apiUser, '');
         const formattedUser = {
           id: apiUser.id,
           username: apiUser.username,
           name: [apiUser.first_name, apiUser.last_name].filter(Boolean).join(' ') || apiUser.username,
+          first_name: apiUser.first_name || '',
+          last_name: apiUser.last_name || '',
           email: apiUser.email,
           role: apiUser.role,
           phone: apiUser.phone || '',
-          customerProfile: apiUser.customer_profile || {},
+          customerProfile: apiUser.customer_profile || apiUser.profile || {},
           tier: 'Apex VIP',
           badge: apiUser.role === 'DEALER' ? 'PRINCIPAL DEALER' : 'VERIFIED MEMBER',
-          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
+          avatar: resolvedAvatar,
           joinedDate: 'Member',
           allocationTier: 'Standard Priority',
           token: res.tokens.access,
@@ -177,15 +206,20 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('carcraft_refresh_token', res.tokens.refresh);
 
         const apiUser = res.user;
+        const resolvedAvatar = extractUserAvatar(apiUser, '');
         const formattedUser = {
           id: apiUser.id,
           username: apiUser.username,
           name: [apiUser.first_name, apiUser.last_name].filter(Boolean).join(' ') || apiUser.username,
+          first_name: apiUser.first_name || '',
+          last_name: apiUser.last_name || '',
           email: apiUser.email,
           role: apiUser.role,
+          phone: apiUser.phone || '',
+          customerProfile: apiUser.customer_profile || apiUser.profile || {},
           tier,
           badge: 'CONCIERGE ACCESS',
-          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
+          avatar: resolvedAvatar,
           token: res.tokens.access,
         };
 
@@ -201,6 +235,41 @@ export const AuthProvider = ({ children }) => {
         'Registration failed. Please check your details.';
       addToast(errMsg, 'error');
       throw new Error(errMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateProfile = async (profileData) => {
+    setLoading(true);
+    try {
+      const res = await authApi.updateProfile(profileData);
+      if (res?.user) {
+        const apiUser = res.user;
+        const resolvedAvatar = extractUserAvatar(apiUser, profileData?.avatar || '');
+        setUser((prev) => {
+          const updated = {
+            ...prev,
+            id: apiUser.id,
+            username: apiUser.username,
+            name: [apiUser.first_name, apiUser.last_name].filter(Boolean).join(' ') || apiUser.username,
+            first_name: apiUser.first_name || '',
+            last_name: apiUser.last_name || '',
+            email: apiUser.email,
+            phone: apiUser.phone || prev?.phone || '',
+            customerProfile: apiUser.customer_profile || apiUser.profile || prev?.customerProfile || {},
+            avatar: resolvedAvatar || prev?.avatar || '',
+          };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+          return updated;
+        });
+        addToast('Profile updated successfully', 'success');
+        return res.user;
+      }
+    } catch (err) {
+      const errMsg = err.response?.data?.message || 'Failed to update profile.';
+      addToast(errMsg, 'error');
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -223,16 +292,16 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         register,
+        updateProfile,
         logout,
         quickDemoLogin,
-        demoProfiles: DEMO_PROFILES
+        demoProfiles: DEMO_PROFILES,
       }}
     >
       {children}
     </AuthContext.Provider>
   );
 };
-
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

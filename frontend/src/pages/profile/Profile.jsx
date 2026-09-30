@@ -24,6 +24,7 @@ import { useCart } from '../../context/CartContext';
 import { useCompare } from '../../context/CompareContext';
 import testDriveApi from '../../api/testDriveApi';
 import serviceApi from '../../api/serviceApi';
+import UserAvatar from '../../components/UserAvatar';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import './Profile.css';
@@ -173,11 +174,10 @@ export default function Profile() {
   }
 
   // Safe fallback attributes for authenticated user
-  const displayName = user?.name || 'Alexander Vance';
-  const displayEmail = user?.email || 'alex.vance@carcraft.io';
+  const displayName = user?.name || user?.username || 'CarCraft Member';
+  const displayEmail = user?.email || 'client@carcraft.io';
   const displayTier = user?.tier || 'Apex VIP';
-  const displayJoined = user?.joinedDate || 'March 2024';
-  const displayAvatar = user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80';
+  const displayJoined = user?.joinedDate || 'Member';
   const displayAllocation = user?.allocationTier || 'Priority Level 1';
 
   return (
@@ -190,12 +190,14 @@ export default function Profile() {
           <div className="profile-hero-content">
             <div className="profile-user-left">
               <div className="profile-avatar-wrapper">
-                <img 
-                  src={displayAvatar} 
-                  alt={displayName} 
+                <UserAvatar
+                  user={user}
+                  size={88}
+                  fontSize="2rem"
                   className="profile-avatar"
-                  onError={(e) => {
-                    e.currentTarget.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80';
+                  style={{
+                    boxShadow: '0 0 24px rgba(190, 242, 100, 0.3)',
+                    border: '2px solid #bef264',
                   }}
                 />
                 <div className="profile-avatar-badge">
