@@ -1,0 +1,452 @@
+/* ══════════════════════════════════════════════════════════════
+   CARCRAFT VEHICLE COMPARISON SUITE STYLES
+   ══════════════════════════════════════════════════════════════ */
+
+.compare-page {
+  min-height: 100vh;
+  background-color: #040508;
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.compare-atmosphere {
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 20% 15%, rgba(190, 242, 100, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(56, 189, 248, 0.05) 0%, transparent 40%),
+    #040508;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.compare-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+}
+
+/* Header & Controls */
+.compare-header-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.compare-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: #bef264;
+  text-transform: uppercase;
+  background: rgba(190, 242, 100, 0.08);
+  border: 1px solid rgba(190, 242, 100, 0.22);
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+
+.compare-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin: 0;
+}
+
+.compare-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Highlight Differences Toggle */
+.compare-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 16px;
+  border-radius: 999px;
+  transition: all 0.2s ease;
+}
+
+.compare-toggle-label:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(190, 242, 100, 0.3);
+}
+
+.compare-clear-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #f87171;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.compare-clear-btn:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: #f87171;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   COMPARISON MATRIX GRID
+   ══════════════════════════════════════════════════════════════ */
+.compare-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  background: rgba(10, 14, 22, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.compare-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 820px;
+}
+
+/* Header Columns */
+.compare-th-metric {
+  width: 220px;
+  padding: 24px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(6, 9, 15, 0.7);
+}
+
+.compare-th-car {
+  padding: 24px 20px;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  position: relative;
+  min-width: 240px;
+}
+
+/* Vehicle Header Card Inside Matrix */
+.compare-car-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.compare-car-media-wrap {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 140px;
+  background: #080b11;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.compare-car-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.compare-car-media-wrap:hover .compare-car-img {
+  transform: scale(1.06);
+}
+
+.compare-remove-car-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(6, 8, 12, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.compare-remove-car-btn:hover {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+}
+
+.compare-car-brand {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 10px;
+  color: #64748b;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.compare-car-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 2px 0 6px;
+  line-height: 1.2;
+}
+
+.compare-car-price {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #bef264;
+}
+
+.compare-car-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.compare-action-btn-primary {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #bef264;
+  color: #080a08;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.compare-action-btn-primary:hover {
+  box-shadow: 0 0 16px rgba(190, 242, 100, 0.45);
+}
+
+/* Empty Slot Card inside Matrix */
+.compare-empty-slot {
+  height: 240px;
+  border: 2px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.015);
+  transition: all 0.25s ease;
+  padding: 20px;
+  text-align: center;
+}
+
+.compare-empty-slot:hover {
+  border-color: #bef264;
+  background: rgba(190, 242, 100, 0.04);
+}
+
+.compare-add-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(190, 242, 100, 0.1);
+  border: 1px solid rgba(190, 242, 100, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #bef264;
+}
+
+/* Section Header Rows */
+.compare-section-row td {
+  padding: 16px 24px;
+  background: rgba(15, 22, 35, 0.85);
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #bef264;
+  text-transform: uppercase;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Metric Data Rows */
+.compare-data-row td {
+  padding: 16px 20px;
+  font-size: 0.88rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  vertical-align: middle;
+}
+
+.compare-data-row.highlight-diff {
+  background: rgba(190, 242, 100, 0.035);
+}
+
+.compare-metric-name {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.compare-cell-val {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.compare-cell-val.winner {
+  color: #bef264;
+  font-weight: 800;
+  position: relative;
+}
+
+.compare-winner-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(190, 242, 100, 0.15);
+  border: 1px solid rgba(190, 242, 100, 0.3);
+  color: #bef264;
+  font-size: 10px;
+  font-family: 'Space Grotesk', monospace;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+}
+
+/* Empty State View */
+.compare-zero-state {
+  text-align: center;
+  padding: 80px 24px;
+  background: rgba(10, 14, 22, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  max-width: 680px;
+  margin: 30px auto;
+  backdrop-filter: blur(20px);
+}
+
+.compare-zero-icon-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(190, 242, 100, 0.1);
+  border: 1px solid rgba(190, 242, 100, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  color: #bef264;
+}
+
+/* Modal Selector */
+.compare-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 5, 8, 0.85);
+  backdrop-filter: blur(12px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.compare-modal-card {
+  width: 100%;
+  max-width: 640px;
+  max-height: 80vh;
+  background: #0b0f19;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
+}
+
+.compare-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.compare-modal-list {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 6px;
+}
+
+.compare-modal-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.compare-modal-item:hover {
+  background: rgba(190, 242, 100, 0.06);
+  border-color: rgba(190, 242, 100, 0.3);
+}
+
+.compare-modal-thumb {
+  width: 54px;
+  height: 38px;
+  border-radius: 6px;
+  object-fit: cover;
+}

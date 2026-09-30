@@ -1,0 +1,109 @@
+/* ══════════════════════════════════════════════════════════════
+   CARCRAFT UNIFIED SEARCH & COMMAND DECK STYLES
+   ══════════════════════════════════════════════════════════════ */
+
+.search-page {
+  min-height: 100vh;
+  background-color: #040508;
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.search-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.search-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.search-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: #bef264;
+  text-transform: uppercase;
+  background: rgba(190, 242, 100, 0.08);
+  border: 1px solid rgba(190, 242, 100, 0.25);
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.search-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 8px;
+}
+
+/* Big Search Bar */
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(15, 20, 30, 0.85);
+  border: 1px solid rgba(190, 242, 100, 0.3);
+  box-shadow: 0 0 24px rgba(190, 242, 100, 0.15);
+  border-radius: 16px;
+  padding: 16px 24px;
+  margin-bottom: 36px;
+}
+
+.search-input-field {
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  color: #ffffff;
+  outline: none;
+}
+
+.search-category-group {
+  margin-bottom: 32px;
+}
+
+.search-category-title {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.8rem;
+  color: #bef264;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.search-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: rgba(10, 14, 22, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  text-decoration: none;
+  color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.search-result-item:hover {
+  background: rgba(190, 242, 100, 0.08);
+  border-color: rgba(190, 242, 100, 0.35);
+  transform: translateX(4px);
+}

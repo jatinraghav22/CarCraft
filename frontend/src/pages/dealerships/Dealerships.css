@@ -1,0 +1,239 @@
+/* ══════════════════════════════════════════════════════════════
+   CARCRAFT GLOBAL DEALERSHIP HUBS & ATELIERS STYLES
+   ══════════════════════════════════════════════════════════════ */
+
+.dealerships-page {
+  min-height: 100vh;
+  background-color: #040508;
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.dealerships-container {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dealerships-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.dealerships-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: #bef264;
+  text-transform: uppercase;
+  background: rgba(190, 242, 100, 0.08);
+  border: 1px solid rgba(190, 242, 100, 0.25);
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.dealerships-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 8px;
+}
+
+.dealerships-subtitle {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  max-width: 580px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* Filter Controls */
+.dealerships-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.dealerships-search-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(15, 20, 30, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 10px 16px;
+  min-width: 280px;
+}
+
+.dealerships-search-input {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  width: 100%;
+}
+
+.dealerships-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dealerships-pill-btn {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  color: #94a3b8;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dealerships-pill-btn.active {
+  background: rgba(190, 242, 100, 0.12);
+  border-color: #bef264;
+  color: #bef264;
+  font-weight: 700;
+}
+
+/* Hub Cards Grid */
+.dealerships-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 24px;
+}
+
+.dealership-card {
+  background: rgba(10, 14, 22, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  overflow: hidden;
+  backdrop-filter: blur(16px);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.dealership-card:hover {
+  border-color: rgba(190, 242, 100, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+
+.dealership-media {
+  position: relative;
+  height: 200px;
+}
+
+.dealership-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dealership-badge-float {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(6, 8, 12, 0.88);
+  border: 1px solid rgba(190, 242, 100, 0.3);
+  color: #bef264;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.dealership-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 14px;
+}
+
+.dealership-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+}
+
+.dealership-address-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.dealership-facilities-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.dealership-facility-chip {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11px;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.dealership-footer {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dealership-cta-book {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  background: #bef264;
+  color: #080a08;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.dealership-cta-book:hover {
+  box-shadow: 0 0 16px rgba(190, 242, 100, 0.4);
+}
+
+@media (max-width: 768px) {
+  .dealerships-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,169 @@
+/* ══════════════════════════════════════════════════════════════
+   CARCRAFT OWNER REVIEWS & TELEMETRY EXPERIENCES STYLES
+   ══════════════════════════════════════════════════════════════ */
+
+.reviews-page {
+  min-height: 100vh;
+  background-color: #040508;
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.reviews-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.reviews-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.reviews-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: #bef264;
+  text-transform: uppercase;
+  background: rgba(190, 242, 100, 0.08);
+  border: 1px solid rgba(190, 242, 100, 0.25);
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.reviews-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 8px;
+}
+
+/* Overall Ratings Strip */
+.reviews-metrics-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  background: rgba(13, 17, 26, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 24px;
+  margin-bottom: 40px;
+  backdrop-filter: blur(16px);
+}
+
+.reviews-metric-item {
+  text-align: center;
+}
+
+.reviews-metric-val {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #bef264;
+  line-height: 1;
+}
+
+.reviews-metric-lbl {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+/* Reviews Grid */
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 24px;
+}
+
+.review-card {
+  background: rgba(10, 14, 22, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  backdrop-filter: blur(16px);
+  transition: all 0.25s ease;
+}
+
+.review-card:hover {
+  border-color: rgba(190, 242, 100, 0.3);
+  transform: translateY(-2px);
+}
+
+.review-stars {
+  display: flex;
+  gap: 4px;
+  color: #bef264;
+  margin-bottom: 12px;
+}
+
+.review-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 10px;
+  line-height: 1.3;
+}
+
+.review-content {
+  font-size: 0.88rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin: 0 0 20px;
+}
+
+.review-author-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.review-author-name {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #ffffff;
+}
+
+.review-author-meta {
+  font-size: 0.74rem;
+  color: #64748b;
+  font-family: 'Space Grotesk', monospace;
+}
+
+.review-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 10px;
+  color: #bef264;
+  background: rgba(190, 242, 100, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(190, 242, 100, 0.2);
+}
+
+@media (max-width: 860px) {
+  .reviews-metrics-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

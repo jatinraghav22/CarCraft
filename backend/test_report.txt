@@ -1,0 +1,130 @@
+============================================================
+CARCRAFT AUTOMATED TEST REPORT
+============================================================
+
+TOTAL:    100
+PASSED:   94
+FAILED:   0
+SKIPPED:  0
+MANUAL:   6
+PASS RATE: 94.0%
+FAIL RATE: 0.0%
+
+============================================================
+CARCRAFT CONNECTIVITY MATRIX
+============================================================
+Customer -> Backend            PASS
+Dealer -> Backend              PASS
+Dealer -> Database             PASS
+Customer -> Database           PASS
+Dealer Vehicle -> Customer     PASS
+Test Drive -> Dealer           PASS
+Dealer Approval -> Customer    PASS
+Service -> Dealer              PASS
+Order -> Dealer                PASS
+Sales -> Financials            PASS
+Expense -> P&L                 PASS
+
+============================================================
+DETAILED TEST RESULTS (TC-001 TO TC-100)
+============================================================
+[PASS] TC-001: Open homepage / API root (Homepage) - 0.0017s
+[PASS] TC-002: Backend health check (Homepage) - 0.0014s
+[MANUAL] TC-003: Cinematic video completion (Homepage) - 0.001s
+[MANUAL] TC-004: Showroom 3D canvas visibility (Homepage) - 0.001s
+[MANUAL] TC-005: Dashboard hidden during intro (Homepage) - 0.001s
+[MANUAL] TC-006: Dashboard appears after intro (Homepage) - 0.001s
+[PASS] TC-007: Explore Vehicles navigation endpoint (Homepage) - 0.0085s
+[PASS] TC-008: Parts navigation endpoint (Homepage) - 0.0112s
+[PASS] TC-009: Service navigation endpoint (Homepage) - 0.0088s
+[PASS] TC-010: Showroom & Master API directory (Homepage) - 0.0026s
+[PASS] TC-011: Valid customer registration (Customer Auth) - 0.2549s
+[PASS] TC-012: Duplicate customer registration blocked (Customer Auth) - 0.0071s
+[PASS] TC-013: Invalid email format rejection (Customer Auth) - 0.0064s
+[PASS] TC-014: Weak password rejection (Customer Auth) - 0.0073s
+[PASS] TC-015: Missing required fields rejection (Customer Auth) - 0.0041s
+[PASS] TC-016: Valid customer login (Customer Auth) - 0.1911s
+[PASS] TC-017: Wrong password rejection (Customer Auth) - 0.1911s
+[PASS] TC-018: Non-existing customer rejection (Customer Auth) - 0.0048s
+[PASS] TC-019: JWT Token refresh verification (Customer Auth) - 0.008s
+[PASS] TC-020: Profile access without auth blocked (Customer Auth) - 0.0029s
+[PASS] TC-021: GET vehicles list (Vehicles) - 0.0116s
+[PASS] TC-022: Validate vehicle model attributes (Vehicles) - 0.0116s
+[PASS] TC-023: Vehicle brand search/filter (Vehicles) - 0.0084s
+[PASS] TC-024: Vehicle model search query (Vehicles) - 0.0095s
+[PASS] TC-025: Random search query returns 0 items without 500 error (Vehicles) - 0.0054s
+[PASS] TC-026: Porsche brand filter (Vehicles) - 0.0082s
+[PASS] TC-027: Fuel type filter (Vehicles) - 0.0081s
+[PASS] TC-028: Transmission filter (Vehicles) - 0.0114s
+[PASS] TC-029: Body type filter (Vehicles) - 0.0091s
+[PASS] TC-030: Multi-parameter filter evaluation (Vehicles) - 0.0104s
+[PASS] TC-031: Price sorting asc vs desc (Vehicles) - 0.0103s
+[PASS] TC-032: Clear filters restore full catalog (Vehicles) - 0.0112s
+[PASS] TC-033: Open valid vehicle details (Vehicle Details) - 0.0082s
+[PASS] TC-034: Open non-existent vehicle ID (Vehicle Details) - 0.0055s
+[PASS] TC-035: Validate vehicle gallery structure (Vehicle Details) - 0.0083s
+[MANUAL] TC-036: Carousel Next image transition (Vehicle Details) - 0.001s
+[MANUAL] TC-037: Carousel Previous image transition (Vehicle Details) - 0.001s
+[PASS] TC-038: Add vehicle to customer wishlist (Vehicle Details) - 0.0189s
+[PASS] TC-039: Remove item from wishlist (Vehicle Details) - 0.0149s
+[PASS] TC-040: Book test drive from vehicle details (Vehicle Details) - 0.0207s
+[PASS] TC-041: GET parts catalog (Parts) - 0.0069s
+[PASS] TC-042: Validate parts product images (Parts) - 0.0083s
+[PASS] TC-043: Search parts catalog (Parts) - 0.008s
+[PASS] TC-044: Category filter on parts (Parts) - 0.0069s
+[PASS] TC-045: Price range filter on parts (Parts) - 0.0079s
+[PASS] TC-046: Price sorting on parts catalog (Parts) - 0.0069s
+[PASS] TC-047: Open valid part details (Parts) - 0.0049s
+[PASS] TC-048: Add part to cart (Parts) - 0.0192s
+[PASS] TC-049: Add same part increments quantity (Parts) - 0.016s
+[PASS] TC-050: Out of stock quantity addition rejected (Parts) - 0.0073s
+[PASS] TC-051: Empty cart clearance (Cart & Checkout) - 0.0143s
+[PASS] TC-052: Add 1 item to cart (Cart & Checkout) - 0.0179s
+[PASS] TC-053: Add multiple distinct items to cart (Cart & Checkout) - 0.0105s
+[PASS] TC-054: Increase item quantity in cart (Cart & Checkout) - 0.0202s
+[PASS] TC-055: Decrease item quantity in cart (Cart & Checkout) - 0.024s
+[PASS] TC-056: Remove item from cart (Cart & Checkout) - 0.0167s
+[PASS] TC-057: Subtotal calculation accuracy (Cart & Checkout) - 0.0091s
+[PASS] TC-058: Final total with 5% GST calculation (Cart & Checkout) - 0.0106s
+[PASS] TC-059: Checkout without authentication blocked (Cart & Checkout) - 0.0024s
+[PASS] TC-060: Complete Checkout & Dealer Visibility (Cart & Checkout) - 0.0249s
+[PASS] TC-061: Customer opens vehicle for test-drive (Test Drive) - 0.007s
+[PASS] TC-062: Test-drive booking endpoint reachable (Test Drive) - 0.0095s
+[PASS] TC-063: Submit valid test-drive request (Test Drive) - 0.0161s
+[PASS] TC-064: Verify test-drive database record exists (Test Drive) - 0.008s
+[PASS] TC-065: Verify vehicle foreign key relation (Test Drive) - 0.0079s
+[PASS] TC-066: Verify customer foreign key relation (Test Drive) - 0.0084s
+[PASS] TC-067: Dealer Test Drives list visibility (Test Drive) - 0.0125s
+[PASS] TC-068: Dealer approves test drive booking (Test Drive) - 0.0185s
+[PASS] TC-069: Customer observes APPROVED test-drive (Test Drive) - 0.008s
+[PASS] TC-070: Dealer rejects test drive & Customer sees update (Test Drive) - 0.0144s
+[PASS] TC-071: Service appointments endpoint reachable (Service) - 0.0082s
+[PASS] TC-072: Select valid service package (Service) - 0.001s
+[PASS] TC-073: Vehicle selection for service bay (Service) - 0.001s
+[PASS] TC-074: Valid future service date (Service) - 0.001s
+[PASS] TC-075: Past service date validation (Service) - 0.001s
+[PASS] TC-076: Valid service appointment time slot (Service) - 0.001s
+[PASS] TC-077: Submit service booking (Service) - 0.0145s
+[PASS] TC-078: Verify service appointment DB record (Service) - 0.0108s
+[PASS] TC-079: Dealer Service Bay visibility (Service) - 0.0136s
+[PASS] TC-080: Dealer approves service & Customer sees updated status (Service) - 0.0169s
+[PASS] TC-081: Dealer portal authentication (Dealer Vehicles) - 0.001s
+[PASS] TC-082: Customer blocked from Dealer Dashboard (Dealer Vehicles) - 0.005s
+[PASS] TC-083: Dealer vehicle list access (Dealer Vehicles) - 0.0096s
+[PASS] TC-084: Dealer adds vehicle with unique VIN (Dealer Vehicles) - 0.0156s
+[PASS] TC-085: CRITICAL: Dealer vehicle visible on Customer site (Dealer Vehicles) - 0.01s
+[PASS] TC-086: Dealer edits vehicle & Customer sees updated price (Dealer Vehicles) - 0.0172s
+[PASS] TC-087: Dealer adds new performance part (Parts & Inventory) - 0.0129s
+[PASS] TC-088: Customer sees newly added part (Parts & Inventory) - 0.0058s
+[PASS] TC-089: Dealer updates stock & Customer sees change (Parts & Inventory) - 0.0121s
+[PASS] TC-090: Out of stock part purchase prevented (Parts & Inventory) - 0.0075s
+[PASS] TC-091: Customer order appears in Dealer orders (Orders & Financials) - 0.0124s
+[PASS] TC-092: Dealer updates order status & Customer sees status (Orders & Financials) - 0.0207s
+[PASS] TC-093: Completed transactions recorded in Sales ledger (Orders & Financials) - 0.0089s
+[PASS] TC-094: Authoritative revenue calculated from paid sales (Orders & Financials) - 0.0076s
+[PASS] TC-095: Dealer creates operational expense (Orders & Financials) - 0.0124s
+[PASS] TC-096: Decimal Gross Profit arithmetic accuracy (Orders & Financials) - 0.0099s
+[PASS] TC-097: Customer blocked from financial reports (Security & E2E) - 0.0051s
+[PASS] TC-098: Tampered JWT rejection (Security & E2E) - 0.002s
+[PASS] TC-099: Duplicate VIN inventory prevention (Security & E2E) - 0.0072s
+[PASS] TC-100: FULL END-TO-END MASTER INTEGRATION FLOW (Security & E2E) - 0.1232s

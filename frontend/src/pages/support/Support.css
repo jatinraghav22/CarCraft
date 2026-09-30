@@ -1,0 +1,142 @@
+/* ══════════════════════════════════════════════════════════════
+   CARCRAFT CONCIERGE SUPPORT & FAQ STYLES
+   ══════════════════════════════════════════════════════════════ */
+
+.support-page {
+  min-height: 100vh;
+  background-color: #040508;
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.support-container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.support-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.support-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: #bef264;
+  text-transform: uppercase;
+  background: rgba(190, 242, 100, 0.08);
+  border: 1px solid rgba(190, 242, 100, 0.25);
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.support-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 8px;
+}
+
+/* Category Filter Pills */
+.support-pills {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.support-pill-btn {
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  color: #94a3b8;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.support-pill-btn.active {
+  background: rgba(190, 242, 100, 0.12);
+  border-color: #bef264;
+  color: #bef264;
+  font-weight: 700;
+}
+
+/* Accordion */
+.support-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 48px;
+}
+
+.support-faq-item {
+  background: rgba(10, 14, 22, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+.support-faq-item.open {
+  border-color: rgba(190, 242, 100, 0.35);
+  background: rgba(15, 22, 34, 0.85);
+}
+
+.support-faq-question {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.support-faq-answer {
+  padding: 0 24px 20px;
+  font-size: 0.9rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  padding-top: 14px;
+}
+
+/* Contact Concierge Banner */
+.support-contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.support-contact-card {
+  background: rgba(10, 14, 22, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 28px;
+  backdrop-filter: blur(16px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .support-contact-grid {
+    grid-template-columns: 1fr;
+  }
+}

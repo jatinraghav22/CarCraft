@@ -1,0 +1,342 @@
+/* ══════════════════════════════════════════════════════════════
+   CARCRAFT 3D CONFIGURATOR & BESPOKE STUDIO STYLES
+   ══════════════════════════════════════════════════════════════ */
+
+.config-page {
+  min-height: 100vh;
+  background-color: #040508;
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.config-ambient {
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 15% 20%, rgba(190, 242, 100, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 85% 75%, rgba(56, 189, 248, 0.04) 0%, transparent 40%),
+    #040508;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.config-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 30px 24px 80px;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+}
+
+/* Header */
+.config-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.config-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: #bef264;
+  text-transform: uppercase;
+  background: rgba(190, 242, 100, 0.08);
+  border: 1px solid rgba(190, 242, 100, 0.25);
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+
+.config-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* Vehicle Switcher Bar */
+.config-model-switcher {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 24px;
+}
+
+.config-model-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  color: #94a3b8;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.config-model-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
+.config-model-btn.active {
+  background: rgba(190, 242, 100, 0.12);
+  border-color: #bef264;
+  color: #bef264;
+}
+
+/* Main Studio Layout: Left Stage (Visualizer), Right Deck (Controls) */
+.config-studio-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+/* Visualizer Stage */
+.config-stage-card {
+  background: rgba(10, 14, 22, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  overflow: hidden;
+  position: sticky;
+  top: 100px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.config-canvas-viewport {
+  position: relative;
+  height: 480px;
+  background: radial-gradient(circle at 50% 60%, rgba(26, 36, 56, 0.8) 0%, #06090e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.config-car-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.config-stage-overlay-tags {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 2;
+}
+
+.config-stage-tag {
+  background: rgba(6, 9, 15, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11px;
+  color: #cbd5e1;
+}
+
+.config-price-summary-bar {
+  padding: 20px 24px;
+  background: rgba(6, 9, 15, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.config-total-price {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #bef264;
+  line-height: 1;
+}
+
+/* Configuration Option Tabs & Panels */
+.config-controls-card {
+  background: rgba(10, 14, 22, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 24px;
+  backdrop-filter: blur(20px);
+}
+
+.config-section-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 24px;
+}
+
+.config-sec-tab {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.config-sec-tab.active {
+  background: rgba(190, 242, 100, 0.12);
+  color: #bef264;
+  font-weight: 700;
+  border: 1px solid rgba(190, 242, 100, 0.3);
+}
+
+/* Paint Swatches Grid */
+.config-swatches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.config-swatch-card {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.config-swatch-card:hover {
+  border-color: rgba(190, 242, 100, 0.3);
+}
+
+.config-swatch-card.selected {
+  border-color: #bef264;
+  background: rgba(190, 242, 100, 0.08);
+  box-shadow: 0 0 16px rgba(190, 242, 100, 0.15);
+}
+
+.config-color-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Option List Items */
+.config-option-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 10px;
+}
+
+.config-option-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(190, 242, 100, 0.25);
+}
+
+.config-option-item.selected {
+  border-color: #bef264;
+  background: rgba(190, 242, 100, 0.08);
+}
+
+/* Action Buttons */
+.config-cta-primary {
+  flex: 1;
+  padding: 14px 20px;
+  border-radius: 10px;
+  background: #bef264;
+  color: #080a08;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 20px rgba(190, 242, 100, 0.35);
+}
+
+.config-cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(190, 242, 100, 0.55);
+}
+
+.config-cta-secondary {
+  padding: 14px 18px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.config-cta-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #bef264;
+}
+
+@media (max-width: 1024px) {
+  .config-studio-grid {
+    grid-template-columns: 1fr;
+  }
+  .config-stage-card {
+    position: static;
+  }
+}

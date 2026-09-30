@@ -1,0 +1,195 @@
+/* ══════════════════════════════════════════════════════════════
+   CARCRAFT FINANCING & LEASE CALCULATOR STYLES
+   ══════════════════════════════════════════════════════════════ */
+
+.financing-page {
+  min-height: 100vh;
+  background-color: #040508;
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.financing-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.financing-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.financing-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: #bef264;
+  text-transform: uppercase;
+  background: rgba(190, 242, 100, 0.08);
+  border: 1px solid rgba(190, 242, 100, 0.25);
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.financing-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 8px;
+}
+
+.financing-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 32px;
+}
+
+.financing-card {
+  background: rgba(10, 14, 22, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 32px;
+  backdrop-filter: blur(20px);
+}
+
+.financing-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 28px;
+}
+
+.financing-tab-btn {
+  padding: 10px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.financing-tab-btn.active {
+  background: rgba(190, 242, 100, 0.15);
+  color: #bef264;
+  border: 1px solid rgba(190, 242, 100, 0.3);
+}
+
+/* Slider Controls */
+.financing-control-group {
+  margin-bottom: 24px;
+}
+
+.financing-control-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.financing-control-label {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.76rem;
+  color: #cbd5e1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.financing-control-val {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #bef264;
+}
+
+.financing-slider {
+  width: 100%;
+  accent-color: #bef264;
+  cursor: pointer;
+}
+
+/* Term buttons */
+.financing-terms-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.financing-term-btn {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  color: #94a3b8;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.financing-term-btn.active {
+  border-color: #bef264;
+  background: rgba(190, 242, 100, 0.12);
+  color: #bef264;
+  font-weight: 700;
+}
+
+/* Results Display Panel */
+.financing-results-panel {
+  background: linear-gradient(145deg, #0e1420 0%, #06090e 100%);
+  border: 1px solid rgba(190, 242, 100, 0.3);
+  border-radius: 20px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(190, 242, 100, 0.08);
+}
+
+.financing-payment-big {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: #bef264;
+  line-height: 1;
+  margin: 12px 0 6px;
+}
+
+.financing-breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 24px 0;
+  padding: 20px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.financing-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+}
+
+@media (max-width: 860px) {
+  .financing-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,603 @@
+/* ══════════════════════════════════════════════════════════════
+   CARCRAFT TEST DRIVE & CONCIERGE RESERVATION SUITE STYLES
+   ══════════════════════════════════════════════════════════════ */
+
+.testdrive-page {
+  min-height: 100vh;
+  background-color: #040508;
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.testdrive-ambient {
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 10% 25%, rgba(190, 242, 100, 0.06) 0%, transparent 45%),
+    radial-gradient(circle at 90% 70%, rgba(56, 189, 248, 0.05) 0%, transparent 45%),
+    #040508;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.testdrive-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px 90px;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+}
+
+/* Header */
+.testdrive-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.testdrive-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: #bef264;
+  text-transform: uppercase;
+  background: rgba(190, 242, 100, 0.08);
+  border: 1px solid rgba(190, 242, 100, 0.22);
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.testdrive-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+}
+
+.testdrive-subtitle {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  max-width: 580px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* Stepper Bar */
+.testdrive-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.testdrive-step-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #64748b;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.testdrive-step-item.active {
+  background: rgba(190, 242, 100, 0.12);
+  border-color: rgba(190, 242, 100, 0.35);
+  color: #bef264;
+  font-weight: 700;
+}
+
+.testdrive-step-item.completed {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #cbd5e1;
+}
+
+.testdrive-step-num {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+
+.testdrive-step-item.active .testdrive-step-num {
+  background: #bef264;
+  color: #080a08;
+  font-weight: 800;
+}
+
+/* Form Container */
+.testdrive-card {
+  background: rgba(10, 14, 22, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 36px;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+}
+
+.testdrive-section-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 20px;
+}
+
+/* Vehicle Selection Strip */
+.testdrive-car-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.testdrive-car-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.testdrive-car-card:hover {
+  border-color: rgba(190, 242, 100, 0.3);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.testdrive-car-card.selected {
+  border-color: #bef264;
+  background: rgba(190, 242, 100, 0.08);
+  box-shadow: 0 0 20px rgba(190, 242, 100, 0.15);
+}
+
+.testdrive-car-thumb {
+  width: 100%;
+  height: 120px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.testdrive-car-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+/* Hub Selection Cards */
+.testdrive-hubs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.testdrive-hub-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.testdrive-hub-card:hover {
+  border-color: rgba(190, 242, 100, 0.3);
+}
+
+.testdrive-hub-card.selected {
+  border-color: #bef264;
+  background: rgba(190, 242, 100, 0.06);
+  box-shadow: 0 0 20px rgba(190, 242, 100, 0.15);
+}
+
+.testdrive-hub-img-wrap {
+  position: relative;
+  height: 140px;
+}
+
+.testdrive-hub-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.testdrive-hub-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  background: rgba(6, 8, 12, 0.85);
+  color: #bef264;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(190, 242, 100, 0.3);
+}
+
+.testdrive-hub-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.testdrive-hub-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin: 0;
+  color: #ffffff;
+}
+
+.testdrive-hub-city {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.testdrive-hub-track-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-family: 'Space Grotesk', monospace;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  padding: 3px 8px;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+/* Experience Tiers */
+.testdrive-tiers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.testdrive-tier-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.testdrive-tier-card:hover {
+  border-color: rgba(190, 242, 100, 0.3);
+}
+
+.testdrive-tier-card.selected {
+  border-color: #bef264;
+  background: rgba(190, 242, 100, 0.08);
+  box-shadow: 0 0 20px rgba(190, 242, 100, 0.15);
+}
+
+.testdrive-tier-badge {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 10px;
+  color: #bef264;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.testdrive-tier-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 6px 0 2px;
+}
+
+.testdrive-tier-duration {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-family: 'Space Grotesk', monospace;
+}
+
+.testdrive-tier-cost {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #bef264;
+  margin: 12px 0 8px;
+}
+
+.testdrive-tier-features {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.testdrive-tier-feat-item {
+  font-size: 0.74rem;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Date & Time Slot Grid */
+.testdrive-schedule-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.testdrive-date-input {
+  width: 100%;
+  background: rgba(15, 20, 30, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #ffffff;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.testdrive-date-input:focus {
+  border-color: #bef264;
+}
+
+.testdrive-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.testdrive-slot-btn {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  color: #94a3b8;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.testdrive-slot-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(190, 242, 100, 0.3);
+}
+
+.testdrive-slot-btn.selected {
+  background: rgba(190, 242, 100, 0.15);
+  border-color: #bef264;
+  color: #bef264;
+  font-weight: 700;
+}
+
+/* Instructor Selection */
+.testdrive-instructors-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.testdrive-inst-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.testdrive-inst-card:hover {
+  border-color: rgba(190, 242, 100, 0.3);
+}
+
+.testdrive-inst-card.selected {
+  border-color: #bef264;
+  background: rgba(190, 242, 100, 0.08);
+}
+
+.testdrive-inst-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #bef264;
+}
+
+/* Form Fields */
+.testdrive-fields-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.testdrive-input {
+  width: 100%;
+  background: rgba(15, 20, 30, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.testdrive-input:focus {
+  border-color: #bef264;
+  box-shadow: 0 0 0 3px rgba(190, 242, 100, 0.15);
+}
+
+/* Actions Footer */
+.testdrive-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.testdrive-primary-btn {
+  padding: 14px 28px;
+  border-radius: 10px;
+  background: #bef264;
+  color: #080a08;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 20px rgba(190, 242, 100, 0.35);
+}
+
+.testdrive-primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(190, 242, 100, 0.55);
+}
+
+.testdrive-secondary-btn {
+  padding: 14px 24px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.testdrive-secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #bef264;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CONFIRMATION BOARDING PASS
+   ══════════════════════════════════════════════════════════════ */
+.testdrive-pass-card {
+  background: linear-gradient(145deg, #0d121c 0%, #06090e 100%);
+  border: 1px solid rgba(190, 242, 100, 0.3);
+  border-radius: 20px;
+  overflow: hidden;
+  max-width: 680px;
+  margin: 0 auto;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(190, 242, 100, 0.1);
+  position: relative;
+}
+
+.testdrive-pass-header {
+  padding: 24px;
+  background: rgba(190, 242, 100, 0.12);
+  border-bottom: 1px dashed rgba(190, 242, 100, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.testdrive-pass-body {
+  padding: 28px 24px;
+}
+
+.testdrive-pass-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.testdrive-pass-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.testdrive-pass-lbl {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 10px;
+  color: #64748b;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.testdrive-pass-val {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+@media (max-width: 860px) {
+  .testdrive-tiers-grid,
+  .testdrive-instructors-grid,
+  .testdrive-schedule-row,
+  .testdrive-fields-grid {
+    grid-template-columns: 1fr;
+  }
+}

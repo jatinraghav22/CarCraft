@@ -1,0 +1,756 @@
+/* ==========================================================================
+   CARCRAFT VIRTUAL SHOWROOM - 3D STUDIO & ATELIER STYLES
+   ========================================================================== */
+
+.showroom-page {
+  min-height: 100vh;
+  background-color: #04050a;
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.showroom-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 30px 28px 80px;
+  width: 100%;
+  flex: 1;
+}
+
+/* Studio Lighting Atmosphere Layer */
+.showroom-atmosphere-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  transition: background 0.8s ease;
+}
+
+/* Showroom Top Bar */
+.showroom-top-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+  position: relative;
+  z-index: 10;
+}
+
+.showroom-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(190, 242, 100, 0.08);
+  border: 1px solid rgba(190, 242, 100, 0.25);
+  color: #bef264;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* Studio Lighting Theme Switcher */
+.showroom-theme-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(13, 17, 24, 0.7);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.showroom-theme-btn {
+  padding: 6px 12px;
+  border-radius: 7px;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.showroom-theme-btn:hover {
+  color: #ffffff;
+}
+
+.showroom-theme-btn.active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #bef264;
+  border: 1px solid rgba(190, 242, 100, 0.3);
+}
+
+/* ════════════════════════════════════════════════════
+   3D CENTER STAGE / SPOTLIGHT TURNTABLE
+   ════════════════════════════════════════════════════ */
+.showroom-spotlight-stage {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  background: rgba(8, 11, 16, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+  margin-bottom: 48px;
+  z-index: 10;
+}
+
+.showroom-stage-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  min-height: 520px;
+}
+
+.showroom-stage-media {
+  position: relative;
+  background: radial-gradient(circle at 50% 50%, #0d121c 0%, #04050a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  min-height: 480px;
+}
+
+.showroom-stage-vehicle-wrap {
+  position: relative;
+  z-index: 2;
+  width: 90%;
+  max-width: 620px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.showroom-stage-hero-img {
+  width: 100%;
+  height: auto;
+  max-height: 380px;
+  object-fit: contain;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease;
+  user-select: none;
+}
+
+.showroom-stage-vehicle-wrap:hover .showroom-stage-hero-img {
+  transform: scale(1.04) translateY(-4px);
+}
+
+/* Floating Telemetry HUD */
+.showroom-stage-telemetry-overlay {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 5;
+  flex-wrap: wrap;
+}
+
+.showroom-telemetry-chip {
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(6, 8, 12, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.showroom-telemetry-label {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 8.5px;
+  color: #94a3b8;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.showroom-telemetry-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+/* Angles Bar at bottom of media */
+.showroom-stage-angles-bar {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 5;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.showroom-angle-pill {
+  padding: 5px 12px;
+  border-radius: 6px;
+  background: rgba(6, 8, 12, 0.75);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.showroom-angle-pill:hover,
+.showroom-angle-pill.active {
+  background: rgba(190, 242, 100, 0.18);
+  border-color: #bef264;
+  color: #bef264;
+}
+
+.showroom-auto-spin-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  background: rgba(6, 8, 12, 0.75);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.showroom-auto-spin-btn.active {
+  color: #bef264;
+  border-color: rgba(190, 242, 100, 0.3);
+}
+
+/* Stage Info Column */
+.showroom-stage-info {
+  padding: 38px 42px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: rgba(10, 14, 22, 0.6);
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.showroom-stage-brand {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: #bef264;
+  text-transform: uppercase;
+}
+
+.showroom-stage-badge {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.showroom-stage-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(2rem, 3.2vw, 3rem);
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin: 6px 0 10px;
+  text-transform: uppercase;
+}
+
+.showroom-stage-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+/* Specs Matrix */
+.showroom-specs-box-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0 24px;
+}
+
+.showroom-spec-item {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.showroom-spec-sub {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 9px;
+  color: #64748b;
+  letter-spacing: 0.1em;
+}
+
+.showroom-spec-main {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.showroom-stage-cta-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.showroom-stage-price {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.1;
+}
+
+.showroom-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: none;
+}
+
+.showroom-cta-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(190, 242, 100, 0.4);
+}
+
+.showroom-cta-btn.secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.showroom-cta-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Quick Turntable Dock Strip */
+.showroom-stage-dock {
+  padding: 14px 28px;
+  background: rgba(4, 6, 10, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  overflow-x: auto;
+}
+
+.showroom-stage-dock-lbl {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+}
+
+.showroom-stage-dock-list {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+}
+
+.showroom-dock-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.showroom-dock-card img {
+  width: 36px;
+  height: 24px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.showroom-dock-card:hover,
+.showroom-dock-card.active {
+  background: rgba(190, 242, 100, 0.1);
+  border-color: #bef264;
+}
+
+.showroom-dock-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fff;
+  display: block;
+}
+
+.showroom-dock-hp {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 9px;
+  color: #bef264;
+}
+
+/* ════════════════════════════════════════════════════
+   SHOWROOM ZONES NAV
+   ════════════════════════════════════════════════════ */
+.showroom-zones-nav {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 28px;
+}
+
+.showroom-zone-tab {
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: rgba(13, 17, 24, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  white-space: nowrap;
+  transition: all 0.25s ease;
+}
+
+.showroom-zone-tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.showroom-zone-tab.active {
+  background: rgba(190, 242, 100, 0.1);
+  border-color: #bef264;
+}
+
+.showroom-zone-tab-badge {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.showroom-zone-tab.active .showroom-zone-tab-badge {
+  color: #bef264;
+}
+
+.showroom-zone-tab-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.showroom-zone-info {
+  margin-bottom: 28px;
+}
+
+.showroom-zone-badge {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: #bef264;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.showroom-zone-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #fff;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.showroom-zone-desc {
+  color: #94a3b8;
+  font-size: 0.88rem;
+  max-width: 600px;
+}
+
+/* ════════════════════════════════════════════════════
+   3D SHOWROOM CARDS GRID
+   ════════════════════════════════════════════════════ */
+.showroom-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 24px;
+}
+
+.showroom-3d-card {
+  border-radius: 18px;
+  background: rgba(14, 18, 26, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.showroom-3d-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(190, 242, 100, 0.4);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px rgba(190, 242, 100, 0.12);
+}
+
+.showroom-3d-card-media {
+  height: 220px;
+  position: relative;
+  overflow: hidden;
+  background: #020305;
+}
+
+.showroom-3d-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.showroom-3d-card:hover .showroom-3d-card-img {
+  transform: scale(1.08);
+}
+
+.showroom-3d-card-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-family: 'Space Grotesk', monospace;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #bef264;
+  text-transform: uppercase;
+}
+
+.showroom-card-dock-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.showroom-3d-card:hover .showroom-card-dock-btn {
+  opacity: 1;
+}
+
+.showroom-3d-card-body {
+  padding: 22px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.showroom-3d-card-brand-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.showroom-3d-card-brand {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #bef264;
+  text-transform: uppercase;
+}
+
+.showroom-3d-card-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.showroom-3d-card-specs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  margin-bottom: 16px;
+}
+
+.showroom-card-spec-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.showroom-card-spec-lbl {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 8.5px;
+  color: #64748b;
+  letter-spacing: 0.08em;
+}
+
+.showroom-card-spec-val {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.showroom-3d-card-footer {
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.showroom-3d-card-price {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.showroom-3d-card-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.showroom-3d-card-btn:hover {
+  background: rgba(190, 242, 100, 0.15);
+  border-color: #bef264;
+  color: #bef264;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1100px) {
+  .showroom-stage-grid {
+    grid-template-columns: 1fr;
+  }
+  .showroom-stage-media {
+    min-height: 400px;
+  }
+  .showroom-stage-info {
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .showroom-container {
+    padding: 20px 16px 60px;
+  }
+  .showroom-stage-media {
+    min-height: 320px;
+  }
+  .showroom-stage-hero-img {
+    max-height: 240px;
+  }
+  .showroom-stage-info {
+    padding: 24px 18px;
+  }
+  .showroom-stage-title {
+    font-size: 1.8rem;
+  }
+  .showroom-specs-box-grid {
+    grid-template-columns: 1fr;
+  }
+  .showroom-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}

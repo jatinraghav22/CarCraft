@@ -1,0 +1,200 @@
+{
+  "customers_customer": [
+    {
+      "id": 1,
+      "full_name": "Jatin Raghav",
+      "email": "jatinraghavrrrr@gmail.com",
+      "phone": "08595817741",
+      "address": "banail post banail pahasu dehat bulamdshahr uttar pradesh",
+      "created_on": "2026-09-25T16:31:48.086030",
+      "user_id": null
+    },
+    {
+      "id": 3,
+      "full_name": "admin",
+      "email": "admin@gmail.com",
+      "phone": "7887878787",
+      "address": "",
+      "created_on": "2026-09-28T18:04:20.623530",
+      "user_id": 7
+    }
+  ],
+  "inventory_vehicle": [
+    {
+      "id": 1,
+      "make": "Toyota",
+      "model": "Fortuner",
+      "year": 2025,
+      "vin": "ABCDEFGHIJKLMNOP1",
+      "color": "White",
+      "price": "4500000.00",
+      "mileage": 5000,
+      "status": "available",
+      "image": "",
+      "added_on": "2026-09-23T17:32:03.922807"
+    },
+    {
+      "id": 2,
+      "make": "Mahindra",
+      "model": "Scorpio N",
+      "year": 2026,
+      "vin": "ANDJGBCDSJDAB",
+      "color": "Black",
+      "price": "2500000.00",
+      "mileage": 10,
+      "status": "sold",
+      "image": "",
+      "added_on": "2026-09-24T05:45:50.023478"
+    }
+  ],
+  "parts_part": [
+    {
+      "id": 1,
+      "name": "Breake pad",
+      "sku": "BP01",
+      "category": "Brakes",
+      "price": "20000.00",
+      "stock_qty": 9
+    }
+  ],
+  "parts_partorder": [
+    {
+      "id": 1,
+      "quantity": 1,
+      "ordered_on": "2026-09-28T18:06:47.233740",
+      "part_id": 1,
+      "customer_id": 3
+    }
+  ],
+  "sales_sale": [
+    {
+      "id": 2,
+      "stage": "sold",
+      "amount": "2500000.00",
+      "sale_date": "2026-09-25",
+      "customer_id": 1,
+      "vehicle_id": 2
+    },
+    {
+      "id": 3,
+      "stage": "inquiry",
+      "amount": "4500000.00",
+      "sale_date": "2026-09-28",
+      "customer_id": 3,
+      "vehicle_id": 1
+    }
+  ],
+  "service_serviceappointment": [
+    {
+      "id": 1,
+      "scheduled_for": "2026-09-30T06:47:00",
+      "description": "Full Service",
+      "status": "completed",
+      "cost": "10000.00",
+      "customer_id": 1,
+      "vehicle_id": 2
+    },
+    {
+      "id": 2,
+      "scheduled_for": "2026-09-30T18:09:00",
+      "description": "bsv",
+      "status": "scheduled",
+      "cost": "0.00",
+      "customer_id": 3,
+      "vehicle_id": 1
+    }
+  ],
+  "auth_user": [
+    {
+      "id": 1,
+      "password": "pbkdf2_sha256$1000000$1q3DfPd6ZZ5VAgtI4LtWsk$/EonvqA6XwSWvHP4KtRgWT8GSAsZPpJ2OFMdC8xqOHU=",
+      "last_login": "2026-09-26T06:18:47.814959",
+      "is_superuser": 1,
+      "username": "jatin",
+      "first_name": "",
+      "last_name": "",
+      "email": "jatinraghavrrrr@gmail.com",
+      "is_staff": 1,
+      "is_active": 1,
+      "date_joined": "2026-09-23T16:49:17.858998"
+    },
+    {
+      "id": 2,
+      "password": "pbkdf2_sha256$1000000$ZB4bOxnpps0FPdsrT2X7bT$U5rxGvGGlznP27g8+RpYXstBt9okkwPwJXT6XsDQltw=",
+      "last_login": null,
+      "is_superuser": 1,
+      "username": "jatinraghav",
+      "first_name": "",
+      "last_name": "",
+      "email": "jatinragghavrrrr@gmail.com",
+      "is_staff": 1,
+      "is_active": 1,
+      "date_joined": "2026-09-23T18:09:14.430093"
+    },
+    {
+      "id": 3,
+      "password": "pbkdf2_sha256$1000000$cWgG1m4IMOPusSxe5TuW09$GKUpeGK/V4BctngJGzgDpRC+tR4MG1SdbQW/Nx/jcTM=",
+      "last_login": null,
+      "is_superuser": 1,
+      "username": "jatinraghavrrrr",
+      "first_name": "",
+      "last_name": "",
+      "email": "jatinraghavrrrr@gmail.com",
+      "is_staff": 1,
+      "is_active": 1,
+      "date_joined": "2026-09-25T16:15:27.366514"
+    },
+    {
+      "id": 4,
+      "password": "pbkdf2_sha256$1000000$ES2jhH60at5HOq8HyI0dHV$XOLiAusQtKw4db0E0pTkymYKOfO12vAefeRgdurp0L0=",
+      "last_login": null,
+      "is_superuser": 1,
+      "username": "raghavjatin",
+      "first_name": "",
+      "last_name": "",
+      "email": "jatinraghavrrrr@gmail.com",
+      "is_staff": 1,
+      "is_active": 1,
+      "date_joined": "2026-09-25T21:10:25.010435"
+    },
+    {
+      "id": 5,
+      "password": "pbkdf2_sha256$1000000$uq6BEjPho6CZCz51uxeTLl$k0nyMT301szC2h2DTv6bKMSLHvtO2f9WZp8eIhJwGMg=",
+      "last_login": null,
+      "is_superuser": 1,
+      "username": "jatin001",
+      "first_name": "",
+      "last_name": "",
+      "email": "jatinraghavrrr4@gmail.com",
+      "is_staff": 1,
+      "is_active": 1,
+      "date_joined": "2026-09-26T06:08:38.196787"
+    },
+    {
+      "id": 6,
+      "password": "pbkdf2_sha256$1000000$OTvDPH1tS0ExSzPpOpSW9K$3PR1kqcB0ogWdXfmS2ONjIfmB5HPtm5TRQVB6Fbwyy4=",
+      "last_login": "2026-09-28T18:33:49.266125",
+      "is_superuser": 1,
+      "username": "admin",
+      "first_name": "",
+      "last_name": "",
+      "email": "admin@carcraft.com",
+      "is_staff": 1,
+      "is_active": 1,
+      "date_joined": "2026-09-26T06:17:40.264672"
+    },
+    {
+      "id": 7,
+      "password": "pbkdf2_sha256$1000000$gSwT8DOf9OlhM0y8LmHJKF$0AFeXH2aBKJA5aM/T6hcjZQXKH+ghRkaUIMt08TvCxU=",
+      "last_login": "2026-09-28T18:04:20.641673",
+      "is_superuser": 0,
+      "username": "admin-1",
+      "first_name": "",
+      "last_name": "",
+      "email": "admin@gmail.com",
+      "is_staff": 0,
+      "is_active": 1,
+      "date_joined": "2026-09-28T18:04:20.443562"
+    }
+  ]
+}
