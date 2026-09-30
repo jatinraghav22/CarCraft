@@ -21,6 +21,7 @@ import DealerReports from './dealer/pages/Reports';
 import DealerProfile from './dealer/pages/Profile';
 import PlaceholderModule from './dealer/components/PlaceholderModule';
 import ShowroomHomepage from './components/ShowroomHomepage';
+import GuestOnlyRoute from './components/GuestOnlyRoute';
 import Vehicles from './pages/vehicles/Vehicles';
 import VehicleDetails from './pages/vehicles/VehicleDetails';
 import Parts from './pages/parts/Parts';
@@ -124,8 +125,22 @@ export default function App() {
                   {/* ════════════════════════════════════════════════════
                       PHASE 7: AUTHENTICATION & ACCESS SUITE
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
+                  <Route
+                    path="/login"
+                    element={
+                      <GuestOnlyRoute>
+                        <Login />
+                      </GuestOnlyRoute>
+                    }
+                  />
+                  <Route
+                    path="/register"
+                    element={
+                      <GuestOnlyRoute>
+                        <Register />
+                      </GuestOnlyRoute>
+                    }
+                  />
                   <Route path="/profile" element={<Profile />} />
 
                   {/* ════════════════════════════════════════════════════

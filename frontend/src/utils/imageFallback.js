@@ -172,10 +172,23 @@ export function handleVehicleImageError(e, brand = '', model = '') {
 }
 
 /**
- * Returns clean backend base URL without /api or trailing slash
+ * Returns clean backend base URL without /api or trailing slash.
+ * In production (e.g. Vercel), guarantees it never points to localhost.
  */
 export function getBackendBaseUrl() {
-  const raw = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) || 'https://car-craft.onrender.com';
+  const isBrowser = typeof window !== 'undefined';
+  const isProduction =
+    (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') ||
+    (isBrowser && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1'));
+
+  let raw = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) || '';
+
+  if (isProduction && (!raw || raw.includes('localhost') || raw.includes('127.0.0.1'))) {
+    raw = 'https://car-craft.onrender.com';
+  } else if (!raw) {
+    raw = 'http://127.0.0.1:8000';
+  }
+
   return raw.replace(/\/api\/?$/, '').replace(/\/$/, '');
 }
 
@@ -189,6 +202,15 @@ export function formatImageUrl(url) {
   if (!trimmed) return '';
 
   const backendBase = getBackendBaseUrl();
+  const isBrowser = typeof window !== 'undefined';
+  const isProduction =
+    (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') ||
+    (isBrowser && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1'));
+
+  // Strip localhost/127.0.0.1 in production environments
+  if (isProduction && (trimmed.includes('127.0.0.1') || trimmed.includes('localhost'))) {
+    return trimmed.replace(/http:\/\/(127\.0\.0\.1|localhost)(:\d+)?/, backendBase);
+  }
 
   // If it's a relative path starting with /media/ or /
   if (trimmed.startsWith('/media/') || (trimmed.startsWith('/') && !trimmed.startsWith('//'))) {
@@ -197,15 +219,6 @@ export function formatImageUrl(url) {
       return trimmed;
     }
     return `${backendBase}${trimmed}`;
-  }
-
-  // If in production it has localhost/127.0.0.1 and backendBase is not localhost
-  if (
-    (trimmed.includes('127.0.0.1:8000') || trimmed.includes('localhost:8000')) &&
-    !backendBase.includes('127.0.0.1') &&
-    !backendBase.includes('localhost')
-  ) {
-    return trimmed.replace(/http:\/\/(127\.0\.0\.1|localhost):8000/, backendBase);
   }
 
   return trimmed;

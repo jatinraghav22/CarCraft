@@ -8,6 +8,8 @@ import {
   ArrowUpRight, Sparkles, Car, Wrench, Eye, Disc
 } from 'lucide-react';
 import { handleImageError } from '../utils/imageFallback';
+import { useAuth } from '../context/AuthContext';
+import UserAvatar from './UserAvatar';
 import vehiclesImg from '../assets/images/vehicles.jpg';
 import partsImg from '../assets/images/parts.jpg';
 import serviceImg from '../assets/images/service.jpg';
@@ -248,6 +250,17 @@ export default function ShowroomHomepage({
   const [phase, setPhase] = useState('video');
   const [showCanvas, setShowCanvas] = useState(false);
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
+
+  const customerIsLoggedIn = Boolean(
+    isAuthenticated && user && (!user.role || user.role === 'CUSTOMER' || user.role !== 'DEALER')
+  );
+
+  const customerDisplayName =
+    user?.name ||
+    [user?.first_name, user?.last_name].filter(Boolean).join(' ') ||
+    user?.username ||
+    'Client';
 
   /* Mouse parallax (dashboard phase only) */
   useEffect(() => {
@@ -629,23 +642,67 @@ export default function ShowroomHomepage({
             </button>
           </nav>
 
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {customerIsLoggedIn ? (
+              <button
+                onClick={() => navigate('/profile')}
+                title="Customer Profile"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '9px',
+                  padding: '4px 16px 4px 5px',
+                  borderRadius: '999px',
+                  background: 'rgba(10, 15, 22, 0.75)',
+                  border: '1.5px solid #bef264',
+                  cursor: 'pointer',
+                  boxShadow: '0 0 16px rgba(190, 242, 100, 0.2)',
+                  transition: 'all 0.25s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(190, 242, 100, 0.14)';
+                  e.currentTarget.style.boxShadow = '0 0 20px rgba(190, 242, 100, 0.35)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(10, 15, 22, 0.75)';
+                  e.currentTarget.style.boxShadow = '0 0 16px rgba(190, 242, 100, 0.2)';
+                }}
+              >
+                <UserAvatar user={user} size={28} fontSize="0.75rem" />
+                <span
+                  style={{
+                    fontFamily: 'Outfit, sans-serif',
+                    fontWeight: 800,
+                    fontSize: '0.95rem',
+                    color: '#bef264',
+                    letterSpacing: '0.02em',
+                  }}
+                >
+                  {customerDisplayName}
+                </span>
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate('/login')}
+                style={{
+                  padding: '7px 16px', borderRadius: '9px',
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                  color: '#fff', fontFamily: 'Outfit, sans-serif', fontWeight: 600,
+                  fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', cursor: 'pointer',
+                }}
+              >
+                LOGIN
+              </button>
+            )}
             <button
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/vehicles')}
+              title="Explore Inventory"
               style={{
-                padding: '7px 16px', borderRadius: '9px',
+                padding: '7px 12px', borderRadius: '9px',
                 background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                color: '#fff', fontFamily: 'Outfit, sans-serif', fontWeight: 600,
-                fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', cursor: 'pointer',
+                color: '#fff', cursor: 'pointer',
               }}
             >
-              LOGIN
-            </button>
-            <button style={{
-              padding: '7px 12px', borderRadius: '9px',
-              background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-              color: '#fff', cursor: 'pointer',
-            }}>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                 <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
               </svg>

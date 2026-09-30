@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { 
   Lock, 
   Mail, 
@@ -19,7 +19,20 @@ import './Auth.css';
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, quickDemoLogin, demoProfiles, loading, isAuthenticated, user } = useAuth();
+  const { login, quickDemoLogin, demoProfiles, loading, authLoading, isAuthenticated, user } = useAuth();
+
+  const customerIsLoggedIn = Boolean(
+    isAuthenticated &&
+    user &&
+    (!user.role || user.role === 'CUSTOMER' || user.role !== 'DEALER')
+  );
+
+  // If already authenticated customer opens /login, redirect to homepage
+  useEffect(() => {
+    if (!authLoading && customerIsLoggedIn) {
+      navigate('/', { replace: true });
+    }
+  }, [customerIsLoggedIn, authLoading, navigate]);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,8 +40,21 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Destination after login
-  const from = location.state?.from?.pathname || '/profile';
+  // Destination after login: redirect to homepage "/" per requirement
+  const from = location.state?.from?.pathname || '/';
+
+  // Do not render login page if already authenticated or while restoring session
+  if (!authLoading && customerIsLoggedIn) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (authLoading) {
+    return (
+      <div className="auth-page" style={{ minHeight: '100vh', background: '#040508' }}>
+        <Navbar />
+      </div>
+    );
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();

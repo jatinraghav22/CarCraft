@@ -68,6 +68,8 @@ export const AuthProvider = ({ children }) => {
   const { addToast } = useToast();
   const [user, setUser] = useState(() => {
     try {
+      const token = localStorage.getItem('carcraft_access_token');
+      if (!token) return null;
       const saved = localStorage.getItem(STORAGE_KEY);
       return saved ? JSON.parse(saved) : null;
     } catch (e) {
@@ -76,6 +78,7 @@ export const AuthProvider = ({ children }) => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [authLoading, setAuthLoading] = useState(() => Boolean(localStorage.getItem('carcraft_access_token')));
 
   // Sync profile from backend on app mount if token exists
   useEffect(() => {
@@ -111,7 +114,16 @@ export const AuthProvider = ({ children }) => {
           // Token expired or invalid
           localStorage.removeItem('carcraft_access_token');
           localStorage.removeItem('carcraft_refresh_token');
+          localStorage.removeItem(STORAGE_KEY);
+          setUser(null);
+        })
+        .finally(() => {
+          setAuthLoading(false);
         });
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+      setUser(null);
+      setAuthLoading(false);
     }
   }, []);
 
@@ -290,6 +302,7 @@ export const AuthProvider = ({ children }) => {
         user,
         isAuthenticated: !!user,
         loading,
+        authLoading,
         login,
         register,
         updateProfile,

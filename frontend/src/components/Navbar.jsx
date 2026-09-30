@@ -30,6 +30,7 @@ export default function Navbar() {
   const { compareCount } = useCompare();
   const { cartCount } = useCart();
   const { user, isAuthenticated } = useAuth();
+  const customerIsLoggedIn = Boolean(isAuthenticated && user);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -428,41 +429,44 @@ export default function Navbar() {
               )}
             </Link>
 
-            {/* Login or User Profile Button */}
-            {isAuthenticated && user ? (
+            {/* Customer Profile Photo or Login CTA */}
+            {customerIsLoggedIn ? (
               <Link
                 to="/profile"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '9px',
-                  padding: '5px 14px 5px 6px',
+                  padding: '4px 16px 4px 5px',
                   borderRadius: '999px',
-                  background: 'rgba(190, 242, 100, 0.08)',
-                  border: '1px solid rgba(190, 242, 100, 0.3)',
-                  color: '#ffffff',
-                  fontFamily: 'Outfit, sans-serif',
-                  fontWeight: 600,
-                  fontSize: '0.8rem',
-                  letterSpacing: '0.04em',
+                  background: 'rgba(10, 15, 22, 0.75)',
+                  border: '1.5px solid #bef264',
+                  color: '#bef264',
                   textDecoration: 'none',
-                  transition: 'all 0.25s',
+                  transition: 'all 0.25s ease',
+                  boxShadow: '0 0 16px rgba(190, 242, 100, 0.2)',
                 }}
                 className="cc-login-btn"
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(190, 242, 100, 0.15)';
-                  e.currentTarget.style.borderColor = '#bef264';
-                  e.currentTarget.style.boxShadow = '0 0 16px rgba(190, 242, 100, 0.25)';
+                  e.currentTarget.style.background = 'rgba(190, 242, 100, 0.14)';
+                  e.currentTarget.style.boxShadow = '0 0 20px rgba(190, 242, 100, 0.35)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(190, 242, 100, 0.08)';
-                  e.currentTarget.style.borderColor = 'rgba(190, 242, 100, 0.3)';
-                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.background = 'rgba(10, 15, 22, 0.75)';
+                  e.currentTarget.style.boxShadow = '0 0 16px rgba(190, 242, 100, 0.2)';
                 }}
               >
-                <UserAvatar user={user} size={26} fontSize="0.72rem" />
-                <span style={{ color: '#bef264' }}>
-                  {user?.name ? user.name.split(' ')[0] : 'MEMBER'}
+                <UserAvatar user={user} size={28} fontSize="0.75rem" />
+                <span
+                  style={{
+                    fontFamily: 'Outfit, sans-serif',
+                    fontWeight: 800,
+                    fontSize: '0.9rem',
+                    color: '#bef264',
+                    letterSpacing: '0.02em',
+                  }}
+                >
+                  {user?.name || [user?.first_name, user?.last_name].filter(Boolean).join(' ') || user?.username || 'Client'}
                 </span>
               </Link>
             ) : (
@@ -566,7 +570,7 @@ export default function Navbar() {
                 </Link>
               );
             })}
-            {isAuthenticated && user ? (
+            {customerIsLoggedIn ? (
               <Link
                 to="/profile"
                 style={{
