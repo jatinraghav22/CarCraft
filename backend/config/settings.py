@@ -183,25 +183,46 @@ CORS_ALLOWED_ORIGINS = [
     origin.strip()
     for origin in os.environ.get(
         'CORS_ALLOWED_ORIGINS',
-        'http://localhost:5173,http://127.0.0.1:5173,https://car-craft.onrender.com'
+        'http://localhost:5173,http://127.0.0.1:5173,https://car-craft.onrender.com,https://car-craft-an93.onrender.com,https://car-craft.vercel.app'
     ).split(',')
     if origin.strip()
 ]
+for default_origin in [
+    'https://car-craft.vercel.app',
+    'https://car-craft-an93.onrender.com',
+    'https://car-craft.onrender.com',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]:
+    if default_origin not in CORS_ALLOWED_ORIGINS:
+        CORS_ALLOWED_ORIGINS.append(default_origin)
+
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https:\/\/.*\.vercel\.app$",
+]
 if DEBUG:
-    CORS_ALLOWED_ORIGIN_REGEXES = [
-        r"^http://(localhost|127\.0\.0\.1):(517[0-9]|3000)$",
-    ]
+    CORS_ALLOWED_ORIGIN_REGEXES.append(r"^http://(localhost|127\.0\.0\.1):(517[0-9]|3000)$")
 
 # CSRF Trusted Origins
 CSRF_TRUSTED_ORIGINS = [
     origin.strip()
     for origin in os.environ.get(
         'CSRF_TRUSTED_ORIGINS',
-        'http://localhost:5173,http://127.0.0.1:5173,https://car-craft.onrender.com'
+        'http://localhost:5173,http://127.0.0.1:5173,https://car-craft.onrender.com,https://car-craft-an93.onrender.com,https://car-craft.vercel.app'
     ).split(',')
     if origin.strip()
 ]
+for default_origin in [
+    'https://car-craft.vercel.app',
+    'https://car-craft-an93.onrender.com',
+    'https://car-craft.onrender.com',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]:
+    if default_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(default_origin)
+
 
 
 # Django REST Framework Configuration
