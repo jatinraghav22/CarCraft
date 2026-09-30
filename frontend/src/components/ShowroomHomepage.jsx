@@ -243,12 +243,14 @@ export default function ShowroomHomepage({
   const card2Ref = useRef(null);
   const card3Ref = useRef(null);
   const card4Ref = useRef(null);
+  const geminiCoverRef = useRef(null);
   const mousePos = useRef({ x: 0, y: 0 });
 
   const [isMuted, setIsMuted] = useState(true);
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState('video');
   const [showCanvas, setShowCanvas] = useState(false);
+  const [videoBox, setVideoBox] = useState({ left: 0, top: 0, width: 0, height: 0 });
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
 
@@ -280,6 +282,38 @@ export default function ShowroomHomepage({
     window.addEventListener('mousemove', onMove, { passive: true });
     return () => window.removeEventListener('mousemove', onMove);
   }, [phase]);
+
+  /* Track rendered 16:9 video frame for pixel-precise responsive masking of Gemini watermark */
+  useEffect(() => {
+    const updateBox = () => {
+      const wrap = videoWrapRef.current;
+      if (!wrap) return;
+      const cw = wrap.clientWidth;
+      const ch = wrap.clientHeight;
+      if (!cw || !ch) return;
+
+      const videoAspect = 16 / 9; // video.mp4 native aspect ratio (1280x720)
+      const containerAspect = cw / ch;
+
+      let rw, rh, left, top;
+      if (containerAspect > videoAspect) {
+        rw = cw;
+        rh = cw / videoAspect;
+        left = 0;
+        top = (ch - rh) / 2;
+      } else {
+        rh = ch;
+        rw = ch * videoAspect;
+        left = (cw - rw) / 2;
+        top = 0;
+      }
+      setVideoBox({ left, top, width: rw, height: rh });
+    };
+
+    updateBox();
+    window.addEventListener('resize', updateBox);
+    return () => window.removeEventListener('resize', updateBox);
+  }, []);
 
   /* Video events */
   useEffect(() => {
@@ -317,6 +351,11 @@ export default function ShowroomHomepage({
         if (onVideoEnd) onVideoEnd();
       }
     });
+
+    // 0. Smoothly fade out Gemini logo cover immediately when video finishes
+    if (geminiCoverRef.current) {
+      tl.to(geminiCoverRef.current, { opacity: 0, duration: 0.35, ease: 'power2.out' }, 0);
+    }
 
     // 1. Camera push-in
     if (vid) {
@@ -386,6 +425,88 @@ export default function ShowroomHomepage({
           autoPlay muted={isMuted} playsInline preload="auto"
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transform: 'scale(1.05)', transformOrigin: 'center center' }}
         />
+
+        {/* ── GEMINI LOGO MASK (ACTIVE ONLY DURING INTRO VIDEO) ── */}
+        {videoBox.width > 0 && phase !== 'dashboard' && (
+          <div
+            ref={geminiCoverRef}
+            style={{
+              position: 'absolute',
+              left: `${videoBox.left}px`,
+              top: `${videoBox.top}px`,
+              width: `${videoBox.width}px`,
+              height: `${videoBox.height}px`,
+              transform: 'scale(1.05)',
+              transformOrigin: 'center center',
+              pointerEvents: 'none',
+              zIndex: 2,
+              opacity: phase === 'video' ? 1 : 0,
+              transition: 'opacity 0.35s ease',
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                left: '90.625%',
+                top: '83.333%',
+                transform: 'translate(-50%, -50%)',
+                width: 'clamp(54px, 4.4vw, 68px)',
+                height: 'clamp(54px, 4.4vw, 68px)',
+                borderRadius: '14px',
+                background: 'rgba(6, 9, 14, 0.92)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                border: '1px solid rgba(190, 242, 100, 0.45)',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.8), 0 0 16px rgba(190, 242, 100, 0.22)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '2px',
+                pointerEvents: 'none',
+              }}
+            >
+              <div
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '6px',
+                  background: 'linear-gradient(135deg, #bef264, #84cc16)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 0 10px rgba(190, 242, 100, 0.4)',
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: 'Space Grotesk, monospace',
+                    fontWeight: 900,
+                    fontSize: '11px',
+                    color: '#080a08',
+                    lineHeight: 1,
+                  }}
+                >
+                  CC
+                </span>
+              </div>
+              <span
+                style={{
+                  fontFamily: 'Outfit, sans-serif',
+                  fontWeight: 800,
+                  fontSize: '7px',
+                  color: '#bef264',
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  lineHeight: 1,
+                  marginTop: '2px',
+                }}
+              >
+                CARCRAFT
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Cinematic vignette always-on */}
