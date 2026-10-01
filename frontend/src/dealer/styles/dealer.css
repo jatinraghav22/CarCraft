@@ -1108,21 +1108,623 @@
   border-radius: 3px;
 }
 
-/* Interactive SVG Chart Tooltip */
-.dealer-chart-tooltip {
-  position: absolute;
-  pointer-events: none;
-  background: rgba(8, 12, 18, 0.95);
-  border: 1px solid var(--dealer-border-lime);
+/* ==========================================================================
+   FINANCIAL TRAJECTORY & INFLOW - ENHANCED ANALYTICS COMPONENT
+   ========================================================================== */
+
+:root {
+  --chart-rev-color: #bef264;
+  --chart-rev-glow: rgba(190, 242, 100, 0.35);
+  --chart-exp-color: #fb7185;
+  --chart-exp-glow: rgba(251, 113, 133, 0.35);
+  --chart-profit-color: #38bdf8;
+  --chart-profit-glow: rgba(56, 189, 248, 0.4);
+  --chart-grid-color: rgba(255, 255, 255, 0.06);
+  --chart-axis-color: #94a3b8;
+  --chart-crosshair: rgba(255, 255, 255, 0.3);
+  --chart-tooltip-bg: rgba(10, 15, 24, 0.95);
+  --chart-tooltip-border: rgba(190, 242, 100, 0.3);
+  --chart-tooltip-text: #f8fafc;
+  --chart-summary-bg: rgba(255, 255, 255, 0.025);
+  --chart-summary-border: rgba(255, 255, 255, 0.07);
+  --chart-summary-hover: rgba(255, 255, 255, 0.045);
+  --chart-input-bg: rgba(255, 255, 255, 0.04);
+  --chart-input-border: rgba(255, 255, 255, 0.12);
+  --chart-input-text: #f8fafc;
+}
+
+/* Light Mode Overrides (Automatic via OS setting or theme class) */
+@media (prefers-color-scheme: light) {
+  :root {
+    --chart-rev-color: #16a34a;
+    --chart-rev-glow: rgba(22, 163, 74, 0.25);
+    --chart-exp-color: #e11d48;
+    --chart-exp-glow: rgba(225, 29, 72, 0.2);
+    --chart-profit-color: #0284c7;
+    --chart-profit-glow: rgba(2, 132, 199, 0.25);
+    --chart-grid-color: rgba(0, 0, 0, 0.06);
+    --chart-axis-color: #64748b;
+    --chart-crosshair: rgba(0, 0, 0, 0.35);
+    --chart-tooltip-bg: rgba(255, 255, 255, 0.98);
+    --chart-tooltip-border: rgba(203, 213, 225, 0.9);
+    --chart-tooltip-text: #0f172a;
+    --chart-summary-bg: rgba(241, 245, 249, 0.7);
+    --chart-summary-border: rgba(226, 232, 240, 1);
+    --chart-summary-hover: rgba(226, 232, 240, 0.8);
+    --chart-input-bg: #ffffff;
+    --chart-input-border: #cbd5e1;
+    --chart-input-text: #0f172a;
+  }
+}
+
+[data-theme="light"],
+[data-dealer-theme="light"],
+.light,
+.light-mode,
+.light-theme {
+  --chart-rev-color: #16a34a;
+  --chart-rev-glow: rgba(22, 163, 74, 0.25);
+  --chart-exp-color: #e11d48;
+  --chart-exp-glow: rgba(225, 29, 72, 0.2);
+  --chart-profit-color: #0284c7;
+  --chart-profit-glow: rgba(2, 132, 199, 0.25);
+  --chart-grid-color: rgba(0, 0, 0, 0.06);
+  --chart-axis-color: #64748b;
+  --chart-crosshair: rgba(0, 0, 0, 0.35);
+  --chart-tooltip-bg: rgba(255, 255, 255, 0.98);
+  --chart-tooltip-border: rgba(203, 213, 225, 0.9);
+  --chart-tooltip-text: #0f172a;
+  --chart-summary-bg: rgba(241, 245, 249, 0.7);
+  --chart-summary-border: rgba(226, 232, 240, 1);
+  --chart-summary-hover: rgba(226, 232, 240, 0.8);
+  --chart-input-bg: #ffffff;
+  --chart-input-border: #cbd5e1;
+  --chart-input-text: #0f172a;
+}
+
+.financial-trajectory-card {
+  position: relative;
+  background: var(--dealer-bg-card);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--dealer-border-subtle);
+  border-radius: 20px;
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.45);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.financial-trajectory-card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 42px -10px rgba(0, 0, 0, 0.55);
+}
+
+.dealer-chart-title-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.financial-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(190, 242, 100, 0.08);
+  border: 1px solid rgba(190, 242, 100, 0.25);
+  font-family: var(--dealer-font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--chart-rev-color);
+  letter-spacing: 0.02em;
+}
+
+.financial-sparkle-icon {
+  animation: pulse-soft 2s infinite ease-in-out;
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.6; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+.financial-segmented-controls-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.financial-segment-btn {
+  font-family: var(--dealer-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.01em;
+  padding: 6px 14px;
+}
+
+/* Custom Date Range Expandable Drawer */
+.financial-custom-range-bar {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--dealer-border-subtle);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fadeInDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.financial-custom-inputs-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.financial-date-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.financial-date-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--dealer-font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--dealer-text-secondary);
+}
+
+.financial-date-input {
+  background: var(--chart-input-bg);
+  border: 1px solid var(--chart-input-border);
   border-radius: 8px;
-  padding: 8px 12px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.8);
+  padding: 5px 10px;
   font-family: var(--dealer-font-mono);
   font-size: 0.75rem;
+  color: var(--chart-input-text);
+  color-scheme: dark light;
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.financial-date-input:focus {
+  border-color: var(--chart-rev-color);
+  box-shadow: 0 0 0 2px var(--chart-rev-glow);
+}
+
+.financial-date-separator {
+  font-family: var(--dealer-font-mono);
+  font-size: 0.75rem;
+  color: var(--dealer-text-muted);
+}
+
+.financial-preset-buttons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.financial-preset-chip {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--dealer-border-subtle);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: var(--dealer-font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--dealer-text-secondary);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.financial-preset-chip:hover {
+  background: rgba(255, 255, 255, 0.08);
   color: #fff;
-  z-index: 20;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.financial-date-error-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--dealer-font-mono);
+  font-size: 0.72rem;
+  color: #fb7185;
+  background: rgba(251, 113, 133, 0.08);
+  border: 1px solid rgba(251, 113, 133, 0.25);
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+/* ── COMPACT FINANCIAL SUMMARY CARDS ── */
+.financial-summary-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 640px) {
+  .financial-summary-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.financial-summary-card {
+  background: var(--chart-summary-bg);
+  border: 1px solid var(--chart-summary-border);
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.2s ease,
+              border-color 0.2s ease;
+}
+
+.financial-summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 14px 14px 0 0;
+}
+
+.financial-card-revenue::before {
+  background: var(--chart-rev-color);
+  box-shadow: 0 0 10px var(--chart-rev-glow);
+}
+
+.financial-card-expenses::before {
+  background: var(--chart-exp-color);
+  box-shadow: 0 0 10px var(--chart-exp-glow);
+}
+
+.financial-card-profit::before {
+  background: var(--chart-profit-color);
+  box-shadow: 0 0 10px var(--chart-profit-glow);
+}
+
+.financial-summary-card:hover {
+  transform: translateY(-2px);
+  background: var(--chart-summary-hover);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.financial-summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.financial-summary-icon-wrap {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.financial-summary-icon-wrap.rev-icon {
+  background: rgba(190, 242, 100, 0.12);
+  color: var(--chart-rev-color);
+}
+
+.financial-summary-icon-wrap.exp-icon {
+  background: rgba(251, 113, 133, 0.12);
+  color: var(--chart-exp-color);
+}
+
+.financial-summary-icon-wrap.profit-icon {
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--chart-profit-color);
+}
+
+.financial-summary-label {
+  font-family: var(--dealer-font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--dealer-text-secondary);
+  flex-grow: 1;
+}
+
+.financial-summary-badge {
+  font-family: var(--dealer-font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 5px;
+  letter-spacing: 0.02em;
+}
+
+.financial-summary-badge.rev-badge {
+  background: rgba(190, 242, 100, 0.12);
+  color: var(--chart-rev-color);
+}
+
+.financial-summary-badge.exp-badge {
+  background: rgba(251, 113, 133, 0.12);
+  color: var(--chart-exp-color);
+}
+
+.financial-summary-badge.profit-badge {
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--chart-profit-color);
+}
+
+.financial-summary-amount {
+  font-family: var(--dealer-font-heading);
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
+  line-height: 1.15;
+}
+
+.financial-summary-amount.rev-amount {
+  color: var(--chart-rev-color);
+}
+
+.financial-summary-amount.exp-amount {
+  color: var(--chart-exp-color);
+}
+
+.financial-summary-amount.profit-amount {
+  color: var(--chart-profit-color);
+}
+
+.profit-negative .profit-amount {
+  color: #fb7185;
+}
+
+.financial-summary-subtext {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--dealer-font-mono);
+  font-size: 0.68rem;
+  color: var(--dealer-text-muted);
+}
+
+.financial-summary-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--dealer-text-muted);
+}
+
+.financial-summary-stat {
+  color: var(--dealer-text-secondary);
+  font-weight: 600;
+}
+
+/* ── SVG CANVAS & SMOOTH TRANSITIONS ── */
+.financial-svg-container {
+  width: 100%;
+  height: 290px;
+  position: relative;
+  user-select: none;
+  margin-top: 4px;
+}
+
+.financial-svg-canvas {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.financial-chart-line {
+  transition: d 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              stroke 0.25s ease,
+              opacity 0.25s ease;
+}
+
+.financial-chart-area {
+  transition: d 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.25s ease;
+}
+
+.financial-x-label {
+  transition: fill 0.2s ease, font-weight 0.2s ease;
+}
+
+/* ── FLOATING TOOLTIP ── */
+.financial-chart-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--chart-tooltip-bg);
+  border: 1px solid var(--chart-tooltip-border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.65), 0 0 15px rgba(0, 0, 0, 0.3);
+  font-family: var(--dealer-font-mono);
+  color: var(--chart-tooltip-text);
+  z-index: 30;
   transform: translate(-50%, -115%);
   white-space: nowrap;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  min-width: 190px;
+  animation: tooltipPop 0.15s ease-out;
+}
+
+@keyframes tooltipPop {
+  from { opacity: 0; transform: translate(-50%, -105%) scale(0.96); }
+  to { opacity: 1; transform: translate(-50%, -115%) scale(1); }
+}
+
+.financial-tooltip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.financial-tooltip-period {
+  font-weight: 700;
+  font-size: 0.78rem;
+  color: #fff;
+}
+
+.financial-tooltip-badge {
+  font-size: 0.62rem;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(190, 242, 100, 0.12);
+  color: var(--chart-rev-color);
+  font-weight: 600;
+}
+
+.financial-tooltip-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.73rem;
+}
+
+.financial-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.financial-tooltip-indicator {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.financial-tooltip-indicator.rev-dot {
+  background: var(--chart-rev-color);
+  box-shadow: 0 0 6px var(--chart-rev-glow);
+}
+
+.financial-tooltip-indicator.exp-dot {
+  background: var(--chart-exp-color);
+  box-shadow: 0 0 6px var(--chart-exp-glow);
+}
+
+.financial-tooltip-indicator.profit-dot {
+  background: var(--chart-profit-color);
+  box-shadow: 0 0 6px var(--chart-profit-glow);
+}
+
+.financial-tooltip-name {
+  color: var(--dealer-text-secondary);
+}
+
+.financial-tooltip-val {
+  margin-left: auto;
+  font-weight: 700;
+}
+
+.financial-tooltip-val.rev-val {
+  color: var(--chart-rev-color);
+}
+
+.financial-tooltip-val.exp-val {
+  color: var(--chart-exp-color);
+}
+
+.financial-tooltip-val.profit-val {
+  color: var(--chart-profit-color);
+}
+
+.financial-tooltip-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  margin: 2px 0;
+}
+
+.financial-tooltip-row.profit-row {
+  font-weight: 700;
+}
+
+.financial-tooltip-margin {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+  font-size: 0.68rem;
+  color: var(--chart-profit-color);
+  text-align: right;
+  font-weight: 600;
+}
+
+/* ── INTERACTIVE LEGEND ── */
+.financial-chart-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.financial-legend-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--dealer-font-mono);
+  font-size: 0.74rem;
+  color: var(--dealer-text-secondary);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.financial-legend-btn:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.financial-legend-btn.dimmed {
+  opacity: 0.35;
+  text-decoration: line-through;
+}
+
+.financial-legend-eye {
+  color: var(--dealer-text-muted);
+  opacity: 0.6;
+  margin-left: 2px;
+}
+
+.financial-legend-hint {
+  margin-left: auto;
+  font-family: var(--dealer-font-mono);
+  font-size: 0.68rem;
+  color: var(--dealer-text-muted);
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .financial-legend-hint {
+    display: none;
+  }
 }
 
 /* Donut / Breakdown Chart Side */

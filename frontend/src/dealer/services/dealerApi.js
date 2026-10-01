@@ -13,15 +13,95 @@ import {
 } from '../data/dealerMock';
 import { formatINR } from '../../utils/currency';
 
+/**
+ * Dynamically generates interval points and metrics for a custom date range.
+ * Always ensures Net Profit = Revenue - Expenses.
+ */
+export function generateCustomChartSeries(startDateStr, endDateStr) {
+  const start = new Date(startDateStr);
+  const end = new Date(endDateStr);
+  if (isNaN(start.getTime()) || isNaN(end.getTime()) || end < start) {
+    return chartSeriesMock.custom;
+  }
+
+  const diffDays = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1);
+  const labels = [];
+  const revenue = [];
+  const expenses = [];
+  const profit = [];
+
+  if (diffDays <= 8) {
+    // Daily granularity
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      labels.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+      const seed = (d.getDate() * 7 + (d.getMonth() + 1) * 13) % 25;
+      const rev = Math.round(24 + seed);
+      const exp = Math.round(rev * 0.67);
+      revenue.push(rev);
+      expenses.push(exp);
+      profit.push(rev - exp);
+    }
+  } else if (diffDays <= 45) {
+    // 3 to 7 day steps
+    const stepDays = Math.max(3, Math.floor(diffDays / 6));
+    let cur = new Date(start);
+    while (cur <= end) {
+      labels.push(cur.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+      const seed = (cur.getDate() * 11 + (cur.getMonth() + 1) * 17) % 35;
+      const rev = Math.round(55 + seed * 1.4);
+      const exp = Math.round(rev * 0.67);
+      revenue.push(rev);
+      expenses.push(exp);
+      profit.push(rev - exp);
+      cur.setDate(cur.getDate() + stepDays);
+    }
+  } else if (diffDays <= 240) {
+    // Monthly milestones
+    const numPoints = Math.min(8, Math.max(4, Math.floor(diffDays / 30) + 1));
+    const stepTime = (end.getTime() - start.getTime()) / Math.max(1, numPoints - 1);
+    for (let i = 0; i < numPoints; i++) {
+      const ptDate = new Date(start.getTime() + stepTime * i);
+      labels.push(ptDate.toLocaleDateString('en-US', { month: 'short', year: diffDays > 120 ? '2-digit' : undefined }));
+      const seed = (ptDate.getMonth() * 23 + i * 19) % 50;
+      const rev = Math.round(180 + seed * 2);
+      const exp = Math.round(rev * 0.68);
+      revenue.push(rev);
+      expenses.push(exp);
+      profit.push(rev - exp);
+    }
+  } else {
+    // Quarterly milestones
+    const numPoints = Math.min(8, Math.max(4, Math.floor(diffDays / 90)));
+    const stepTime = (end.getTime() - start.getTime()) / Math.max(1, numPoints - 1);
+    for (let i = 0; i < numPoints; i++) {
+      const ptDate = new Date(start.getTime() + stepTime * i);
+      const q = Math.floor(ptDate.getMonth() / 3) + 1;
+      labels.push(`Q${q} '${String(ptDate.getFullYear()).slice(-2)}`);
+      const seed = (q * 31 + i * 47) % 80;
+      const rev = Math.round(620 + seed * 2.2);
+      const exp = Math.round(rev * 0.67);
+      revenue.push(rev);
+      expenses.push(exp);
+      profit.push(rev - exp);
+    }
+  }
+
+  return { labels, revenue, expenses, profit };
+}
+
 export const dealerApi = {
   /**
    * Fetches key performance metrics, KPIs, and financial stats.
    * Endpoint: GET /api/dealer/dashboard/?period={period}
    */
-  async getDashboardMetrics(period = 'monthly') {
+  async getDashboardMetrics(period = 'monthly', customDates = null) {
     try {
+      let url = `/dealer/dashboard/?period=${encodeURIComponent(period)}`;
+      if (customDates?.startDate && customDates?.endDate) {
+        url += `&start_date=${encodeURIComponent(customDates.startDate)}&end_date=${encodeURIComponent(customDates.endDate)}`;
+      }
       const res = await dealerApiClient.get(
-        `/dealer/dashboard/?period=${encodeURIComponent(period)}`,
+        url,
         () => ({ success: true, period, data: dashboardMetricsMock })
       );
 
@@ -178,18 +258,42 @@ export const dealerApi = {
 
   /**
    * Fetches charting telemetry data for the given timeframe.
+   * Connects to live backend API (/reports/sales/) and smoothly transforms series.
    */
-  async getChartData(period = 'monthly') {
-    return dealerApiClient.get(
-      `/reports/sales/?period=${encodeURIComponent(period)}`,
-      () => {
-        const series = chartSeriesMock[period] || chartSeriesMock.monthly;
-        return { success: true, period, series };
+  async getChartData(period = 'monthly', customDates = null) {
+    let url = `/reports/sales/?period=${encodeURIComponent(period)}`;
+    if (customDates?.startDate && customDates?.endDate) {
+      url += `&start_date=${encodeURIComponent(customDates.startDate)}&end_date=${encodeURIComponent(customDates.endDate)}`;
+    }
+
+    const fallbackSeries = () => {
+      if (period === 'custom' && customDates?.startDate && customDates?.endDate) {
+        return generateCustomChartSeries(customDates.startDate, customDates.endDate);
       }
-    ).catch(() => ({
+      return chartSeriesMock[period] || chartSeriesMock.monthly;
+    };
+
+    return dealerApiClient.get(
+      url,
+      () => ({ success: true, period, series: fallbackSeries() })
+    ).then((res) => {
+      if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
+        const labels = res.data.map((d) => d.period);
+        const revenue = res.data.map((d) => Math.round(Number(d.revenue || 0) / 100000));
+        const expenses = res.data.map((d) => Math.round(Number(d.direct_costs || 0) / 100000));
+        const profit = res.data.map((d) => Math.round(Number(d.gross_profit || 0) / 100000));
+        return {
+          success: true,
+          period,
+          series: { labels, revenue, expenses, profit }
+        };
+      }
+      if (res?.series) return res;
+      return { success: true, period, series: fallbackSeries() };
+    }).catch(() => ({
       success: true,
       period,
-      series: chartSeriesMock[period] || chartSeriesMock.monthly
+      series: fallbackSeries()
     }));
   },
 

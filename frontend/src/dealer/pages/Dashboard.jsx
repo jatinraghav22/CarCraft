@@ -36,12 +36,12 @@ export default function Dashboard() {
   const [activeChartTab, setActiveChartTab] = useState('revenue_expense'); // 'revenue_expense' | 'profit' | 'volume'
 
   // Fetch telemetry and dashboard metrics through API service layer
-  const loadDashboardData = async (selectedPeriod) => {
+  const loadDashboardData = async (selectedPeriod, customDates = null) => {
     try {
       setLoading(true);
       const [metricsRes, chartRes, activityRes] = await Promise.all([
-        dealerApi.getDashboardMetrics(selectedPeriod),
-        dealerApi.getChartData(selectedPeriod),
+        dealerApi.getDashboardMetrics(selectedPeriod, customDates),
+        dealerApi.getChartData(selectedPeriod, customDates),
         dealerApi.getRecentActivity()
       ]);
 
@@ -59,8 +59,9 @@ export default function Dashboard() {
     loadDashboardData(period);
   }, [period]);
 
-  const handlePeriodChange = (newPeriod) => {
+  const handlePeriodChange = (newPeriod, customDates = null) => {
     setPeriod(newPeriod);
+    loadDashboardData(newPeriod, customDates);
   };
 
   const topStats = metrics?.topStats;
@@ -211,11 +212,10 @@ export default function Dashboard() {
           {/* Main Financial Analytics Chart */}
           <ChartCard
             title="Financial Trajectory & Inflow"
-            subtitle={`Inflow (Revenue) vs Expenditure (${period.toUpperCase()} Interval)`}
+            subtitle="Inflow (Revenue) vs Expenditure (Expenses)"
             period={period}
             onPeriodChange={handlePeriodChange}
             seriesData={seriesData}
-            chartType={activeChartTab === 'profit' ? 'bar' : 'area'}
           />
 
           {/* Revenue Stream Breakdown Card */}
