@@ -3,7 +3,11 @@
 // Connected to Django REST APIs (http://127.0.0.1:8000/api)
 // ==========================================================================
 
-const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
+const defaultBaseUrl =
+  typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')
+    ? 'https://car-craft-an93.onrender.com/api'
+    : 'http://127.0.0.1:8000/api';
+const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || defaultBaseUrl;
 const cleanBaseUrl = rawBaseUrl.replace(/\/$/, '');
 const API_BASE_URL = cleanBaseUrl.endsWith('/api') ? cleanBaseUrl : `${cleanBaseUrl}/api`;
 const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK === 'true'; // false by default -> uses real backend
@@ -101,7 +105,7 @@ class DealerApiClient {
 
       return { success: true, text };
     } catch (err) {
-      if (mockFallbackFn && USE_MOCK_DATA) {
+      if (mockFallbackFn) {
         console.warn(`[DealerApi] Falling back to local data for ${url}:`, err.message);
         return await mockFallbackFn();
       }

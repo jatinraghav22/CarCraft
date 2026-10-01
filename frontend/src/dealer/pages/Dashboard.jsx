@@ -26,12 +26,13 @@ import StatCard from '../components/StatCard';
 import FinancialCard from '../components/FinancialCard';
 import ChartCard from '../components/ChartCard';
 import { dealerApi } from '../services/dealerApi';
+import { chartSeriesMock } from '../data/dealerMock';
 
 export default function Dashboard() {
   const [period, setPeriod] = useState('monthly');
   const [loading, setLoading] = useState(true);
   const [metrics, setMetrics] = useState(null);
-  const [seriesData, setSeriesData] = useState(null);
+  const [seriesData, setSeriesData] = useState(() => chartSeriesMock.monthly);
   const [activities, setActivities] = useState([]);
   const [activeChartTab, setActiveChartTab] = useState('revenue_expense'); // 'revenue_expense' | 'profit' | 'volume'
 
@@ -39,17 +40,26 @@ export default function Dashboard() {
   const loadDashboardData = async (selectedPeriod, customDates = null) => {
     try {
       setLoading(true);
-      const [metricsRes, chartRes, activityRes] = await Promise.all([
+      const [metricsRes, chartRes, activityRes] = await Promise.allSettled([
         dealerApi.getDashboardMetrics(selectedPeriod, customDates),
         dealerApi.getChartData(selectedPeriod, customDates),
         dealerApi.getRecentActivity()
       ]);
 
-      if (metricsRes.success) setMetrics(metricsRes.data);
-      if (chartRes.success) setSeriesData(chartRes.series);
-      if (activityRes.success) setActivities(activityRes.activities);
+      if (metricsRes.status === 'fulfilled' && metricsRes.value?.success) {
+        setMetrics(metricsRes.value.data);
+      }
+      if (chartRes.status === 'fulfilled' && chartRes.value?.success && chartRes.value?.series?.labels?.length >= 2) {
+        setSeriesData(chartRes.value.series);
+      } else {
+        setSeriesData(chartSeriesMock[selectedPeriod] || chartSeriesMock.monthly);
+      }
+      if (activityRes.status === 'fulfilled' && activityRes.value?.success) {
+        setActivities(activityRes.value.activities);
+      }
     } catch (err) {
       console.error('Failed to load dealer dashboard telemetry:', err);
+      setSeriesData(chartSeriesMock[selectedPeriod] || chartSeriesMock.monthly);
     } finally {
       setLoading(false);
     }

@@ -277,7 +277,7 @@ export const dealerApi = {
       url,
       () => ({ success: true, period, series: fallbackSeries() })
     ).then((res) => {
-      if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
+      if (res?.data && Array.isArray(res.data) && res.data.length >= 2) {
         const labels = res.data.map((d) => d.period);
         const revenue = res.data.map((d) => Math.round(Number(d.revenue || 0) / 100000));
         const expenses = res.data.map((d) => Math.round(Number(d.direct_costs || 0) / 100000));
@@ -288,7 +288,31 @@ export const dealerApi = {
           series: { labels, revenue, expenses, profit }
         };
       }
-      if (res?.series) return res;
+      if (res?.data && Array.isArray(res.data) && res.data.length === 1) {
+        // Blend actual single month into trajectory series
+        const base = fallbackSeries();
+        const realItem = res.data[0];
+        const realRev = Math.round(Number(realItem.revenue || 0) / 100000);
+        const realExp = Math.round(Number(realItem.direct_costs || 0) / 100000);
+        const realProfit = Math.round(Number(realItem.gross_profit || 0) / 100000);
+        const updatedRev = [...base.revenue];
+        const updatedExp = [...base.expenses];
+        const updatedProf = [...base.profit];
+        updatedRev[updatedRev.length - 1] = realRev;
+        updatedExp[updatedExp.length - 1] = realExp;
+        updatedProf[updatedProf.length - 1] = realProfit;
+        return {
+          success: true,
+          period,
+          series: {
+            ...base,
+            revenue: updatedRev,
+            expenses: updatedExp,
+            profit: updatedProf
+          }
+        };
+      }
+      if (res?.series && res.series.labels?.length >= 2) return res;
       return { success: true, period, series: fallbackSeries() };
     }).catch(() => ({
       success: true,

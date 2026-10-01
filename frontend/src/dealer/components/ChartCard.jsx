@@ -10,6 +10,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { generateCustomChartSeries } from '../services/dealerApi';
+import { chartSeriesMock } from '../data/dealerMock';
 
 /**
  * Format amounts cleanly for automotive dealership telemetry.
@@ -56,9 +57,11 @@ function formatYTick(val, isLakhs = true) {
  */
 function generateSplinePath(points) {
   if (!points || points.length === 0) return '';
-  if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
+  if (points.length === 1) {
+    return `M 58 ${points[0].y.toFixed(1)} L 728 ${points[0].y.toFixed(1)}`;
+  }
   if (points.length === 2) {
-    return `M ${points[0].x} ${points[0].y} L ${points[1].x} ${points[1].y}`;
+    return `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)} L ${points[1].x.toFixed(1)} ${points[1].y.toFixed(1)}`;
   }
 
   let d = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
@@ -84,6 +87,9 @@ function generateSplinePath(points) {
  */
 function generateSplineArea(points, bottomY) {
   if (!points || points.length === 0) return '';
+  if (points.length === 1) {
+    return `M 58 ${points[0].y.toFixed(1)} L 728 ${points[0].y.toFixed(1)} L 728 ${bottomY.toFixed(1)} L 58 ${bottomY.toFixed(1)} Z`;
+  }
   const linePath = generateSplinePath(points);
   const firstX = points[0].x.toFixed(1);
   const lastX = points[points.length - 1].x.toFixed(1);
@@ -141,8 +147,19 @@ export default function ChartCard({
         return generateCustomChartSeries(startDate, endDate);
       }
     }
-    if (seriesData?.labels && seriesData?.revenue && seriesData?.expenses) {
-      const profit = seriesData.profit || seriesData.revenue.map((r, i) => r - (seriesData.expenses[i] || 0));
+    if (
+      seriesData?.labels &&
+      Array.isArray(seriesData.labels) &&
+      seriesData.labels.length >= 2 &&
+      Array.isArray(seriesData.revenue) &&
+      seriesData.revenue.length >= 2 &&
+      Array.isArray(seriesData.expenses) &&
+      seriesData.expenses.length >= 2
+    ) {
+      const profit =
+        seriesData.profit && seriesData.profit.length >= 2
+          ? seriesData.profit
+          : seriesData.revenue.map((r, i) => r - (seriesData.expenses[i] || 0));
       return {
         labels: seriesData.labels,
         revenue: seriesData.revenue,
@@ -150,12 +167,7 @@ export default function ChartCard({
         profit,
       };
     }
-    return {
-      labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
-      revenue: [180, 210, 245, 220, 260, 284],
-      expenses: [130, 150, 168, 155, 175, 191],
-      profit: [50, 60, 77, 65, 85, 93],
-    };
+    return chartSeriesMock[period] || chartSeriesMock.monthly;
   }, [period, seriesData, startDate, endDate]);
 
   const labels = activeSeries.labels || [];
