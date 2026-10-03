@@ -1063,7 +1063,7 @@ Cloud Computing
   https://github.com/jatinraghav22
 
 * 🌐 **Portfolio:**
-  https://jatinraghav22.vercel.app/
+  https://jatinraghav.vercel.app/
 
 * 🚗 **CarCraft:**
   https://car-craft.vercel.app/
