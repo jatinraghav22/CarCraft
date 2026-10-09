@@ -1,18 +1,18 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { 
-  Car, 
-  MapPin, 
-  Calendar, 
-  Clock, 
-  User, 
-  Phone, 
-  Mail, 
-  CheckCircle2, 
-  ArrowRight, 
-  ArrowLeft, 
-  ShieldCheck, 
-  Award, 
+import {
+  Car,
+  MapPin,
+  Calendar,
+  Clock,
+  User,
+  Phone,
+  Mail,
+  CheckCircle2,
+  ArrowRight,
+  ArrowLeft,
+  ShieldCheck,
+  Award,
   Sparkles,
   Zap,
   Printer,
@@ -26,6 +26,7 @@ import { dealershipHubs, experienceTiers, conciergeInstructors } from '../../dat
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { handleImageError } from '../../utils/imageFallback';
+import { useRequireLogin } from '../../components/AuthActionGuard';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import './TestDrive.css';
@@ -44,6 +45,7 @@ export default function TestDrive() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToast } = useToast();
+  const requireCustomerLogin = useRequireLogin();
 
   const preselectedVehicleId = searchParams.get('vehicle');
 
@@ -118,6 +120,7 @@ export default function TestDrive() {
 
   const handleCompleteReservation = async (e) => {
     e.preventDefault();
+    if (requireCustomerLogin()) return;
     if (!pilotName || !pilotEmail || !pilotPhone) {
       addToast('Please complete all required pilot credentials', 'error');
       return;
@@ -152,17 +155,14 @@ export default function TestDrive() {
         phone: pilotPhone,
         notes: `Hub: ${selectedHub.name}, Tier: ${selectedTier.name}, Instructor: ${selectedInstructor.name}, Pilot: ${pilotName} (${pilotEmail}), License: ${licenseNumber}. Notes: ${specialNotes || 'None'}`
       });
-      if (res?.id) {
-        bookingRef = `CC-TD-${res.id}`;
-        dbRecord = res;
-        addToast(`Test Drive #${res.id} booked and sent to Dealer Concierge!`, 'success');
-      }
+      if (!res?.id) throw new Error('Booking was not confirmed by the server.');
+      bookingRef = `CC-TD-${res.id}`;
+      dbRecord = res;
+      addToast(`Test Drive #${res.id} booked and sent to Dealer Concierge!`, 'success');
     } catch (err) {
       console.warn('Backend test drive notice:', err.message);
-    }
-
-    if (!bookingRef) {
-      bookingRef = 'CC-TD-' + Math.floor(100000 + Math.random() * 900000);
+      addToast('Unable to book the test drive. Please try again.', 'error');
+      return;
     }
 
     const confirmedData = {
@@ -187,15 +187,6 @@ export default function TestDrive() {
 
     setReservation(confirmedData);
     setStep(5);
-
-    // Save to localStorage under carcraft_testdrives
-    try {
-      const existing = JSON.parse(localStorage.getItem('carcraft_testdrives') || '[]');
-      existing.unshift(confirmedData);
-      localStorage.setItem('carcraft_testdrives', JSON.stringify(existing));
-    } catch (err) {
-      console.error(err);
-    }
 
     addToast(`Test drive confirmed! Reservation code: ${bookingRef}`, 'success');
   };

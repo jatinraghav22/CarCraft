@@ -2,19 +2,19 @@ import { formatINR } from '../../utils/currency';
 import { handleImageError } from '../../utils/imageFallback';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  Heart, 
-  Layers, 
-  Calendar, 
-  PhoneCall, 
-  CheckCircle2, 
-  Zap, 
-  Gauge, 
-  ShieldCheck, 
-  Compass, 
-  Fuel, 
-  X, 
+import {
+  ArrowLeft,
+  Heart,
+  Layers,
+  Calendar,
+  PhoneCall,
+  CheckCircle2,
+  Zap,
+  Gauge,
+  ShieldCheck,
+  Compass,
+  Fuel,
+  X,
   Sparkles,
   Share2,
   Clock,
@@ -29,6 +29,7 @@ import { normalizeVehicle } from '../../api/normalizers';
 import { useWishlist } from '../../context/WishlistContext';
 import { useCompare } from '../../context/CompareContext';
 import { useToast } from '../../context/ToastContext';
+import { useRequireLogin } from '../../components/AuthActionGuard';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import './VehicleDetails.css';
@@ -96,6 +97,7 @@ export default function VehicleDetails() {
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { isInCompare, addToCompare } = useCompare();
   const { addToast } = useToast();
+  const requireCustomerLogin = useRequireLogin();
 
   const isSaved = isInWishlist(vehicle?.id);
   const isCompared = isInCompare(vehicle?.id);
@@ -140,6 +142,7 @@ export default function VehicleDetails() {
   }
 
   const handleWishlistToggle = () => {
+    if (requireCustomerLogin()) return;
     const added = toggleWishlist(vehicle);
     addToast(
       added ? `${vehicle.model} added to your wishlist` : `${vehicle.model} removed from your wishlist`,
@@ -158,19 +161,22 @@ export default function VehicleDetails() {
 
   const handleTestDriveSubmit = async (e) => {
     e.preventDefault();
+    if (requireCustomerLogin()) return;
     try {
       const vId = vehicle.rawId || (!isNaN(Number(vehicle.id)) ? Number(vehicle.id) : null);
-      if (vId) {
-        await testDriveApi.createTestDrive({
-          vehicle: vId,
-          preferred_date: testDriveForm.date || new Date().toISOString().split('T')[0],
-          preferred_time: '10:00:00',
-          phone: testDriveForm.phone || '9999999999',
-          notes: `Hub: ${testDriveForm.location}. Pilot: ${testDriveForm.name} (${testDriveForm.email})`,
-        });
-      }
+      if (!vId) throw new Error('Vehicle is unavailable for test drive booking.');
+      const response = await testDriveApi.createTestDrive({
+        vehicle: vId,
+        preferred_date: testDriveForm.date || new Date().toISOString().split('T')[0],
+        preferred_time: '10:00:00',
+        phone: testDriveForm.phone || '9999999999',
+        notes: `Hub: ${testDriveForm.location}. Pilot: ${testDriveForm.name} (${testDriveForm.email})`,
+      });
+      if (!response?.id) throw new Error('Booking was not confirmed by the server.');
     } catch (err) {
       console.warn('Backend test drive registration notice:', err.message);
+      addToast('Unable to book the test drive. Please try again.', 'error');
+      return;
     }
 
     const randomId = 'CC-TD-' + Math.floor(100000 + Math.random() * 900000);

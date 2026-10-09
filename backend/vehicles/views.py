@@ -23,7 +23,7 @@ class VehicleViewSet(viewsets.ModelViewSet):
     Public: GET list and retrieve (using CustomerSerializer without purchase_cost).
     Dealer: Full CRUD with DealerSerializer (exposing purchase_cost & margin).
     """
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsDealerOrReadOnly]
     pagination_class = VehiclePagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['brand', 'model', 'color', 'description', 'engine']

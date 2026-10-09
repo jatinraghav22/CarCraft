@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { 
-  Search, 
-  Package, 
-  CheckCircle2, 
-  Clock, 
-  Wrench, 
-  Sparkles, 
-  Truck, 
-  ShieldCheck, 
+import {
+  Search,
+  Package,
+  CheckCircle2,
+  Clock,
+  Wrench,
+  Sparkles,
+  Truck,
+  ShieldCheck,
   ArrowRight,
   Car
 } from 'lucide-react';
@@ -17,113 +17,52 @@ import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import './Orders.css';
 
-const DEFAULT_ORDERS = {
-  'CC-ORD-882109': {
-    orderId: 'CC-ORD-882109',
-    model: 'CARCRAFT Apex GT-R',
-    tier: 'Flagship Bespoke Commission',
-    vin: '1CC982GT002914',
-    exteriorColor: 'Acid Lime Metallic',
-    interiorColor: 'Obsidian Alcantara',
-    deliveryHub: 'Silicon Valley Flagship Studio',
-    estDelivery: 'October 18, 2026',
-    currentStage: 3, // 1 to 5
-    assignedEngineer: 'Dr. Wolfgang Becker, Lead Powertrain Specialist',
-    stages: [
-      { num: 1, name: 'Commission Approved', date: 'Sep 10' },
-      { num: 2, name: 'Carbon Monocoque Mold', date: 'Sep 16' },
-      { num: 3, name: 'Bespoke Paint & Interior', date: 'Sep 24 (In Progress)' },
-      { num: 4, name: 'Dyno & Track Certification', date: 'Oct 04' },
-      { num: 5, name: 'White-Glove Enclosed Transit', date: 'Oct 18' }
-    ]
-  },
-  'CC-ORD-551920': {
-    orderId: 'CC-ORD-551920',
-    model: 'Apex Carbon Track Aerokit',
-    tier: 'Performance Parts Package',
-    vin: 'SKU-AERO-7712',
-    exteriorColor: 'Pre-preg Dry Carbon Fiber',
-    interiorColor: 'N/A',
-    deliveryHub: 'Monaco Riviera Atelier',
-    estDelivery: 'October 02, 2026',
-    currentStage: 4,
-    assignedEngineer: 'Master Technician Jean-Paul',
-    stages: [
-      { num: 1, name: 'Order Verified', date: 'Sep 18' },
-      { num: 2, name: 'Autoclave Curing', date: 'Sep 20' },
-      { num: 3, name: 'Quality Inspection', date: 'Sep 22' },
-      { num: 4, name: 'Air Freight Dispatched', date: 'Sep 27 (In Flight)' },
-      { num: 5, name: 'Delivered to Atelier', date: 'Oct 02' }
-    ]
-  }
-};
+const toOrderTracker = (order) => ({
+  orderId: order.order_number,
+  model: order.items?.[0]?.part_details?.name || 'CarCraft Parts Order',
+  tier: `${order.payment_status} • Total ${formatINR(order.total_amount)}`,
+  vin: order.order_number,
+  exteriorColor: order.shipping_city || 'Atelier Delivery',
+  interiorColor: order.shipping_address,
+  deliveryHub: 'White-Glove Enclosed Transit',
+  estDelivery: new Date(order.created_at).toLocaleDateString(),
+  currentStage: order.status === 'DELIVERED' ? 5 : (order.status === 'SHIPPED' ? 4 : (order.status === 'PROCESSING' ? 3 : 2)),
+  assignedEngineer: 'Chief Allocation Specialist',
+  stages: [
+    { num: 1, name: 'Commission Approved', date: 'Confirmed' },
+    { num: 2, name: 'Component Allocation', date: order.status !== 'PENDING' ? 'Verified' : 'Pending' },
+    { num: 3, name: 'Assembly & Inspection', date: ['PROCESSING', 'SHIPPED', 'DELIVERED'].includes(order.status) ? 'Complete' : 'In Progress' },
+    { num: 4, name: 'Logistics Dispatched', date: ['SHIPPED', 'DELIVERED'].includes(order.status) ? 'En Route' : 'Scheduled' },
+    { num: 5, name: 'White-Glove Delivery', date: order.status === 'DELIVERED' ? 'Delivered' : 'Pending' },
+  ],
+});
 
 export default function Orders() {
-  const [searchCode, setSearchCode] = useState('CC-ORD-882109');
-  const [activeOrder, setActiveOrder] = useState(DEFAULT_ORDERS['CC-ORD-882109']);
-  const [searched, setSearched] = useState(true);
+  const [searchCode, setSearchCode] = useState('');
+  const [orders, setOrders] = useState([]);
+  const [activeOrder, setActiveOrder] = useState(null);
+  const [searched, setSearched] = useState(false);
 
   React.useEffect(() => {
     orderApi.getOrders()
       .then((res) => {
         const list = Array.isArray(res) ? res : (res?.results || []);
+        setOrders(list);
         if (list.length > 0) {
-          const first = list[0];
-          setSearchCode(first.order_number);
-          setActiveOrder({
-            orderId: first.order_number,
-            model: first.items?.[0]?.part?.name ? `${first.items[0].part.name} + Components` : 'CARCRAFT Client Order',
-            tier: `${first.payment_status} • Total ${formatINR(first.total_amount)}`,
-            vin: first.order_number,
-            exteriorColor: first.shipping_city || 'Atelier Delivery',
-            interiorColor: first.shipping_address,
-            deliveryHub: 'White-Glove Enclosed Transit',
-            estDelivery: new Date(first.created_at).toLocaleDateString(),
-            currentStage: first.status === 'DELIVERED' ? 5 : (first.status === 'SHIPPED' ? 4 : (first.status === 'PROCESSING' ? 3 : 2)),
-            assignedEngineer: 'Chief Allocation Specialist',
-            stages: [
-              { num: 1, name: 'Commission Approved', date: 'Confirmed' },
-              { num: 2, name: 'Component Allocation', date: first.status !== 'PENDING' ? 'Verified' : 'Pending' },
-              { num: 3, name: 'Assembly & Inspection', date: first.status === 'PROCESSING' || first.status === 'SHIPPED' || first.status === 'DELIVERED' ? 'Complete' : 'In Progress' },
-              { num: 4, name: 'Logistics Dispatched', date: first.status === 'SHIPPED' || first.status === 'DELIVERED' ? 'En Route' : 'Scheduled' },
-              { num: 5, name: 'White-Glove Delivery', date: first.status === 'DELIVERED' ? 'Delivered' : 'Pending' },
-            ]
-          });
+          setSearchCode(list[0].order_number);
+          setActiveOrder(toOrderTracker(list[0]));
         }
       })
-      .catch(() => {});
+      .catch(() => setOrders([]));
   }, []);
 
 
   const handleSearch = (e) => {
     e.preventDefault();
     const clean = searchCode.trim().toUpperCase();
-    if (DEFAULT_ORDERS[clean]) {
-      setActiveOrder(DEFAULT_ORDERS[clean]);
-      setSearched(true);
-    } else {
-      // Create dynamic fallback mock order for whatever reference user types
-      setActiveOrder({
-        orderId: clean,
-        model: 'CarCraft Bespoke Allocation',
-        tier: 'Private Client Reserve',
-        vin: '1CC' + Math.floor(10000000 + Math.random() * 90000000),
-        exteriorColor: 'Liquid Titanium Silver',
-        interiorColor: 'Tuscan Saddle Leather',
-        deliveryHub: 'Global Atelier Delivery',
-        estDelivery: 'Within 21 Business Days',
-        currentStage: 2,
-        assignedEngineer: 'Master Guild Artisan',
-        stages: [
-          { num: 1, name: 'Order Commissioned', date: 'Completed' },
-          { num: 2, name: 'Component Fabrication', date: 'In Progress' },
-          { num: 3, name: 'Bespoke Tailoring', date: 'Scheduled' },
-          { num: 4, name: 'Dyno Track Testing', date: 'Scheduled' },
-          { num: 5, name: 'Enclosed Carrier Delivery', date: 'Pending' }
-        ]
-      });
-      setSearched(true);
-    }
+    const foundOrder = orders.find((order) => order.order_number.toUpperCase() === clean);
+    setActiveOrder(foundOrder ? toOrderTracker(foundOrder) : null);
+    setSearched(true);
   };
 
   return (
@@ -264,6 +203,11 @@ export default function Orders() {
               </button>
             </div>
           </div>
+        )}
+        {!activeOrder && searched && (
+          <p style={{ color: '#94a3b8', textAlign: 'center', padding: '32px 16px' }}>
+            No order found for this reference.
+          </p>
         )}
       </main>
 

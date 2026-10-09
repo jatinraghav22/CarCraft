@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 /**
@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext';
  * Strictly distinguishes customers from dealer users so dealer workflows remain intact.
  */
 export default function GuestOnlyRoute({ children }) {
+  const location = useLocation();
   const { isAuthenticated, user, authLoading } = useAuth();
 
   const customerIsLoggedIn = Boolean(
@@ -27,7 +28,7 @@ export default function GuestOnlyRoute({ children }) {
 
   // If already authenticated customer, redirect to homepage
   if (customerIsLoggedIn) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={location.state?.from || '/'} replace />;
   }
 
   return children;

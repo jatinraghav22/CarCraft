@@ -184,14 +184,7 @@ export const AuthProvider = ({ children }) => {
 
   const quickDemoLogin = async (profileIndex = 0) => {
     const demo = DEMO_PROFILES[profileIndex] || DEMO_PROFILES[0];
-    try {
-      return await login(demo.login, demo.password);
-    } catch {
-      // Graceful fallback to static demo profile if backend server is rebooting
-      setUser(demo);
-      addToast(`Authenticated as ${demo.name} (${demo.tier})`, 'success');
-      return demo;
-    }
+    return login(demo.login, demo.password);
   };
 
   const register = async ({ name, username, email, password, phone, tier = 'Apex VIP' }) => {

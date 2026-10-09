@@ -2,16 +2,16 @@ import { formatINR } from '../../utils/currency';
 import { handlePartImageError } from '../../utils/imageFallback';
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Search, 
-  SlidersHorizontal, 
-  ShoppingCart, 
-  Heart, 
-  Star, 
-  ArrowRight, 
-  RotateCcw, 
-  Check, 
-  X, 
+import {
+  Search,
+  SlidersHorizontal,
+  ShoppingCart,
+  Heart,
+  Star,
+  ArrowRight,
+  RotateCcw,
+  Check,
+  X,
   ChevronDown,
   Sparkles,
   PackageCheck
@@ -22,9 +22,7 @@ import { normalizePart } from '../../api/normalizers';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useToast } from '../../context/ToastContext';
-import { useAuth } from '../../context/AuthContext';
-import { requireLogin } from '../../utils/authGuard';
-import LoginRequiredModal from '../../components/LoginRequiredModal';
+import { useRequireLogin } from '../../components/AuthActionGuard';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import './Parts.css';
@@ -41,12 +39,11 @@ export default function Parts() {
   const [maxPrice, setMaxPrice] = useState(1000000);
   const [sortBy, setSortBy] = useState('featured');
   const [showFilters, setShowFilters] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { addToast } = useToast();
-  const { isAuthenticated } = useAuth();
+  const requireCustomerLogin = useRequireLogin();
 
   useEffect(() => {
     let isMounted = true;
@@ -156,7 +153,7 @@ export default function Parts() {
   const handleAddToCart = (e, part) => {
     e.preventDefault();
     e.stopPropagation();
-    if (requireLogin(isAuthenticated, setShowLoginModal)) return;
+    if (requireCustomerLogin()) return;
     addToCart(part, 1);
     addToast(`${part.name} added to cart`, 'success');
   };
@@ -164,7 +161,7 @@ export default function Parts() {
   const handleWishlistToggle = (e, part) => {
     e.preventDefault();
     e.stopPropagation();
-    if (requireLogin(isAuthenticated, setShowLoginModal)) return;
+    if (requireCustomerLogin()) return;
     const added = toggleWishlist(part);
     addToast(
       added ? `${part.name} saved to wishlist` : `${part.name} removed from wishlist`,
@@ -182,11 +179,6 @@ export default function Parts() {
 
   return (
     <div className="parts-page">
-      <LoginRequiredModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        message="Login required to add parts to your cart or wishlist."
-      />
       <Navbar />
 
       <main className="parts-container">

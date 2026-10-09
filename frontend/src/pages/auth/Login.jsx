@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
-import { 
-  Lock, 
-  Mail, 
-  Eye, 
-  EyeOff, 
-  ArrowRight, 
-  ShieldCheck, 
-  Sparkles, 
+import {
+  Lock,
+  Mail,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  ShieldCheck,
+  Sparkles,
   CheckCircle2,
   Zap
 } from 'lucide-react';
@@ -27,12 +27,14 @@ export default function Login() {
     (!user.role || user.role === 'CUSTOMER' || user.role !== 'DEALER')
   );
 
-  // If already authenticated customer opens /login, redirect to homepage
+  const from = location.state?.from || '/';
+
+  // If already authenticated customer opens /login, return to the requested page.
   useEffect(() => {
     if (!authLoading && customerIsLoggedIn) {
-      navigate('/', { replace: true });
+      navigate(from, { replace: true });
     }
-  }, [customerIsLoggedIn, authLoading, navigate]);
+  }, [customerIsLoggedIn, authLoading, from, navigate]);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -40,12 +42,9 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Destination after login: redirect to homepage "/" per requirement
-  const from = location.state?.from?.pathname || '/';
-
   // Do not render login page if already authenticated or while restoring session
   if (!authLoading && customerIsLoggedIn) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={from} replace />;
   }
 
   if (authLoading) {
@@ -73,9 +72,13 @@ export default function Login() {
     }
   };
 
-  const handleDemoSelect = (idx) => {
-    quickDemoLogin(idx);
-    navigate(from, { replace: true });
+  const handleDemoSelect = async (idx) => {
+    try {
+      await quickDemoLogin(idx);
+      navigate(from, { replace: true });
+    } catch {
+      // The auth context already reports login failures.
+    }
   };
 
   return (

@@ -22,6 +22,8 @@ import DealerProfile from './dealer/pages/Profile';
 import PlaceholderModule from './dealer/components/PlaceholderModule';
 import ShowroomHomepage from './components/ShowroomHomepage';
 import GuestOnlyRoute from './components/GuestOnlyRoute';
+import CustomerProtectedRoute from './components/CustomerProtectedRoute';
+import { AuthActionGuardProvider } from './components/AuthActionGuard';
 import Vehicles from './pages/vehicles/Vehicles';
 import VehicleDetails from './pages/vehicles/VehicleDetails';
 import Parts from './pages/parts/Parts';
@@ -64,362 +66,364 @@ export default function App() {
     <BrowserRouter>
       <ToastProvider>
         <AuthProvider>
-          <DealerAuthProvider>
-            <WishlistProvider>
-              <CompareProvider>
-                <CartProvider>
-                  <ErrorBoundary>
-                    <Routes>
-                  {/* ════════════════════════════════════════════════════
+          <AuthActionGuardProvider>
+            <DealerAuthProvider>
+              <WishlistProvider>
+                <CompareProvider>
+                  <CartProvider>
+                    <ErrorBoundary>
+                      <Routes>
+                        {/* ════════════════════════════════════════════════════
                       HOMEPAGE: Fixed 100vh cinematic scene.
                       Autoplay video -> 3D WebGL -> Glass Command Deck
                   ════════════════════════════════════════════════════ */}
-                  <Route
-                    path="/"
-                    element={
-                      <div
-                        className="app-container select-none"
-                        style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}
-                      >
-                        <ShowroomHomepage
-                          onVideoEnd={() => setVideoEnded(true)}
-                          onNavigateSection={() => {}}
+                        <Route
+                          path="/"
+                          element={
+                            <div
+                              className="app-container select-none"
+                              style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}
+                            >
+                              <ShowroomHomepage
+                                onVideoEnd={() => setVideoEnded(true)}
+                                onNavigateSection={() => { }}
+                              />
+                            </div>
+                          }
                         />
-                      </div>
-                    }
-                  />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 1: VEHICLES MODULE
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/vehicles" element={<Vehicles />} />
-                  <Route path="/vehicles/:id" element={<VehicleDetails />} />
+                        <Route path="/vehicles" element={<Vehicles />} />
+                        <Route path="/vehicles/:id" element={<VehicleDetails />} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 2: PARTS & ACCESSORIES MODULE
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/parts" element={<Parts />} />
-                  <Route path="/parts/:id" element={<PartDetails />} />
+                        <Route path="/parts" element={<Parts />} />
+                        <Route path="/parts/:id" element={<PartDetails />} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 3: CART MODULE
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/cart" element={<Cart />} />
+                        <Route path="/cart" element={<CustomerProtectedRoute><Cart /></CustomerProtectedRoute>} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 4: WISHLIST MODULE
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/wishlist" element={<Wishlist />} />
+                        <Route path="/wishlist" element={<CustomerProtectedRoute><Wishlist /></CustomerProtectedRoute>} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 5: SERVICE BOOKING MODULE
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/service" element={<Service />} />
-                  <Route path="/service/book" element={<ServiceBooking />} />
+                        <Route path="/service" element={<Service />} />
+                        <Route path="/service/book" element={<ServiceBooking />} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 6: 360° DIGITAL SHOWROOM MODULE
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/showroom" element={<Showroom />} />
+                        <Route path="/showroom" element={<Showroom />} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 7: AUTHENTICATION & ACCESS SUITE
                   ════════════════════════════════════════════════════ */}
-                  <Route
-                    path="/login"
-                    element={
-                      <GuestOnlyRoute>
-                        <Login />
-                      </GuestOnlyRoute>
-                    }
-                  />
-                  <Route
-                    path="/register"
-                    element={
-                      <GuestOnlyRoute>
-                        <Register />
-                      </GuestOnlyRoute>
-                    }
-                  />
-                  <Route path="/profile" element={<Profile />} />
+                        <Route
+                          path="/login"
+                          element={
+                            <GuestOnlyRoute>
+                              <Login />
+                            </GuestOnlyRoute>
+                          }
+                        />
+                        <Route
+                          path="/register"
+                          element={
+                            <GuestOnlyRoute>
+                              <Register />
+                            </GuestOnlyRoute>
+                          }
+                        />
+                        <Route path="/profile" element={<CustomerProtectedRoute><Profile /></CustomerProtectedRoute>} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 8: VEHICLE COMPARISON SUITE
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/compare" element={<Compare />} />
+                        <Route path="/compare" element={<Compare />} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 9: TEST DRIVE & CONCIERGE RESERVATION SUITE
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/test-drive" element={<TestDrive />} />
+                        <Route path="/test-drive" element={<TestDrive />} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 10: 3D BESPOKE CONFIGURATOR STUDIO
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/configurator" element={<Configurator />} />
-                  <Route path="/garage" element={<Configurator />} />
+                        <Route path="/configurator" element={<Configurator />} />
+                        <Route path="/garage" element={<Configurator />} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 11: GLOBAL ATELIER & STUDIO LOCATOR
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/dealerships" element={<Dealerships />} />
+                        <Route path="/dealerships" element={<Dealerships />} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 12: LEASE & TREASURY FINANCE CALCULATOR
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/financing" element={<Financing />} />
+                        <Route path="/financing" element={<Financing />} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 13: VERIFIED OWNER REVIEWS & TELEMETRY
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/reviews" element={<Reviews />} />
+                        <Route path="/reviews" element={<Reviews />} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 14: TELEMETRY JOURNAL & MOTORSPORT DISPATCH
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/journal" element={<Journal />} />
+                        <Route path="/journal" element={<Journal />} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 15: LIVE ALLOCATION & ORDER TRACKER
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/orders" element={<Orders />} />
+                        <Route path="/orders" element={<CustomerProtectedRoute><Orders /></CustomerProtectedRoute>} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 16: FAQ & CONCIERGE ASSISTANCE
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/support" element={<Support />} />
+                        <Route path="/support" element={<Support />} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 17: SELL & TRADE-IN VALUATION DESK
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/sell" element={<Sell />} />
+                        <Route path="/sell" element={<Sell />} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 18: CORPORATE HERITAGE & LEADERSHIP
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/about" element={<About />} />
+                        <Route path="/about" element={<About />} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 19: PRIVACY & LEGAL ACCORDS
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/privacy" element={<Privacy />} />
-                  <Route path="/terms" element={<Terms />} />
+                        <Route path="/privacy" element={<Privacy />} />
+                        <Route path="/terms" element={<Terms />} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       PHASE 20: UNIFIED OMNIBAR & UNIVERSAL SEARCH
                   ════════════════════════════════════════════════════ */}
-                  <Route path="/search" element={<SearchPage />} />
+                        <Route path="/search" element={<SearchPage />} />
 
-                  {/* ════════════════════════════════════════════════════
+                        {/* ════════════════════════════════════════════════════
                       CARCRAFT DEALER SUITE - PRIVATE ATELIER (PHASE 2)
                   ════════════════════════════════════════════════════ */}
-                  {/* Dealer Public Gateway */}
-                  <Route path="/dealer/login" element={<DealerLogin />} />
-                  <Route path="/dealer" element={<Navigate to="/dealer/dashboard" replace />} />
+                        {/* Dealer Public Gateway */}
+                        <Route path="/dealer/login" element={<DealerLogin />} />
+                        <Route path="/dealer" element={<Navigate to="/dealer/dashboard" replace />} />
 
-                  {/* Dealer Protected Enclave */}
-                  <Route
-                    path="/dealer/dashboard"
-                    element={
-                      <DealerProtectedRoute>
-                        <DealerLayout>
-                          <DealerDashboard />
-                        </DealerLayout>
-                      </DealerProtectedRoute>
-                    }
-                  />
-                  {/* Phase 3: Vehicle Management */}
-                  <Route
-                    path="/dealer/vehicles"
-                    element={
-                      <DealerProtectedRoute>
-                        <DealerLayout>
-                          <DealerVehicles />
-                        </DealerLayout>
-                      </DealerProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dealer/vehicles/add"
-                    element={
-                      <DealerProtectedRoute>
-                        <DealerLayout>
-                          <DealerVehicleForm mode="add" />
-                        </DealerLayout>
-                      </DealerProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dealer/vehicles/:id/edit"
-                    element={
-                      <DealerProtectedRoute>
-                        <DealerLayout>
-                          <DealerVehicleForm mode="edit" />
-                        </DealerLayout>
-                      </DealerProtectedRoute>
-                    }
-                  />
-                  {/* Phase 4: Parts Management */}
-                  <Route
-                    path="/dealer/parts"
-                    element={
-                      <DealerProtectedRoute>
-                        <DealerLayout>
-                          <DealerParts />
-                        </DealerLayout>
-                      </DealerProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dealer/parts/add"
-                    element={
-                      <DealerProtectedRoute>
-                        <DealerLayout>
-                          <DealerPartForm mode="add" />
-                        </DealerLayout>
-                      </DealerProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dealer/parts/:id/edit"
-                    element={
-                      <DealerProtectedRoute>
-                        <DealerLayout>
-                          <DealerPartForm mode="edit" />
-                        </DealerLayout>
-                      </DealerProtectedRoute>
-                    }
-                  />
-                  {/* Phase 5: Inventory */}
-                  <Route
-                    path="/dealer/inventory"
-                    element={
-                      <DealerProtectedRoute>
-                        <DealerLayout>
-                          <DealerInventory />
-                        </DealerLayout>
-                      </DealerProtectedRoute>
-                    }
-                  />
+                        {/* Dealer Protected Enclave */}
+                        <Route
+                          path="/dealer/dashboard"
+                          element={
+                            <DealerProtectedRoute>
+                              <DealerLayout>
+                                <DealerDashboard />
+                              </DealerLayout>
+                            </DealerProtectedRoute>
+                          }
+                        />
+                        {/* Phase 3: Vehicle Management */}
+                        <Route
+                          path="/dealer/vehicles"
+                          element={
+                            <DealerProtectedRoute>
+                              <DealerLayout>
+                                <DealerVehicles />
+                              </DealerLayout>
+                            </DealerProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/dealer/vehicles/add"
+                          element={
+                            <DealerProtectedRoute>
+                              <DealerLayout>
+                                <DealerVehicleForm mode="add" />
+                              </DealerLayout>
+                            </DealerProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/dealer/vehicles/:id/edit"
+                          element={
+                            <DealerProtectedRoute>
+                              <DealerLayout>
+                                <DealerVehicleForm mode="edit" />
+                              </DealerLayout>
+                            </DealerProtectedRoute>
+                          }
+                        />
+                        {/* Phase 4: Parts Management */}
+                        <Route
+                          path="/dealer/parts"
+                          element={
+                            <DealerProtectedRoute>
+                              <DealerLayout>
+                                <DealerParts />
+                              </DealerLayout>
+                            </DealerProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/dealer/parts/add"
+                          element={
+                            <DealerProtectedRoute>
+                              <DealerLayout>
+                                <DealerPartForm mode="add" />
+                              </DealerLayout>
+                            </DealerProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/dealer/parts/:id/edit"
+                          element={
+                            <DealerProtectedRoute>
+                              <DealerLayout>
+                                <DealerPartForm mode="edit" />
+                              </DealerLayout>
+                            </DealerProtectedRoute>
+                          }
+                        />
+                        {/* Phase 5: Inventory */}
+                        <Route
+                          path="/dealer/inventory"
+                          element={
+                            <DealerProtectedRoute>
+                              <DealerLayout>
+                                <DealerInventory />
+                              </DealerLayout>
+                            </DealerProtectedRoute>
+                          }
+                        />
 
-                  {/* Phase 6: Test Drives */}
-                  <Route
-                    path="/dealer/test-drives"
-                    element={
-                      <DealerProtectedRoute>
-                        <DealerLayout>
-                          <DealerTestDrives />
-                        </DealerLayout>
-                      </DealerProtectedRoute>
-                    }
-                  />
+                        {/* Phase 6: Test Drives */}
+                        <Route
+                          path="/dealer/test-drives"
+                          element={
+                            <DealerProtectedRoute>
+                              <DealerLayout>
+                                <DealerTestDrives />
+                              </DealerLayout>
+                            </DealerProtectedRoute>
+                          }
+                        />
 
-                  {/* Phase 7: Service Appointments */}
-                  <Route
-                    path="/dealer/service-appointments"
-                    element={
-                      <DealerProtectedRoute>
-                        <DealerLayout>
-                          <DealerServiceAppointments />
-                        </DealerLayout>
-                      </DealerProtectedRoute>
-                    }
-                  />
+                        {/* Phase 7: Service Appointments */}
+                        <Route
+                          path="/dealer/service-appointments"
+                          element={
+                            <DealerProtectedRoute>
+                              <DealerLayout>
+                                <DealerServiceAppointments />
+                              </DealerLayout>
+                            </DealerProtectedRoute>
+                          }
+                        />
 
-                  {/* Phase 8: Client Orders */}
-                  <Route
-                    path="/dealer/orders"
-                    element={
-                      <DealerProtectedRoute>
-                        <DealerLayout>
-                          <DealerOrders />
-                        </DealerLayout>
-                      </DealerProtectedRoute>
-                    }
-                  />
+                        {/* Phase 8: Client Orders */}
+                        <Route
+                          path="/dealer/orders"
+                          element={
+                            <DealerProtectedRoute>
+                              <DealerLayout>
+                                <DealerOrders />
+                              </DealerLayout>
+                            </DealerProtectedRoute>
+                          }
+                        />
 
-                  {/* Phase 9: Sales Ledger */}
-                  <Route
-                    path="/dealer/sales"
-                    element={
-                      <DealerProtectedRoute>
-                        <DealerLayout>
-                          <DealerSales />
-                        </DealerLayout>
-                      </DealerProtectedRoute>
-                    }
-                  />
+                        {/* Phase 9: Sales Ledger */}
+                        <Route
+                          path="/dealer/sales"
+                          element={
+                            <DealerProtectedRoute>
+                              <DealerLayout>
+                                <DealerSales />
+                              </DealerLayout>
+                            </DealerProtectedRoute>
+                          }
+                        />
 
-                  {/* Phase 10: Operational Expenses */}
-                  <Route
-                    path="/dealer/expenses"
-                    element={
-                      <DealerProtectedRoute>
-                        <DealerLayout>
-                          <DealerExpenses />
-                        </DealerLayout>
-                      </DealerProtectedRoute>
-                    }
-                  />
+                        {/* Phase 10: Operational Expenses */}
+                        <Route
+                          path="/dealer/expenses"
+                          element={
+                            <DealerProtectedRoute>
+                              <DealerLayout>
+                                <DealerExpenses />
+                              </DealerLayout>
+                            </DealerProtectedRoute>
+                          }
+                        />
 
-                  {/* Phase 11: Profit & Loss Statement */}
-                  <Route
-                    path="/dealer/profit-loss"
-                    element={
-                      <DealerProtectedRoute>
-                        <DealerLayout>
-                          <DealerProfitLoss />
-                        </DealerLayout>
-                      </DealerProtectedRoute>
-                    }
-                  />
+                        {/* Phase 11: Profit & Loss Statement */}
+                        <Route
+                          path="/dealer/profit-loss"
+                          element={
+                            <DealerProtectedRoute>
+                              <DealerLayout>
+                                <DealerProfitLoss />
+                              </DealerLayout>
+                            </DealerProtectedRoute>
+                          }
+                        />
 
-                  {/* Phase 12: Private Clientele */}
-                  <Route
-                    path="/dealer/customers"
-                    element={
-                      <DealerProtectedRoute>
-                        <DealerLayout>
-                          <DealerCustomers />
-                        </DealerLayout>
-                      </DealerProtectedRoute>
-                    }
-                  />
+                        {/* Phase 12: Private Clientele */}
+                        <Route
+                          path="/dealer/customers"
+                          element={
+                            <DealerProtectedRoute>
+                              <DealerLayout>
+                                <DealerCustomers />
+                              </DealerLayout>
+                            </DealerProtectedRoute>
+                          }
+                        />
 
-                  {/* Phase 13: Executive Reports */}
-                  <Route
-                    path="/dealer/reports"
-                    element={
-                      <DealerProtectedRoute>
-                        <DealerLayout>
-                          <DealerReports />
-                        </DealerLayout>
-                      </DealerProtectedRoute>
-                    }
-                  />
+                        {/* Phase 13: Executive Reports */}
+                        <Route
+                          path="/dealer/reports"
+                          element={
+                            <DealerProtectedRoute>
+                              <DealerLayout>
+                                <DealerReports />
+                              </DealerLayout>
+                            </DealerProtectedRoute>
+                          }
+                        />
 
-                  {/* Phase 14: Dealer Profile & Security */}
-                  <Route
-                    path="/dealer/profile"
-                    element={
-                      <DealerProtectedRoute>
-                        <DealerLayout>
-                          <DealerProfile />
-                        </DealerLayout>
-                      </DealerProtectedRoute>
-                    }
-                  />
+                        {/* Phase 14: Dealer Profile & Security */}
+                        <Route
+                          path="/dealer/profile"
+                          element={
+                            <DealerProtectedRoute>
+                              <DealerLayout>
+                                <DealerProfile />
+                              </DealerLayout>
+                            </DealerProtectedRoute>
+                          }
+                        />
 
-                  {/* Fallback / 404 Route */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </ErrorBoundary>
-            </CartProvider>
-            </CompareProvider>
-          </WishlistProvider>
-        </DealerAuthProvider>
-      </AuthProvider>
-    </ToastProvider>
-  </BrowserRouter>
+                        {/* Fallback / 404 Route */}
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </ErrorBoundary>
+                  </CartProvider>
+                </CompareProvider>
+              </WishlistProvider>
+            </DealerAuthProvider>
+          </AuthActionGuardProvider>
+        </AuthProvider>
+      </ToastProvider>
+    </BrowserRouter>
   );
 }

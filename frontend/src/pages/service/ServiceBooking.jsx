@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  ArrowRight, 
-  Check, 
-  CheckCircle2, 
-  Calendar, 
-  Clock, 
-  Car, 
-  Wrench, 
-  User, 
-  ShieldCheck, 
-  MapPin, 
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  CheckCircle2,
+  Calendar,
+  Clock,
+  Car,
+  Wrench,
+  User,
+  ShieldCheck,
+  MapPin,
   Sparkles,
   RotateCcw
 } from 'lucide-react';
@@ -20,9 +20,7 @@ import { mockVehicles } from '../../data/vehicles';
 import serviceApi from '../../api/serviceApi';
 import { handleImageError } from '../../utils/imageFallback';
 import { useToast } from '../../context/ToastContext';
-import { useAuth } from '../../context/AuthContext';
-import { requireLogin } from '../../utils/authGuard';
-import LoginRequiredModal from '../../components/LoginRequiredModal';
+import { useRequireLogin } from '../../components/AuthActionGuard';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import './Service.css';
@@ -31,9 +29,7 @@ export default function ServiceBooking() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { addToast } = useToast();
-  const { isAuthenticated } = useAuth();
-
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  const requireCustomerLogin = useRequireLogin();
 
   const preselectedServiceId = searchParams.get('service');
 
@@ -162,7 +158,7 @@ export default function ServiceBooking() {
 
   const handleFinalSubmit = async (e) => {
     e.preventDefault();
-    if (requireLogin(isAuthenticated, setShowLoginModal)) return;
+    if (requireCustomerLogin()) return;
     let generatedBookingId = '';
 
     try {
@@ -184,35 +180,15 @@ export default function ServiceBooking() {
       }
     } catch (err) {
       console.warn('Backend service appointment notice:', err.message);
+      addToast('Unable to book the service appointment. Please try again.', 'error');
+      return;
     }
 
     if (!generatedBookingId) {
-      generatedBookingId = 'CC-SRV-' + Math.floor(100000 + Math.random() * 900000);
+      addToast('Unable to confirm the service appointment. Please try again.', 'error');
+      return;
     }
     setBookingId(generatedBookingId);
-
-    // Save to localStorage for User Profile
-    try {
-      const existing = JSON.parse(localStorage.getItem('carcraft_service_bookings') || '[]');
-      const newBooking = {
-        bookingId: generatedBookingId,
-        dateBooked: new Date().toISOString(),
-        vehicle: activeVehicleData.name,
-        services: activeServiceObjects.map((s) => s.name),
-        appointmentDate: selectedDate,
-        appointmentTime: selectedTime,
-        location: customerDetails.hubLocation,
-        estimatedPrice: totalEstimatedPrice,
-        customerName: customerDetails.fullName,
-        customerPhone: customerDetails.phone,
-        customerEmail: customerDetails.email,
-        notes: customerDetails.notes,
-        status: 'Confirmed'
-      };
-      localStorage.setItem('carcraft_service_bookings', JSON.stringify([newBooking, ...existing]));
-    } catch (err) {
-      console.error('Failed saving booking', err);
-    }
 
     setBookingConfirmed(true);
     addToast(`Appointment ${generatedBookingId} confirmed!`, 'success');
@@ -230,11 +206,6 @@ export default function ServiceBooking() {
 
   return (
     <div className="service-page">
-      <LoginRequiredModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        message="Login required to book a service appointment."
-      />
       <Navbar />
 
       <main className="service-container">
@@ -264,9 +235,8 @@ export default function ServiceBooking() {
                   return (
                     <div
                       key={st.num}
-                      className={`booking-step-indicator ${isActive ? 'active' : ''} ${
-                        isCompleted ? 'completed' : ''
-                      }`}
+                      className={`booking-step-indicator ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''
+                        }`}
                       onClick={() => {
                         if (isCompleted) setCurrentStep(stepIndex);
                       }}
@@ -313,9 +283,8 @@ export default function ServiceBooking() {
                         {mockVehicles.slice(0, 6).map((v) => (
                           <div
                             key={v.id}
-                            className={`booking-vehicle-card ${
-                              selectedFleetVehicleId === v.id ? 'selected' : ''
-                            }`}
+                            className={`booking-vehicle-card ${selectedFleetVehicleId === v.id ? 'selected' : ''
+                              }`}
                             onClick={() => setSelectedFleetVehicleId(v.id)}
                           >
                             <img src={v.image} alt={v.model} onError={handleImageError} className="booking-vehicle-thumb" />

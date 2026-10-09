@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { handleImageError } from '../utils/imageFallback';
 import { formatINR } from '../utils/currency';
 import { X, CheckCircle2, Zap, Gauge, Shield, Calendar, Phone, Award } from 'lucide-react';
+import { useRequireLogin } from './AuthActionGuard';
 
 export default function VehicleModal({ vehicle, onClose, onBookTestDrive }) {
+  const requireCustomerLogin = useRequireLogin();
   const [activeImage, setActiveImage] = useState(vehicle ? vehicle.image : '');
   const [testDriveSubmitted, setTestDriveSubmitted] = useState(false);
   const [clientName, setClientName] = useState('');
@@ -13,6 +15,7 @@ export default function VehicleModal({ vehicle, onClose, onBookTestDrive }) {
 
   const handleTestDriveSubmit = (e) => {
     e.preventDefault();
+    if (requireCustomerLogin()) return;
     setTestDriveSubmitted(true);
     setTimeout(() => {
       if (onBookTestDrive) onBookTestDrive(vehicle);
@@ -22,7 +25,7 @@ export default function VehicleModal({ vehicle, onClose, onBookTestDrive }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-xl animate-fade-in overflow-y-auto">
       <div className="relative w-full max-w-4xl bg-[#0e1218] border border-white/15 rounded-3xl overflow-hidden shadow-2xl my-8">
-        
+
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -40,7 +43,7 @@ export default function VehicleModal({ vehicle, onClose, onBookTestDrive }) {
             className="w-full h-full object-cover object-center"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0e1218] via-transparent to-black/50" />
-          
+
           <div className="absolute bottom-6 left-6 right-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
               <span className="inline-block px-3 py-1 rounded bg-[#bef264] text-black text-[11px] font-mono font-bold tracking-widest uppercase mb-2">
@@ -64,7 +67,7 @@ export default function VehicleModal({ vehicle, onClose, onBookTestDrive }) {
 
         {/* Modal Body */}
         <div className="p-6 sm:p-8 space-y-8">
-          
+
           {/* Key Metrics Strip */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-black/40 p-4 rounded-2xl border border-white/10 text-center">
             <div>

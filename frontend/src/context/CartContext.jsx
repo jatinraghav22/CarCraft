@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { formatINR } from '../utils/currency';
 import { formatImageUrl, getPartCategoryFallback } from '../utils/imageFallback';
+import { useAuth } from './AuthContext';
+import { useRequireLogin } from '../components/AuthActionGuard';
 
 const CartContext = createContext();
 
@@ -32,8 +34,11 @@ const normalizeCartEntry = (product, quantity = 1) => {
 };
 
 export function CartProvider({ children }) {
+  const { isAuthenticated, authLoading } = useAuth();
+  const requireCustomerLogin = useRequireLogin();
   const [cart, setCart] = useState(() => {
     try {
+      if (!localStorage.getItem('carcraft_access_token')) return [];
       const saved = localStorage.getItem('carcraft_cart');
       if (!saved) return [];
       const parsed = JSON.parse(saved);
@@ -55,6 +60,15 @@ export function CartProvider({ children }) {
   const [shippingMethod, setShippingMethod] = useState('standard'); // 'standard' | 'express'
 
   useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      setCart([]);
+      setPromoCode('');
+      localStorage.removeItem('carcraft_cart');
+      localStorage.removeItem('carcraft_promo');
+    }
+  }, [authLoading, isAuthenticated]);
+
+  useEffect(() => {
     try {
       localStorage.setItem('carcraft_cart', JSON.stringify(cart));
     } catch (e) {
@@ -71,6 +85,7 @@ export function CartProvider({ children }) {
   }, [promoCode]);
 
   const addToCart = (product, quantity = 1) => {
+    if (requireCustomerLogin()) return false;
     if (!product) return;
     const normalized = normalizeCartEntry(product, quantity);
     if (!normalized) return;
@@ -90,9 +105,11 @@ export function CartProvider({ children }) {
         return [...safePrev, normalized];
       }
     });
+    return true;
   };
 
   const updateQuantity = (id, delta) => {
+    if (requireCustomerLogin()) return false;
     setCart((prev) => {
       const safePrev = Array.isArray(prev) ? prev : [];
       return safePrev
@@ -105,20 +122,25 @@ export function CartProvider({ children }) {
         })
         .filter(Boolean);
     });
+    return true;
   };
 
   const removeFromCart = (id) => {
+    if (requireCustomerLogin()) return false;
     setCart((prev) => {
       const safePrev = Array.isArray(prev) ? prev : [];
       return safePrev.filter(
         (item) => String(item.id) !== String(id) && (!item.rawId || String(item.rawId) !== String(id))
       );
     });
+    return true;
   };
 
   const clearCart = () => {
+    if (requireCustomerLogin()) return false;
     setCart([]);
     setPromoCode('');
+    return true;
   };
 
   const applyPromo = (code) => {

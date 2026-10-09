@@ -87,7 +87,7 @@ export default function LoginRequiredModal({ isOpen, onClose, message }) {
 
         {/* Message */}
         <p className="lrm-message">
-          {message || 'Login required to continue. Please sign in to access this feature.'}
+          {message || 'Login required to continue.'}
         </p>
 
         {/* CTA Buttons */}

@@ -1,20 +1,21 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Heart, 
-  Trash2, 
-  ShoppingCart, 
-  ArrowRight, 
-  Car, 
-  Wrench, 
-  Sparkles, 
-  Compass, 
+import {
+  Heart,
+  Trash2,
+  ShoppingCart,
+  ArrowRight,
+  Car,
+  Wrench,
+  Sparkles,
+  Compass,
   Layers,
   ArrowUpRight
 } from 'lucide-react';
 import { useWishlist } from '../../context/WishlistContext';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';
+import { useRequireLogin } from '../../components/AuthActionGuard';
 import { handleImageError, handlePartImageError } from '../../utils/imageFallback';
 import { formatINR } from '../../utils/currency';
 import Navbar from '../../components/Navbar';
@@ -25,6 +26,7 @@ export default function Wishlist() {
   const { wishlist, removeFromWishlist, clearWishlist } = useWishlist();
   const { addToCart } = useCart();
   const { addToast } = useToast();
+  const requireCustomerLogin = useRequireLogin();
 
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'vehicles' | 'parts'
 
@@ -44,11 +46,13 @@ export default function Wishlist() {
   }, [activeTab, wishlist, vehiclesOnly, partsOnly]);
 
   const handleRemove = (item) => {
+    if (requireCustomerLogin()) return;
     removeFromWishlist(item.id);
     addToast(`${item.name} removed from your wishlist`, 'info');
   };
 
   const handleAddToCart = (item) => {
+    if (requireCustomerLogin()) return;
     addToCart(item, 1);
     addToast(`${item.name} added to cart`, 'success');
   };

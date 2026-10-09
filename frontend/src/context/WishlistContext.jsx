@@ -1,55 +1,49 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import wishlistApi from '../api/wishlistApi';
 import { normalizeVehicle, normalizePart } from '../api/normalizers';
+import { useAuth } from './AuthContext';
+import { useRequireLogin } from '../components/AuthActionGuard';
 
 const WishlistContext = createContext();
 
 export function WishlistProvider({ children }) {
-  const [wishlist, setWishlist] = useState(() => {
-    try {
-      const saved = localStorage.getItem('carcraft_wishlist');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  const { isAuthenticated, authLoading } = useAuth();
+  const requireCustomerLogin = useRequireLogin();
+  const [wishlist, setWishlist] = useState([]);
 
-  // Sync with Django wishlist on mount if authenticated
   useEffect(() => {
-    const token = localStorage.getItem('carcraft_access_token');
-    if (token) {
-      wishlistApi.getWishlist()
-        .then((res) => {
-          const items = res?.wishlist?.items || [];
-          if (items.length > 0) {
-            const mapped = items.map((item) => {
-              if (item.vehicle) {
-                const norm = normalizeVehicle(item.vehicle);
-                return { ...norm, wishlistItemId: item.id, type: 'vehicle' };
-              } else if (item.part) {
-                const norm = normalizePart(item.part);
-                return { ...norm, wishlistItemId: item.id, type: 'part' };
-              }
-              return null;
-            }).filter(Boolean);
-            if (mapped.length > 0) {
-              setWishlist(mapped);
-            }
+    if (!authLoading && !isAuthenticated) {
+      setWishlist([]);
+    }
+  }, [authLoading, isAuthenticated]);
+
+  // Sync with the customer's server-owned wishlist after session restoration or login.
+  useEffect(() => {
+    if (authLoading || !isAuthenticated) return undefined;
+    let isCurrentSession = true;
+    wishlistApi.getWishlist()
+      .then((res) => {
+        if (!isCurrentSession) return;
+        const items = res?.wishlist?.items || [];
+        const mapped = items.map((item) => {
+          if (item.vehicle) {
+            const norm = normalizeVehicle(item.vehicle);
+            return { ...norm, wishlistItemId: item.id, type: 'vehicle' };
+          } else if (item.part) {
+            const norm = normalizePart(item.part);
+            return { ...norm, wishlistItemId: item.id, type: 'part' };
           }
+          return null;
         })
-        .catch(() => {});
-    }
-  }, []);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('carcraft_wishlist', JSON.stringify(wishlist));
-    } catch (e) {
-      console.error('Failed to save wishlist to localStorage', e);
-    }
-  }, [wishlist]);
+          .filter(Boolean);
+        setWishlist(mapped);
+      })
+      .catch(() => { });
+    return () => { isCurrentSession = false; };
+  }, [authLoading, isAuthenticated]);
 
   const toggleWishlist = (item) => {
+    if (requireCustomerLogin()) return false;
     if (!item || !item.id) return false;
     let added = false;
     const token = localStorage.getItem('carcraft_access_token');
@@ -60,7 +54,7 @@ export function WishlistProvider({ children }) {
         added = false;
         const target = prev.find((i) => String(i.id) === String(item.id));
         if (token && target?.wishlistItemId) {
-          wishlistApi.removeFromWishlist(target.wishlistItemId).catch(() => {});
+          wishlistApi.removeFromWishlist(target.wishlistItemId).catch(() => { });
         }
         return prev.filter((i) => String(i.id) !== String(item.id));
       } else {
@@ -90,7 +84,7 @@ export function WishlistProvider({ children }) {
                 setWishlist((cur) => cur.map((w) => String(w.id) === String(item.id) ? { ...w, wishlistItemId: res.item.id } : w));
               }
             })
-            .catch(() => {});
+            .catch(() => { });
         }
 
         return [...prev, normalized];
@@ -100,10 +94,11 @@ export function WishlistProvider({ children }) {
   };
 
   const removeFromWishlist = (id) => {
+    if (requireCustomerLogin()) return false;
     const token = localStorage.getItem('carcraft_access_token');
     const target = wishlist.find((i) => String(i.id) === String(id));
     if (token && target?.wishlistItemId) {
-      wishlistApi.removeFromWishlist(target.wishlistItemId).catch(() => {});
+      wishlistApi.removeFromWishlist(target.wishlistItemId).catch(() => { });
     }
     setWishlist((prev) => prev.filter((i) => String(i.id) !== String(id)));
   };
@@ -114,7 +109,9 @@ export function WishlistProvider({ children }) {
 
 
   const clearWishlist = () => {
+    if (requireCustomerLogin()) return false;
     setWishlist([]);
+    return true;
   };
 
   return (

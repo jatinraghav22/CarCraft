@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { mockServices } from '../data/mockData';
 import { api } from '../services/api';
 import { formatINR } from '../utils/currency';
+import { useRequireLogin } from './AuthActionGuard';
 import { Wrench, Calendar, Clock, CheckCircle2, ShieldCheck, Cpu, ArrowRight } from 'lucide-react';
 
 export default function ServiceSection({ onBookingConfirmed }) {
+  const requireCustomerLogin = useRequireLogin();
   const [selectedServiceId, setSelectedServiceId] = useState(mockServices[0].id);
   const [vehicleModel, setVehicleModel] = useState('CARCRAFT Apex GT-R');
   const [vehicleReg, setVehicleReg] = useState('CC-2026-X');
@@ -20,6 +22,7 @@ export default function ServiceSection({ onBookingConfirmed }) {
 
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
+    if (requireCustomerLogin()) return;
     setIsSubmitting(true);
 
     const bookingPayload = {
@@ -46,7 +49,7 @@ export default function ServiceSection({ onBookingConfirmed }) {
   return (
     <section id="service-section" className="relative w-full py-24 md:py-32 px-6 md:px-12 bg-[#090b0e] border-t border-white/5">
       <div className="max-w-7xl mx-auto">
-        
+
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 text-xs font-mono font-semibold text-[#bef264] uppercase tracking-widest mb-3">
@@ -97,7 +100,7 @@ export default function ServiceSection({ onBookingConfirmed }) {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
+
             {/* Left Column: Select Service Package */}
             <div className="lg:col-span-7 space-y-4">
               <h3 className="text-xs font-mono tracking-widest uppercase text-slate-400 mb-2">
@@ -112,17 +115,15 @@ export default function ServiceSection({ onBookingConfirmed }) {
                     <div
                       key={srv.id}
                       onClick={() => setSelectedServiceId(srv.id)}
-                      className={`p-5 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between ${
-                        isSelected
+                      className={`p-5 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between ${isSelected
                           ? 'bg-[#151a24] border-[#bef264] shadow-[0_0_24px_rgba(190,242,100,0.25)]'
                           : 'bg-[#10141c]/80 border-white/10 hover:border-white/20'
-                      }`}
+                        }`}
                     >
                       <div>
                         <div className="flex items-center justify-between gap-2 mb-2">
-                          <span className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded ${
-                            isSelected ? 'bg-[#bef264] text-black font-bold' : 'bg-white/10 text-slate-300'
-                          }`}>
+                          <span className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded ${isSelected ? 'bg-[#bef264] text-black font-bold' : 'bg-white/10 text-slate-300'
+                            }`}>
                             {srv.badge}
                           </span>
                           <span className="text-xs font-mono text-slate-400">
@@ -143,9 +144,8 @@ export default function ServiceSection({ onBookingConfirmed }) {
                         <span className="text-lg font-mono font-extrabold text-white">
                           {formatINR(srv.price)}
                         </span>
-                        <span className={`text-xs font-mono tracking-wider ${
-                          isSelected ? 'text-[#bef264] font-bold' : 'text-slate-500'
-                        }`}>
+                        <span className={`text-xs font-mono tracking-wider ${isSelected ? 'text-[#bef264] font-bold' : 'text-slate-500'
+                          }`}>
                           {isSelected ? 'SELECTED' : 'SELECT'}
                         </span>
                       </div>
@@ -170,7 +170,7 @@ export default function ServiceSection({ onBookingConfirmed }) {
               </div>
 
               <form onSubmit={handleBookingSubmit} className="space-y-4">
-                
+
                 {/* Vehicle Model */}
                 <div>
                   <label className="block text-[11px] font-mono text-slate-400 uppercase mb-1.5">
@@ -226,11 +226,10 @@ export default function ServiceSection({ onBookingConfirmed }) {
                         type="button"
                         key={slot}
                         onClick={() => setSelectedTime(slot)}
-                        className={`py-2 px-1 rounded-lg text-xs font-mono tracking-wider transition-all ${
-                          selectedTime === slot
+                        className={`py-2 px-1 rounded-lg text-xs font-mono tracking-wider transition-all ${selectedTime === slot
                             ? 'bg-[#bef264] text-black font-bold'
                             : 'bg-white/5 text-slate-300 hover:bg-white/10 border border-white/5'
-                        }`}
+                          }`}
                       >
                         {slot}
                       </button>

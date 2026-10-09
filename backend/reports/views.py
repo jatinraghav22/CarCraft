@@ -159,7 +159,7 @@ class DealerNavigationCountsView(APIView):
     navigation counters, and alert dots.
     All numbers strictly derived from database records.
     """
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsDealer]
 
     def get(self, request):
         test_drives_count = TestDrive.objects.count()

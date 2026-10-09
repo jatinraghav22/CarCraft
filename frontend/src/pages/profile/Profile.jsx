@@ -1,17 +1,17 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  User, 
-  LogOut, 
-  ShieldCheck, 
-  Car, 
-  Wrench, 
-  Heart, 
-  ShoppingCart, 
-  SlidersHorizontal, 
-  Eye, 
-  ArrowRight, 
-  Clock, 
+import {
+  User,
+  LogOut,
+  ShieldCheck,
+  Car,
+  Wrench,
+  Heart,
+  ShoppingCart,
+  SlidersHorizontal,
+  Eye,
+  ArrowRight,
+  Clock,
   Award,
   Layers,
   Sparkles,
@@ -71,12 +71,7 @@ export default function Profile() {
         finalCost: sb.final_cost,
       }));
     }
-    try {
-      const stored = JSON.parse(localStorage.getItem('carcraft_service_bookings') || '[]');
-      return Array.isArray(stored) ? stored : [];
-    } catch (e) {
-      return [];
-    }
+    return [];
   }, [dbServices]);
 
   // Load test drive reservations: live backend data prioritized, falling back to local storage
@@ -92,12 +87,7 @@ export default function Profile() {
         status: td.status,
       }));
     }
-    try {
-      const stored = JSON.parse(localStorage.getItem('carcraft_testdrives') || '[]');
-      return Array.isArray(stored) ? stored : [];
-    } catch (e) {
-      return [];
-    }
+    return [];
   }, [dbTestDrives]);
 
   // Guest view if unauthenticated
@@ -215,9 +205,9 @@ export default function Profile() {
             </div>
 
             <div className="profile-hero-actions">
-              <button 
+              <button
                 type="button"
-                className="profile-logout-btn" 
+                className="profile-logout-btn"
                 onClick={() => {
                   logout();
                   navigate('/login');

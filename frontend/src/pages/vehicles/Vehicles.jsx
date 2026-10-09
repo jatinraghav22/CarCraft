@@ -2,20 +2,20 @@ import { formatINR } from '../../utils/currency';
 import { handleImageError } from '../../utils/imageFallback';
 import React, { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Search, 
-  SlidersHorizontal, 
-  LayoutGrid, 
-  List, 
-  Heart, 
-  Zap, 
-  Gauge, 
-  ArrowRight, 
-  RotateCcw, 
-  Sparkles, 
-  Fuel, 
-  Check, 
-  X, 
+import {
+  Search,
+  SlidersHorizontal,
+  LayoutGrid,
+  List,
+  Heart,
+  Zap,
+  Gauge,
+  ArrowRight,
+  RotateCcw,
+  Sparkles,
+  Fuel,
+  Check,
+  X,
   Layers,
   ChevronDown
 } from 'lucide-react';
@@ -25,6 +25,7 @@ import { normalizeVehicle } from '../../api/normalizers';
 import { useWishlist } from '../../context/WishlistContext';
 import { useCompare } from '../../context/CompareContext';
 import { useToast } from '../../context/ToastContext';
+import { useRequireLogin } from '../../components/AuthActionGuard';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import './Vehicles.css';
@@ -57,6 +58,7 @@ export default function Vehicles() {
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { isInCompare, addToCompare } = useCompare();
   const { addToast } = useToast();
+  const requireCustomerLogin = useRequireLogin();
 
   const fetchVehicles = () => {
     setLoading(true);
@@ -191,6 +193,7 @@ export default function Vehicles() {
   const handleWishlistClick = (e, vehicle) => {
     e.preventDefault();
     e.stopPropagation();
+    if (requireCustomerLogin()) return;
     const added = toggleWishlist(vehicle);
     addToast(
       added

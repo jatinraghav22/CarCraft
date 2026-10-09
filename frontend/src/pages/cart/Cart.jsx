@@ -2,19 +2,19 @@ import { formatINR } from '../../utils/currency';
 import { handlePartImageError, formatImageUrl } from '../../utils/imageFallback';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  ShoppingCart, 
-  Trash2, 
-  Heart, 
-  Plus, 
-  Minus, 
-  ArrowRight, 
-  ShieldCheck, 
-  Truck, 
-  CheckCircle2, 
-  X, 
-  Sparkles, 
-  CreditCard, 
+import {
+  ShoppingCart,
+  Trash2,
+  Heart,
+  Plus,
+  Minus,
+  ArrowRight,
+  ShieldCheck,
+  Truck,
+  CheckCircle2,
+  X,
+  Sparkles,
+  CreditCard,
   Wrench,
   Tag,
   ArrowLeft
@@ -22,9 +22,7 @@ import {
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useToast } from '../../context/ToastContext';
-import { useAuth } from '../../context/AuthContext';
-import { requireLogin } from '../../utils/authGuard';
-import LoginRequiredModal from '../../components/LoginRequiredModal';
+import { useRequireLogin } from '../../components/AuthActionGuard';
 import { mockParts } from '../../data/parts';
 import orderApi from '../../api/orderApi';
 import cartApi from '../../api/cartApi';
@@ -34,30 +32,28 @@ import './Cart.css';
 
 export default function Cart() {
   const navigate = useNavigate();
-  const { 
-    cart = [], 
-    cartCount = 0, 
-    cartSubtotal = 0, 
-    discountAmount = 0, 
-    shippingFee = 0, 
-    estimatedTax = 0, 
-    cartTotal = 0, 
-    promoCode = '', 
+  const {
+    cart = [],
+    cartCount = 0,
+    cartSubtotal = 0,
+    discountAmount = 0,
+    shippingFee = 0,
+    estimatedTax = 0,
+    cartTotal = 0,
+    promoCode = '',
     shippingMethod = 'standard',
     setShippingMethod,
-    applyPromo, 
-    removePromo, 
-    updateQuantity, 
-    removeFromCart, 
+    applyPromo,
+    removePromo,
+    updateQuantity,
+    removeFromCart,
     clearCart,
     addToCart
   } = useCart();
 
   const { toggleWishlist } = useWishlist() || {};
   const { addToast } = useToast();
-  const { isAuthenticated } = useAuth();
-
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  const requireCustomerLogin = useRequireLogin();
   const [inputPromo, setInputPromo] = useState('');
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [orderConfirmed, setOrderConfirmed] = useState(false);
@@ -88,6 +84,7 @@ export default function Cart() {
 
   const handleMoveToWishlist = (item) => {
     if (!item) return;
+    if (requireCustomerLogin()) return;
     if (removeFromCart) removeFromCart(item.id);
     if (toggleWishlist) toggleWishlist(item);
     addToast(`${item.name || 'Component'} moved to Wishlist`, 'info');
@@ -95,6 +92,7 @@ export default function Cart() {
 
   const handleCheckoutSubmit = async (e) => {
     e.preventDefault();
+    if (requireCustomerLogin()) return;
     let generatedId = '';
     try {
       // 1. Synchronize current cart items into backend database Cart if logged in
@@ -121,13 +119,13 @@ export default function Cart() {
       });
       if (res?.order?.order_number) {
         generatedId = res.order.order_number;
+      } else {
+        throw new Error('Checkout was not confirmed by the server.');
       }
     } catch (err) {
       console.warn('Backend order checkout notice:', err.message);
-    }
-
-    if (!generatedId) {
-      generatedId = 'CC-ORD-' + Math.floor(100000 + Math.random() * 900000);
+      addToast('Unable to place your order. Please review your cart and try again.', 'error');
+      return;
     }
 
     setOrderId(generatedId);
@@ -142,11 +140,6 @@ export default function Cart() {
 
   return (
     <div className="cart-page">
-      <LoginRequiredModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        message="Login required to proceed with checkout."
-      />
       <Navbar />
 
       <main className="cart-container">
@@ -405,7 +398,7 @@ export default function Cart() {
                 <button
                   className="cart-checkout-btn"
                   onClick={() => {
-                    if (requireLogin(isAuthenticated, setShowLoginModal)) return;
+                    if (requireCustomerLogin()) return;
                     setShowCheckoutModal(true);
                   }}
                 >
@@ -448,8 +441,9 @@ export default function Cart() {
                   </div>
                   <button
                     onClick={() => {
-                      addToCart(item, 1);
-                      addToast(`${item.name} added to cart`, 'success');
+                      if (!requireCustomerLogin() && addToCart(item, 1)) {
+                        addToast(`${item.name} added to cart`, 'success');
+                      }
                     }}
                     style={{ padding: '8px 12px', borderRadius: '8px', background: 'rgba(190, 242, 100, 0.1)', border: '1px solid rgba(190, 242, 100, 0.3)', color: '#bef264', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
                   >

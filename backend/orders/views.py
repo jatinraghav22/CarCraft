@@ -5,6 +5,7 @@ from rest_framework import viewsets, status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.permissions import BasePermission
 from accounts.permissions import IsDealer, IsCustomer, IsOwnerOrDealer
 from parts.models import Part
 from vehicles.models import Vehicle
@@ -17,6 +18,13 @@ from .serializers import (
     OrderSerializer,
     CheckoutSerializer,
 )
+
+
+class IsAuthenticatedOrderAccess(BasePermission):
+    def has_permission(self, request, view):
+        if not request.user or not request.user.is_authenticated:
+            return False
+        return request.method in permissions.SAFE_METHODS or getattr(request.user, 'is_dealer', False)
 
 
 class WishlistView(APIView):
@@ -186,7 +194,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     Customer: Views their own orders.
     Dealer: Views & manages all orders.
     """
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrderAccess]
     serializer_class = OrderSerializer
 
     def get_queryset(self):
@@ -194,6 +202,9 @@ class OrderViewSet(viewsets.ModelViewSet):
         if getattr(user, 'is_dealer', False):
             return Order.objects.prefetch_related('items__part', 'payment').all()
         return Order.objects.prefetch_related('items__part', 'payment').filter(customer=user)
+
+    def perform_create(self, serializer):
+        serializer.save(customer=self.request.user)
 
     @action(detail=False, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def checkout(self, request):
