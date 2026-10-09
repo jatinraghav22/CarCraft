@@ -22,6 +22,9 @@ import {
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
+import { requireLogin } from '../../utils/authGuard';
+import LoginRequiredModal from '../../components/LoginRequiredModal';
 import { mockParts } from '../../data/parts';
 import orderApi from '../../api/orderApi';
 import cartApi from '../../api/cartApi';
@@ -52,7 +55,9 @@ export default function Cart() {
 
   const { toggleWishlist } = useWishlist() || {};
   const { addToast } = useToast();
+  const { isAuthenticated } = useAuth();
 
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [inputPromo, setInputPromo] = useState('');
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [orderConfirmed, setOrderConfirmed] = useState(false);
@@ -137,6 +142,11 @@ export default function Cart() {
 
   return (
     <div className="cart-page">
+      <LoginRequiredModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        message="Login required to proceed with checkout."
+      />
       <Navbar />
 
       <main className="cart-container">
@@ -394,7 +404,10 @@ export default function Cart() {
                 {/* Checkout CTA */}
                 <button
                   className="cart-checkout-btn"
-                  onClick={() => setShowCheckoutModal(true)}
+                  onClick={() => {
+                    if (requireLogin(isAuthenticated, setShowLoginModal)) return;
+                    setShowCheckoutModal(true);
+                  }}
                 >
                   <span>PROCEED TO CHECKOUT</span>
                   <ArrowRight size={18} />

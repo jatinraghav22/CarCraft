@@ -53,21 +53,17 @@ class TestDriveViewSet(viewsets.ModelViewSet):
     Customer: Book a test drive and track booking status.
     Dealer: Approve, reschedule, complete, or reject test drive requests.
     """
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = TestDriveSerializer
 
     def get_queryset(self):
         user = self.request.user
-        if not user or not user.is_authenticated or getattr(user, 'is_dealer', False):
+        if getattr(user, 'is_dealer', False):
             return TestDrive.objects.select_related('customer', 'vehicle').all()
         return TestDrive.objects.select_related('customer', 'vehicle').filter(customer=user)
 
     def perform_create(self, serializer):
-        user = self.request.user if (self.request.user and self.request.user.is_authenticated) else None
-        if not user:
-            from accounts.models import User
-            user = User.objects.filter(role=User.Role.CUSTOMER).first() or User.objects.first()
-        serializer.save(customer=user, status=TestDrive.Status.PENDING)
+        serializer.save(customer=self.request.user, status=TestDrive.Status.PENDING)
 
     @action(detail=True, methods=['patch'], permission_classes=[IsDealer])
     def update_status(self, request, pk=None):

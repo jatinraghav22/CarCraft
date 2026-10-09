@@ -20,6 +20,9 @@ import { mockVehicles } from '../../data/vehicles';
 import serviceApi from '../../api/serviceApi';
 import { handleImageError } from '../../utils/imageFallback';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
+import { requireLogin } from '../../utils/authGuard';
+import LoginRequiredModal from '../../components/LoginRequiredModal';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import './Service.css';
@@ -28,6 +31,9 @@ export default function ServiceBooking() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { addToast } = useToast();
+  const { isAuthenticated } = useAuth();
+
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const preselectedServiceId = searchParams.get('service');
 
@@ -156,6 +162,7 @@ export default function ServiceBooking() {
 
   const handleFinalSubmit = async (e) => {
     e.preventDefault();
+    if (requireLogin(isAuthenticated, setShowLoginModal)) return;
     let generatedBookingId = '';
 
     try {
@@ -223,6 +230,11 @@ export default function ServiceBooking() {
 
   return (
     <div className="service-page">
+      <LoginRequiredModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        message="Login required to book a service appointment."
+      />
       <Navbar />
 
       <main className="service-container">

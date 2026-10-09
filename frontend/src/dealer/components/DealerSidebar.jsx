@@ -138,7 +138,7 @@ export default function DealerSidebar({ isOpen, onClose }) {
                           <Icon size={18} strokeWidth={2} />
                           <span>{item.name}</span>
                         </div>
-                        {item.badge !== null && item.badge !== undefined && (
+                        {item.badge && (
                           <span className="dealer-nav-badge">{item.badge}</span>
                         )}
                       </NavLink>

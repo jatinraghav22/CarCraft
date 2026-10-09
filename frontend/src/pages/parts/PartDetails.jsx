@@ -26,6 +26,9 @@ import { normalizePart } from '../../api/normalizers';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
+import { requireLogin } from '../../utils/authGuard';
+import LoginRequiredModal from '../../components/LoginRequiredModal';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import './Parts.css';
@@ -66,10 +69,12 @@ export default function PartDetails() {
   const [activeImage, setActiveImage] = useState(part?.image || '');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('specs'); // 'specs' | 'features' | 'overview'
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { addToast } = useToast();
+  const { isAuthenticated } = useAuth();
 
   const isSaved = isInWishlist(part?.id);
 
@@ -126,16 +131,19 @@ export default function PartDetails() {
   }
 
   const handleAddToCart = () => {
+    if (requireLogin(isAuthenticated, setShowLoginModal)) return;
     addToCart(part, quantity);
     addToast(`Added ${quantity} × ${part.name} to cart`, 'success');
   };
 
   const handleBuyNow = () => {
+    if (requireLogin(isAuthenticated, setShowLoginModal)) return;
     addToCart(part, quantity);
     navigate('/cart');
   };
 
   const handleWishlistToggle = () => {
+    if (requireLogin(isAuthenticated, setShowLoginModal)) return;
     const added = toggleWishlist(part);
     addToast(
       added ? `${part.name} saved to wishlist` : `${part.name} removed from wishlist`,
@@ -144,6 +152,7 @@ export default function PartDetails() {
   };
 
   const handleAddBundleToCart = () => {
+    if (requireLogin(isAuthenticated, setShowLoginModal)) return;
     addToCart(part, 1);
     bundleItems.forEach((b) => addToCart(b, 1));
     addToast(`Added 3-piece performance bundle to cart!`, 'success');
@@ -151,6 +160,11 @@ export default function PartDetails() {
 
   return (
     <div className="part-details-page">
+      <LoginRequiredModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        message="Login required to add parts to your cart or wishlist."
+      />
       <Navbar />
 
       <main className="part-details-container">

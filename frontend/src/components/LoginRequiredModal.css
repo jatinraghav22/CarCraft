@@ -1,0 +1,219 @@
+/* ============================================================
+   LoginRequiredModal — CarCraft Premium Auth Gate
+   ============================================================ */
+
+.lrm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(4, 5, 8, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: lrmFadeIn 0.22s ease;
+}
+
+@keyframes lrmFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.lrm-card {
+  position: relative;
+  background: linear-gradient(155deg, rgba(15, 18, 28, 0.98) 0%, rgba(8, 11, 20, 0.98) 100%);
+  border: 1px solid rgba(190, 242, 100, 0.18);
+  border-radius: 20px;
+  padding: 48px 40px 40px;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  animation: lrmSlideUp 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes lrmSlideUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Close button */
+.lrm-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.lrm-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Icon */
+.lrm-icon-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.lrm-icon-ring {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(190, 242, 100, 0.15), rgba(190, 242, 100, 0.05));
+  border: 1.5px solid rgba(190, 242, 100, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.lrm-lock-icon {
+  color: #bef264;
+  filter: drop-shadow(0 0 12px rgba(190, 242, 100, 0.5));
+}
+
+.lrm-icon-glow {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(190, 242, 100, 0.12) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Badge */
+.lrm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: rgba(190, 242, 100, 0.08);
+  border: 1px solid rgba(190, 242, 100, 0.2);
+  color: #bef264;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  margin-bottom: 18px;
+}
+
+/* Title */
+.lrm-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 12px;
+  letter-spacing: -0.02em;
+}
+
+/* Message */
+.lrm-message {
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.65;
+  margin: 0 0 32px;
+}
+
+/* Action buttons */
+.lrm-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lrm-login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 24px;
+  background: #bef264;
+  color: #080a08;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(190, 242, 100, 0.25);
+}
+.lrm-login-btn:hover {
+  background: #d4fb7c;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 28px rgba(190, 242, 100, 0.38);
+}
+.lrm-login-btn:active {
+  transform: translateY(0);
+}
+
+.lrm-cancel-btn {
+  width: 100%;
+  padding: 13px 24px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.lrm-cancel-btn:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Footer note */
+.lrm-footer-note {
+  margin-top: 20px;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.lrm-register-link {
+  background: none;
+  border: none;
+  color: #bef264;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.2s;
+}
+.lrm-register-link:hover {
+  opacity: 0.8;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .lrm-card {
+    padding: 40px 24px 32px;
+  }
+  .lrm-title {
+    font-size: 1.3rem;
+  }
+}
