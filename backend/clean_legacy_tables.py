@@ -9,7 +9,7 @@ load_dotenv(BASE_DIR / '.env')
 db = MySQLdb.connect(
     host=os.getenv('DB_HOST', 'localhost'),
     user=os.getenv('DB_USER', 'root'),
-    passwd=os.getenv('DB_PASSWORD', 'Jatin@2007'),
+    passwd=os.getenv('DB_PASSWORD', ''),
     db=os.getenv('DB_NAME', 'carcraft_db'),
     port=int(os.getenv('DB_PORT', 3306)),
     charset='utf8mb4'

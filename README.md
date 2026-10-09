@@ -6,7 +6,7 @@
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge\&logo=github)](https://github.com/jatinraghav22/CarCraft)
 [![React](https://img.shields.io/badge/Frontend-React-61DAFB?style=for-the-badge\&logo=react\&logoColor=black)](https://react.dev/)
 [![Django](https://img.shields.io/badge/Backend-Django-092E20?style=for-the-badge\&logo=django)](https://www.djangoproject.com/)
-[![MySQL](https://img.shields.io/badge/Database-MySQL-4479A1?style=for-the-badge\&logo=mysql\&logoColor=white)](https://www.mysql.com/)
+[![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-4169E1?style=for-the-badge\&logo=postgresql\&logoColor=white)](https://www.postgresql.org/)
 
 ---
 
@@ -185,8 +185,9 @@ CarCraft follows a modern full-stack architecture:
                  ┌─────────────────────────┐
                  │        Database         │
                  │                         │
-                 │          MySQL          │
-                 │     SQLite (Local)      │
+                 │ PostgreSQL (Production) │
+                 │ SQLite (Local Default)  │
+                 │ MySQL (Optional Local)  │
                  └─────────────────────────┘
 ```
 
@@ -241,10 +242,10 @@ Database
 ## Database
 
 ```text
-MySQL
+PostgreSQL in production through DATABASE_URL (Render PostgreSQL)
 ```
 
-SQLite is also supported for local development.
+SQLite is the default for local development. MySQL remains available as an optional local database backend.
 
 ---
 
@@ -318,13 +319,14 @@ Before running CarCraft locally, make sure you have the following installed.
 * Node.js
 * npm
 * Git
-* MySQL
 
 ### Recommended
 
 * Visual Studio Code
 * MySQL Workbench
 * Modern web browser
+
+MySQL is optional. SQLite is used by default locally, and Render PostgreSQL is selected through `DATABASE_URL` in production.
 
 Verify installations:
 
@@ -347,6 +349,8 @@ git --version
 ```bash
 mysql --version
 ```
+
+This check is optional when using the default SQLite setup.
 
 ---
 
@@ -408,9 +412,9 @@ pip install -r requirements.txt
 
 # 🗄️ Database Configuration
 
-CarCraft uses MySQL for the primary database environment.
+CarCraft uses PostgreSQL in production when Render supplies `DATABASE_URL`. SQLite is the default local database.
 
-Create a database:
+For an optional local MySQL database, create the database:
 
 ```sql
 CREATE DATABASE carcraft_db;
@@ -429,7 +433,13 @@ DB_HOST=localhost
 DB_PORT=3306
 ```
 
-For local SQLite development, configure the project to use SQLite if supported by your current backend configuration.
+With uv installed and the local virtual environment activated, install the optional MySQL driver and explicitly set `DB_ENGINE=mysql`:
+
+```bash
+uv sync --active --extra mysql
+```
+
+The optional extra is also required by `clean_legacy_tables.py`, which directly uses MySQLdb.
 
 ---
 
@@ -614,7 +624,7 @@ Django REST Framework
 Django Models
   │
   ▼
-MySQL
+PostgreSQL (production) / SQLite (local default)
 ```
 
 Responses are returned to the frontend as JSON.
@@ -1088,7 +1098,7 @@ If you found **CarCraft** useful or interesting, consider giving the repository 
 
 **Automotive Inventory • Dealership Management • E-Commerce • Service Management**
 
-Built with ❤️ using **React + Django + MySQL**
+Built with ❤️ using **React + Django + PostgreSQL**
 
 **© 2026 Jatin Raghav**
 

@@ -112,9 +112,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database Configuration
-# Automatically use PostgreSQL on Render if DATABASE_URL is provided;
-# otherwise fall back to local MySQL or SQLite based on DB_ENGINE
+# Use the managed PostgreSQL URL in production. Local development defaults to
+# SQLite; MySQL remains available when explicitly selected with DB_ENGINE.
 DATABASE_URL = os.environ.get('DATABASE_URL')
+DB_ENGINE = os.environ.get('DB_ENGINE', 'sqlite').lower()
 
 if DATABASE_URL:
     DATABASES = {
@@ -124,24 +125,26 @@ if DATABASE_URL:
             conn_health_checks=True,
         )
     }
-elif os.environ.get('DB_ENGINE', 'mysql').lower() == 'sqlite':
+elif DB_ENGINE == 'sqlite':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-else:
+elif DB_ENGINE == 'mysql':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': os.environ.get('DB_NAME', 'carcraft_db'),
             'USER': os.environ.get('DB_USER', 'root'),
-            'PASSWORD': os.environ.get('DB_PASSWORD', 'Jatin@2007'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
             'HOST': os.environ.get('DB_HOST', 'localhost'),
             'PORT': os.environ.get('DB_PORT', '3306'),
         }
     }
+else:
+    raise ValueError("DB_ENGINE must be 'sqlite' or 'mysql' when DATABASE_URL is unset.")
 
 
 # Password validation
