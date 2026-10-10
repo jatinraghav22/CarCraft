@@ -227,15 +227,18 @@ function ShowCard({ title, subtitle, badge, image, icon: Icon, cardRef, onClick 
 
 /* ─────────────────────────────────────────────
    MAIN COMPONENT: SHOWROOM HOMEPAGE
-   Single 100vh scene — video then dashboard
+  Cinematic scene — video then dashboard
 ───────────────────────────────────────────── */
 export default function ShowroomHomepage({
+  onVideoPlay,
   onVideoEnd,
   onNavigateSection,
 }) {
   const videoRef = useRef(null);
   const videoWrapRef = useRef(null);
   const lightRef = useRef(null);
+  const revealTimelineRef = useRef(null);
+  const videoPlayingRef = useRef(false);
   const dashRef = useRef(null);
   const headerRef = useRef(null);
   const heroCopyRef = useRef(null);
@@ -322,16 +325,10 @@ export default function ShowroomHomepage({
     const onTime = () => {
       if (vid.duration) setProgress((vid.currentTime / vid.duration) * 100);
     };
-    const onEnded = () => {
-      setPhase('transitioning');
-      runReveal();
-    };
     vid.addEventListener('timeupdate', onTime);
-    vid.addEventListener('ended', onEnded);
     vid.play().catch(() => { });
     return () => {
       vid.removeEventListener('timeupdate', onTime);
-      vid.removeEventListener('ended', onEnded);
     };
   }, []);
 
@@ -344,13 +341,15 @@ export default function ShowroomHomepage({
     const hero = heroCopyRef.current;
     const cards = [card1Ref.current, card2Ref.current, card3Ref.current, card4Ref.current].filter(Boolean);
 
+    revealTimelineRef.current?.kill();
     const tl = gsap.timeline({
       defaults: { ease: 'power3.out' },
       onComplete: () => {
+        if (videoPlayingRef.current) return;
         setPhase('dashboard');
-        if (onVideoEnd) onVideoEnd();
       }
     });
+    revealTimelineRef.current = tl;
 
     // 0. Smoothly fade out Gemini logo cover immediately when video finishes
     if (geminiCoverRef.current) {
@@ -397,7 +396,39 @@ export default function ShowroomHomepage({
         1.55
       );
     }
-  }, [onVideoEnd]);
+  }, []);
+
+  const handleVideoPlay = () => {
+    videoPlayingRef.current = true;
+
+    if (phase !== 'video') {
+      revealTimelineRef.current?.kill();
+      gsap.set(videoRef.current, { opacity: 1, filter: 'none', scale: 1.05 });
+      gsap.set(videoWrapRef.current, { x: 0, y: 0 });
+      gsap.set(lightRef.current, { opacity: 0, x: 0 });
+      gsap.set(dashRef.current, { opacity: 0 });
+      gsap.set(headerRef.current, { opacity: 0, y: 0 });
+      gsap.set(heroCopyRef.current, { opacity: 0, y: 0 });
+      gsap.set([card1Ref.current, card2Ref.current, card3Ref.current, card4Ref.current], {
+        opacity: 0,
+        y: 0,
+        rotateX: 0,
+        scale: 1,
+      });
+      setShowCanvas(false);
+      setProgress(0);
+      setPhase('video');
+    }
+
+    onVideoPlay?.();
+  };
+
+  const handleVideoEnded = () => {
+    videoPlayingRef.current = false;
+    setPhase('transitioning');
+    onVideoEnd?.();
+    runReveal();
+  };
 
   const handleSkip = () => {
     const vid = videoRef.current;
@@ -415,7 +446,14 @@ export default function ShowroomHomepage({
   const isDash = phase !== 'video';
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden', background: '#04050a' }}>
+    <div style={{
+      position: 'relative',
+      width: '100%',
+      height: phase === 'video' ? '100vh' : undefined,
+      minHeight: '100vh',
+      overflow: 'hidden',
+      background: '#04050a',
+    }}>
 
       {/* ── VIDEO LAYER ── */}
       <div ref={videoWrapRef} style={{ position: 'absolute', inset: '-24px', zIndex: 0, overflow: 'hidden' }}>
@@ -423,6 +461,8 @@ export default function ShowroomHomepage({
           ref={videoRef}
           src="/videos/video.mp4"
           autoPlay muted={isMuted} playsInline preload="auto"
+          onPlay={handleVideoPlay}
+          onEnded={handleVideoEnded}
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transform: 'scale(1.05)', transformOrigin: 'center center' }}
         />
 
@@ -638,10 +678,12 @@ export default function ShowroomHomepage({
 
       {/* ── DASHBOARD OVERLAY (in the same 100vh scene) ── */}
       <div ref={dashRef} style={{
-        position: 'absolute', inset: 0, zIndex: 20,
+        position: phase === 'video' ? 'absolute' : 'relative',
+        inset: phase === 'video' ? 0 : undefined,
+        zIndex: 20,
         opacity: 0,
         display: 'flex', flexDirection: 'column',
-        overflow: 'hidden',
+        minHeight: '100vh',
         pointerEvents: 'auto',
       }}>
         {/* Readability gradient over dimmed video */}
@@ -878,7 +920,7 @@ export default function ShowroomHomepage({
           gap: '14px',
           perspective: '1100px',
           perspectiveOrigin: 'center center',
-          minHeight: 0,
+          minHeight: 'min-content',
         }}>
           <ShowCard
             cardRef={card1Ref}

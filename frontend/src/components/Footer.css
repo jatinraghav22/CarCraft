@@ -1,0 +1,21 @@
+.carcraft-footer-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.carcraft-footer-legal-links {
+    flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+    .carcraft-footer-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .carcraft-footer-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 28px !important;
+    }
+}

@@ -23,7 +23,7 @@ export default function NotFound() {
         <div
           style={{
             position: 'absolute',
-            width: '400px',
+            width: 'min(400px, 100%)',
             height: '400px',
             background: 'radial-gradient(circle, rgba(190, 242, 100, 0.08) 0%, transparent 70%)',
             pointerEvents: 'none',

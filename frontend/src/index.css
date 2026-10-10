@@ -9,7 +9,7 @@
   --border-medium: rgba(255, 255, 255, 0.16);
   --border-bright: rgba(255, 255, 255, 0.32);
   --border-lime: rgba(190, 242, 100, 0.5);
-  
+
   --lime-primary: #bef264;
   --lime-electric: #ccff00;
   --lime-dim: #84cc16;
@@ -29,10 +29,21 @@
   --ease-in-out-smooth: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+*::-webkit-scrollbar {
+  display: none !important;
 }
 
 html {
@@ -44,37 +55,23 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100%;
-  overflow-x: hidden;
 }
 
 body {
   background-color: var(--bg-dark);
   color: var(--text-primary);
   min-height: 100%;
-  overflow-x: hidden;
   position: relative;
   line-height: 1.5;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #08090b;
-}
-::-webkit-scrollbar-thumb {
-  background: #1e2430;
-  border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #2b3344;
-}
-
 /* Typography Utility */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-display);
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -105,9 +102,11 @@ h1, h2, h3, h4, h5, h6 {
 .text-lime {
   color: var(--lime-primary);
 }
+
 .bg-lime {
   background-color: var(--lime-primary);
 }
+
 .border-lime {
   border-color: var(--lime-primary);
 }
@@ -198,9 +197,11 @@ h1, h2, h3, h4, h5, h6 {
     transform: translateX(-100%) skewX(-20deg);
     opacity: 0;
   }
+
   50% {
     opacity: 1;
   }
+
   100% {
     transform: translateX(200%) skewX(-20deg);
     opacity: 0;
@@ -208,9 +209,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes pulseGlow {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.4;
   }
+
   50% {
     opacity: 0.9;
   }

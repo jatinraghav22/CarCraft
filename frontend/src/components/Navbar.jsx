@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  Car, 
-  Wrench, 
-  Disc, 
-  Eye, 
-  Heart, 
+import {
+  Car,
+  Wrench,
+  Disc,
+  Eye,
+  Heart,
   SlidersHorizontal,
-  ShoppingCart, 
-  User, 
-  Menu, 
+  ShoppingCart,
+  User,
+  Menu,
   X,
   ChevronRight,
   Search
@@ -25,7 +25,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
+
   const { wishlistCount } = useWishlist();
   const { compareCount } = useCompare();
   const { cartCount } = useCart();
@@ -62,6 +62,13 @@ export default function Navbar() {
     { label: 'PARTS', path: '/parts', icon: Wrench },
     { label: 'SERVICE', path: '/service', icon: Disc },
     { label: 'SHOWROOM', path: '/showroom', icon: Eye },
+  ];
+
+  const mobileUtilityLinks = [
+    { label: 'SEARCH', path: '/search', icon: Search },
+    { label: 'COMPARE VEHICLES', path: '/compare', icon: SlidersHorizontal },
+    { label: 'SAVED VEHICLES & PARTS', path: '/wishlist', icon: Heart },
+    { label: 'CART', path: '/cart', icon: ShoppingCart },
   ];
 
   const isActive = (path) => {
@@ -235,6 +242,7 @@ export default function Navbar() {
 
           {/* Right Action Controls */}
           <div
+            className="cc-action-controls"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -244,6 +252,7 @@ export default function Navbar() {
             {/* Universal Search Omnibar Button */}
             <Link
               to="/search"
+              className="cc-mobile-utility"
               title="Search CarCraft Fleet & Engineering (Ctrl+K)"
               style={{
                 display: 'flex',
@@ -273,6 +282,7 @@ export default function Navbar() {
             {/* Compare Button with Badge */}
             <Link
               to="/compare"
+              className="cc-mobile-utility"
               title="Compare Vehicles"
               style={{
                 position: 'relative',
@@ -326,6 +336,7 @@ export default function Navbar() {
             {/* Wishlist Button with Badge */}
             <Link
               to="/wishlist"
+              className="cc-mobile-utility"
               title="Saved Vehicles & Parts"
               style={{
                 position: 'relative',
@@ -379,6 +390,7 @@ export default function Navbar() {
             {/* Cart Button */}
             <Link
               to="/cart"
+              className="cc-mobile-utility"
               title="Cart"
               style={{
                 position: 'relative',
@@ -570,6 +582,32 @@ export default function Navbar() {
                 </Link>
               );
             })}
+            {mobileUtilityLinks.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '12px 16px',
+                  borderRadius: '8px',
+                  color: '#f8fafc',
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  fontFamily: 'Outfit, sans-serif',
+                  fontWeight: 600,
+                  fontSize: '0.9rem',
+                  letterSpacing: '0.1em',
+                  textDecoration: 'none',
+                }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <item.icon size={18} color="#94a3b8" />
+                  {item.label}
+                </span>
+                <ChevronRight size={16} color="#64748b" />
+              </Link>
+            ))}
             {customerIsLoggedIn ? (
               <Link
                 to="/profile"
@@ -628,6 +666,9 @@ export default function Navbar() {
       <style>{`
         @media (max-width: 860px) {
           .cc-desktop-nav {
+            display: none !important;
+          }
+          .cc-mobile-utility {
             display: none !important;
           }
           .cc-login-btn {

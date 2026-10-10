@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Shield, Sparkles, ArrowUpRight, Globe } from 'lucide-react';
+import './Footer.css';
 
 export default function Footer() {
   return (
@@ -21,9 +22,8 @@ export default function Footer() {
         }}
       >
         <div
+          className="carcraft-footer-grid"
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
             gap: '40px',
             marginBottom: '48px',
           }}
@@ -91,7 +91,7 @@ export default function Footer() {
               {[
                 {
                   label: 'Instagram',
-                  href: 'https://instagram.com',
+                  href: 'https://instagram.com/jatinraghav22',
                   svg: (
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
@@ -102,7 +102,7 @@ export default function Footer() {
                 },
                 {
                   label: 'LinkedIn',
-                  href: 'https://linkedin.com',
+                  href: 'https://www.linkedin.com/in/raghavjatin',
                   svg: (
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
@@ -112,12 +112,11 @@ export default function Footer() {
                   ),
                 },
                 {
-                  label: 'YouTube',
-                  href: 'https://youtube.com',
+                  label: 'GitHub',
+                  href: 'https://github.com/jatinraghav22',
                   svg: (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
-                      <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M12 .297a12 12 0 0 0-3.79 23.386c.6.111.82-.261.82-.577v-2.234c-3.338.726-4.043-1.416-4.043-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.082-.729.082-.729 1.205.084 1.84 1.237 1.84 1.237 1.07 1.835 2.807 1.305 3.492.998.108-.776.418-1.305.762-1.605-2.665-.303-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.536-1.524.117-3.176 0 0 1.008-.322 3.3 1.23a11.5 11.5 0 0 1 6.004 0c2.291-1.552 3.297-1.23 3.297-1.23.655 1.652.243 2.873.12 3.176.77.84 1.234 1.91 1.234 3.221 0 4.609-2.807 5.625-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.216.694.825.576A12.002 12.002 0 0 0 12 .297" />
                     </svg>
                   ),
                 },
@@ -126,8 +125,9 @@ export default function Footer() {
                   key={idx}
                   href={s.href}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   title={s.label}
+                  aria-label={s.label}
                   style={{
                     width: '36px',
                     height: '36px',
@@ -246,7 +246,7 @@ export default function Footer() {
           <div>
             © 2026 CARCRAFT Automotive Technology Inc. All rights reserved.
           </div>
-          <div style={{ display: 'flex', gap: '20px' }}>
+          <div className="carcraft-footer-legal-links" style={{ display: 'flex', gap: '20px' }}>
             <Link to="/privacy" style={{ color: '#64748b', textDecoration: 'none' }}>Privacy Policy</Link>
             <Link to="/terms" style={{ color: '#64748b', textDecoration: 'none' }}>Terms of Service</Link>
             <Link to="/support" style={{ color: '#64748b', textDecoration: 'none' }}>Concierge Accord</Link>

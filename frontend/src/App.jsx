@@ -21,6 +21,7 @@ import DealerReports from './dealer/pages/Reports';
 import DealerProfile from './dealer/pages/Profile';
 import PlaceholderModule from './dealer/components/PlaceholderModule';
 import ShowroomHomepage from './components/ShowroomHomepage';
+import Footer from './components/Footer';
 import GuestOnlyRoute from './components/GuestOnlyRoute';
 import CustomerProtectedRoute from './components/CustomerProtectedRoute';
 import { AuthActionGuardProvider } from './components/AuthActionGuard';
@@ -74,21 +75,22 @@ export default function App() {
                     <ErrorBoundary>
                       <Routes>
                         {/* ════════════════════════════════════════════════════
-                      HOMEPAGE: Fixed 100vh cinematic scene.
+                      HOMEPAGE: Cinematic hero and feature dashboard.
                       Autoplay video -> 3D WebGL -> Glass Command Deck
                   ════════════════════════════════════════════════════ */}
                         <Route
                           path="/"
                           element={
-                            <div
-                              className="app-container select-none"
-                              style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}
-                            >
-                              <ShowroomHomepage
-                                onVideoEnd={() => setVideoEnded(true)}
-                                onNavigateSection={() => { }}
-                              />
-                            </div>
+                            <>
+                              <div className="app-container select-none" style={{ width: '100%' }}>
+                                <ShowroomHomepage
+                                  onVideoPlay={() => setVideoEnded(false)}
+                                  onVideoEnd={() => setVideoEnded(true)}
+                                  onNavigateSection={() => { }}
+                                />
+                              </div>
+                              {videoEnded && <Footer />}
+                            </>
                           }
                         />
 
