@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import {
   ArrowLeft,
   ArrowRight,
@@ -20,7 +20,7 @@ import { mockVehicles } from '../../data/vehicles';
 import serviceApi from '../../api/serviceApi';
 import { handleImageError } from '../../utils/imageFallback';
 import { useToast } from '../../context/ToastContext';
-import { useRequireLogin } from '../../components/AuthActionGuard';
+import { useAuth } from '../../context/AuthContext';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import './Service.css';
@@ -28,8 +28,9 @@ import './Service.css';
 export default function ServiceBooking() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { addToast } = useToast();
-  const requireCustomerLogin = useRequireLogin();
+  const { isAuthenticated, user, logout } = useAuth();
 
   const preselectedServiceId = searchParams.get('service');
 
@@ -73,6 +74,7 @@ export default function ServiceBooking() {
   // Confirmation State
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
   const [bookingId, setBookingId] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   // Selected vehicle object or custom string
   const activeVehicleData = useMemo(() => {
@@ -158,7 +160,18 @@ export default function ServiceBooking() {
 
   const handleFinalSubmit = async (e) => {
     e.preventDefault();
-    if (requireCustomerLogin()) return;
+    if (!isAuthenticated || !user || user.role === 'DEALER') {
+      navigate('/login', {
+        replace: true,
+        state: {
+          from: location,
+          message: 'Please log in to your account to book a service.',
+        },
+      });
+      return;
+    }
+
+    setSubmitting(true);
     let generatedBookingId = '';
 
     try {
@@ -180,8 +193,21 @@ export default function ServiceBooking() {
       }
     } catch (err) {
       console.warn('Backend service appointment notice:', err.message);
+      if (err.response?.status === 401) {
+        logout();
+        navigate('/login', {
+          replace: true,
+          state: {
+            from: location,
+            message: 'Please log in to your account to book a service.',
+          },
+        });
+        return;
+      }
       addToast('Unable to book the service appointment. Please try again.', 'error');
       return;
+    } finally {
+      setSubmitting(false);
     }
 
     if (!generatedBookingId) {
@@ -619,9 +645,9 @@ export default function ServiceBooking() {
                       <ArrowRight size={16} />
                     </button>
                   ) : (
-                    <button className="booking-next-btn" onClick={handleFinalSubmit}>
+                    <button className="booking-next-btn" onClick={handleFinalSubmit} disabled={submitting}>
                       <ShieldCheck size={18} />
-                      <span>CONFIRM APPOINTMENT</span>
+                      <span>{submitting ? 'SUBMITTING APPOINTMENT...' : 'CONFIRM APPOINTMENT'}</span>
                     </button>
                   )}
                 </div>

@@ -115,6 +115,23 @@ export default function Login() {
               </Link>
             </div>
 
+            {location.state?.message && (
+              <p
+                role="status"
+                style={{
+                  color: '#bef264',
+                  background: 'rgba(190, 242, 100, 0.08)',
+                  border: '1px solid rgba(190, 242, 100, 0.24)',
+                  borderRadius: '8px',
+                  padding: '12px 14px',
+                  marginBottom: '16px',
+                  fontSize: '0.9rem',
+                }}
+              >
+                {location.state.message}
+              </p>
+            )}
+
             {errorMsg && (
               <div
                 style={{

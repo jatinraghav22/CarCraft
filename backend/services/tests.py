@@ -39,6 +39,7 @@ class CustomerBookingApiTests(APITestCase):
 		}, format='json')
 		self.assertEqual(service_response.status_code, status.HTTP_401_UNAUTHORIZED)
 		self.assertEqual(test_drive_response.status_code, status.HTTP_401_UNAUTHORIZED)
+		self.assertEqual(ServiceAppointment.objects.count(), 0)
 
 		self.client.credentials(HTTP_AUTHORIZATION='Bearer invalid-token')
 		for url, payload in [
@@ -61,6 +62,7 @@ class CustomerBookingApiTests(APITestCase):
 	def test_customer_can_book_and_only_access_own_records(self):
 		self.authenticate_as(self.customer)
 		service_response = self.client.post('/api/service-appointments/', {
+			'customer': self.other_customer.id,
 			'vehicle': self.vehicle.id,
 			'service_type': 'Full Inspection',
 			'preferred_date': '2026-11-01',

@@ -118,7 +118,7 @@ export default function App() {
                       PHASE 5: SERVICE BOOKING MODULE
                   ════════════════════════════════════════════════════ */}
                         <Route path="/service" element={<Service />} />
-                        <Route path="/service/book" element={<ServiceBooking />} />
+                        <Route path="/service/book" element={<CustomerProtectedRoute><ServiceBooking /></CustomerProtectedRoute>} />
 
                         {/* ════════════════════════════════════════════════════
                       PHASE 6: 360° DIGITAL SHOWROOM MODULE

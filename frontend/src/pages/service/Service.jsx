@@ -1,19 +1,19 @@
 import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Wrench, 
-  Droplets, 
-  Disc, 
-  CircleDashed, 
-  Zap, 
-  Wind, 
-  Activity, 
-  Compass, 
-  Sparkles, 
-  ShieldCheck, 
-  ArrowRight, 
-  CheckCircle2, 
-  Clock, 
+import {
+  Wrench,
+  Droplets,
+  Disc,
+  CircleDashed,
+  Zap,
+  Wind,
+  Activity,
+  Compass,
+  Sparkles,
+  ShieldCheck,
+  ArrowRight,
+  CheckCircle2,
+  Clock,
   Calendar,
   Gauge,
   X,
@@ -88,13 +88,7 @@ export default function Service() {
   }, [selectedCategory]);
 
   const handleOpenBooking = (service) => {
-    setSelectedService(service);
-    setBookingForm((prev) => ({
-      ...prev,
-      serviceId: service.id
-    }));
-    setConfirmedBooking(null);
-    setModalOpen(true);
+    navigate(`/service/book?service=${encodeURIComponent(service.id)}`);
   };
 
   const handleFormChange = (e) => {

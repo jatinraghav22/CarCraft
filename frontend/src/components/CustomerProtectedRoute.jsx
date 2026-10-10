@@ -11,7 +11,16 @@ export default function CustomerProtectedRoute({ children }) {
     }
 
     if (!isAuthenticated || !user || user.role === 'DEALER') {
-        return <Navigate to="/login" replace state={{ from: location }} />;
+        return <Navigate
+            to="/login"
+            replace
+            state={{
+                from: location,
+                message: location.pathname === '/service/book'
+                    ? 'Please log in to your account to book a service.'
+                    : undefined,
+            }}
+        />;
     }
 
     return children;
