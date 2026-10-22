@@ -3,9 +3,19 @@ from .models import Vehicle, VehicleImage
 
 
 class VehicleImageSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = VehicleImage
-        fields = ['id', 'image', 'is_primary', 'created_at']
+        fields = ['id', 'image', 'is_primary', 'order', 'created_at']
+
+    def get_image(self, obj):
+        if obj.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return ''
 
 
 class VehicleCustomerSerializer(serializers.ModelSerializer):
@@ -48,6 +58,14 @@ class VehicleCustomerSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at']
 
     def get_image(self, obj):
+        primary = obj.gallery_images.filter(is_primary=True).first()
+        if primary and primary.image:
+            request = self.context.get('request')
+            return request.build_absolute_uri(primary.image.url) if request else primary.image.url
+        first_img = obj.gallery_images.first()
+        if first_img and first_img.image:
+            request = self.context.get('request')
+            return request.build_absolute_uri(first_img.image.url) if request else first_img.image.url
         if obj.image:
             request = self.context.get('request')
             if request:
@@ -196,8 +214,16 @@ class VehicleDealerSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
-        # Ensure image representation outputs full media URL or external image_url
-        if instance.image:
+        # Ensure image representation prioritizes primary gallery image
+        primary = instance.gallery_images.filter(is_primary=True).first()
+        if primary and primary.image:
+            request = self.context.get('request')
+            ret['image'] = request.build_absolute_uri(primary.image.url) if request else primary.image.url
+        elif instance.gallery_images.first() and instance.gallery_images.first().image:
+            first_img = instance.gallery_images.first()
+            request = self.context.get('request')
+            ret['image'] = request.build_absolute_uri(first_img.image.url) if request else first_img.image.url
+        elif instance.image:
             request = self.context.get('request')
             if request:
                 ret['image'] = request.build_absolute_uri(instance.image.url)

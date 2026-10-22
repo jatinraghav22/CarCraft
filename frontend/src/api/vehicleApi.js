@@ -31,6 +31,16 @@ export const vehicleApi = {
     const res = await apiClient.post(`/vehicles/${id}/upload_gallery_image/`, formData);
     return res.data;
   },
+
+  async deleteGalleryImage(id, imageId) {
+    const res = await apiClient.post(`/vehicles/${id}/delete_gallery_image/`, { image_id: imageId });
+    return res.data;
+  },
+
+  async setPrimaryImage(id, imageId) {
+    const res = await apiClient.post(`/vehicles/${id}/set_primary_image/`, { image_id: imageId });
+    return res.data;
+  },
 };
 
 export default vehicleApi;

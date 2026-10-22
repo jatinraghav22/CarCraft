@@ -22,16 +22,39 @@ export function normalizeVehicle(v) {
     img = getVehicleFallback(v.brand, v.model);
   }
 
-  const galleryList = Array.isArray(v.gallery_images) && v.gallery_images.length > 0
-    ? v.gallery_images.map(g => {
-        let gImg = g.image || '';
-        if (gImg.startsWith('/')) return `${backendBase}${gImg}`;
-        if (gImg.includes('127.0.0.1:8000') && !backendBase.includes('127.0.0.1')) {
-          return gImg.replace('http://127.0.0.1:8000', backendBase);
-        }
-        return gImg;
-      })
-    : (v.gallery || [img]);
+  let primaryImage = img;
+  let galleryList = [];
+
+  if (Array.isArray(v.gallery_images) && v.gallery_images.length > 0) {
+    const sorted = [...v.gallery_images].sort((a, b) => {
+      if (a.is_primary && !b.is_primary) return -1;
+      if (!a.is_primary && b.is_primary) return 1;
+      return (a.order || 0) - (b.order || 0);
+    });
+
+    galleryList = sorted.map(g => {
+      let gImg = g.image || '';
+      if (gImg.startsWith('/')) return `${backendBase}${gImg}`;
+      if (gImg.includes('127.0.0.1:8000') && !backendBase.includes('127.0.0.1')) {
+        return gImg.replace('http://127.0.0.1:8000', backendBase);
+      }
+      return gImg;
+    }).filter(Boolean);
+
+    const primaryObj = sorted.find(g => g.is_primary) || sorted[0];
+    if (primaryObj && primaryObj.image) {
+      let pImg = primaryObj.image;
+      if (pImg.startsWith('/')) pImg = `${backendBase}${pImg}`;
+      else if (pImg.includes('127.0.0.1:8000') && !backendBase.includes('127.0.0.1')) {
+        pImg = pImg.replace('http://127.0.0.1:8000', backendBase);
+      }
+      primaryImage = pImg;
+    }
+  } else if (Array.isArray(v.gallery) && v.gallery.length > 0) {
+    galleryList = v.gallery;
+  } else {
+    galleryList = [img];
+  }
 
   return {
     ...v,

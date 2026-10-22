@@ -126,6 +126,18 @@ function normalizeApiVehicle(apiVehicle) {
     img = defaultFallback;
   }
 
+  const backendBase = getBackendBase();
+  const gallery_images = (apiVehicle.gallery_images || []).map((g) => {
+    let gImg = g.image || '';
+    if (gImg && gImg.startsWith('/') && !gImg.startsWith('http')) {
+      gImg = `${backendBase}${gImg}`;
+    }
+    return {
+      ...g,
+      image: gImg
+    };
+  });
+
   return {
     id: String(apiVehicle.id),
     brand,
@@ -153,7 +165,7 @@ function normalizeApiVehicle(apiVehicle) {
     stock_quantity: apiVehicle.stock_quantity ?? 1,
     status: apiVehicle.status,
     image: img,
-    gallery_images: apiVehicle.gallery_images || [],
+    gallery_images,
     dateAdded: apiVehicle.created_at ? apiVehicle.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
     potentialMargin: Number(apiVehicle.price) - Number(apiVehicle.purchase_cost || 0),
   };
@@ -377,9 +389,17 @@ export const vehicleApi = {
    * Endpoint: POST /api/vehicles/
    * Supports JSON payloads (with image URL) or FormData (with uploaded image file).
    */
+  /**
+   * Registers a new vehicle into the dealer fleet.
+   * Endpoint: POST /api/vehicles/
+   * Supports JSON payloads (with image URL) or FormData (with multiple image files).
+   */
   async createVehicle(formData) {
+    const rawFiles = formData.newImageFiles || formData.imageFiles || [];
+    const hasFiles = (Array.isArray(rawFiles) && rawFiles.length > 0) || (formData.imageFile instanceof File);
+
     let payload;
-    if (formData.imageFile instanceof File) {
+    if (hasFiles) {
       const raw = toApiPayload(formData);
       const fd = new FormData();
       Object.entries(raw).forEach(([k, v]) => {
@@ -389,7 +409,23 @@ export const vehicleApi = {
           fd.append(k, v);
         }
       });
-      fd.append('image', formData.imageFile);
+
+      if (Array.isArray(rawFiles) && rawFiles.length > 0) {
+        rawFiles.forEach((file) => {
+          if (file instanceof File) {
+            fd.append('images', file);
+          }
+        });
+      }
+
+      if (formData.imageFile instanceof File && (!rawFiles || rawFiles.length === 0)) {
+        fd.append('image', formData.imageFile);
+      }
+
+      if (formData.primaryIndex !== undefined && formData.primaryIndex !== null) {
+        fd.append('primary_index', String(formData.primaryIndex));
+      }
+
       payload = fd;
     } else {
       payload = toApiPayload(formData);
@@ -405,8 +441,11 @@ export const vehicleApi = {
    * Endpoint: PATCH /api/vehicles/:id/
    */
   async updateVehicle(id, formData) {
+    const rawFiles = formData.newImageFiles || formData.imageFiles || [];
+    const hasFiles = (Array.isArray(rawFiles) && rawFiles.length > 0) || (formData.imageFile instanceof File);
+
     let payload;
-    if (formData.imageFile instanceof File) {
+    if (hasFiles) {
       const raw = toApiPayload(formData);
       const fd = new FormData();
       Object.entries(raw).forEach(([k, v]) => {
@@ -416,15 +455,110 @@ export const vehicleApi = {
           fd.append(k, v);
         }
       });
-      fd.append('image', formData.imageFile);
+
+      if (Array.isArray(rawFiles) && rawFiles.length > 0) {
+        rawFiles.forEach((file) => {
+          if (file instanceof File) {
+            fd.append('images', file);
+          }
+        });
+      }
+
+      if (formData.imageFile instanceof File && (!rawFiles || rawFiles.length === 0)) {
+        fd.append('image', formData.imageFile);
+      }
+
+      if (formData.primaryImageId) {
+        fd.append('primary_image_id', String(formData.primaryImageId));
+      }
+
       payload = fd;
     } else {
       payload = toApiPayload(formData);
+      if (formData.primaryImageId) {
+        payload.primary_image_id = formData.primaryImageId;
+      }
     }
 
     const data = await dealerApiClient.patch(`/vehicles/${id}/`, payload);
     const vehicle = normalizeApiVehicle(data);
     return { success: true, vehicle };
+  },
+
+  /**
+   * Uploads one or more gallery images to an existing vehicle.
+   * Endpoint: POST /api/vehicles/:id/upload_gallery_image/
+   */
+  async uploadGalleryImages(id, files, isPrimary = false) {
+    const fd = new FormData();
+    const fileList = Array.isArray(files) ? files : [files];
+    fileList.forEach((f) => {
+      if (f instanceof File) {
+        fd.append('images', f);
+      }
+    });
+    if (isPrimary) {
+      fd.append('is_primary', 'true');
+    }
+    const data = await dealerApiClient.post(`/vehicles/${id}/upload_gallery_image/`, fd);
+    return {
+      success: true,
+      images: data.images || [],
+      gallery_images: (data.gallery_images || []).map((g) => ({
+        ...g,
+        image: g.image?.startsWith('/') && !g.image.startsWith('http') ? `${getBackendBase()}${g.image}` : g.image
+      })),
+      vehicle: data.vehicle ? normalizeApiVehicle(data.vehicle) : null,
+    };
+  },
+
+  /**
+   * Removes a specific gallery image from a vehicle.
+   * Endpoint: POST /api/vehicles/:id/delete_gallery_image/
+   */
+  async deleteGalleryImage(id, imageId) {
+    const data = await dealerApiClient.post(`/vehicles/${id}/delete_gallery_image/`, { image_id: imageId });
+    return {
+      success: true,
+      message: data.message || 'Gallery image removed.',
+      gallery_images: (data.gallery_images || []).map((g) => ({
+        ...g,
+        image: g.image?.startsWith('/') && !g.image.startsWith('http') ? `${getBackendBase()}${g.image}` : g.image
+      })),
+      vehicle: data.vehicle ? normalizeApiVehicle(data.vehicle) : null,
+    };
+  },
+
+  /**
+   * Designates a gallery image as the primary cover photo.
+   * Endpoint: POST /api/vehicles/:id/set_primary_image/
+   */
+  async setPrimaryImage(id, imageId) {
+    const data = await dealerApiClient.post(`/vehicles/${id}/set_primary_image/`, { image_id: imageId });
+    return {
+      success: true,
+      message: data.message || 'Primary image updated.',
+      gallery_images: (data.gallery_images || []).map((g) => ({
+        ...g,
+        image: g.image?.startsWith('/') && !g.image.startsWith('http') ? `${getBackendBase()}${g.image}` : g.image
+      })),
+      vehicle: data.vehicle ? normalizeApiVehicle(data.vehicle) : null,
+    };
+  },
+
+  /**
+   * Reorders the gallery images list for a vehicle.
+   * Endpoint: POST /api/vehicles/:id/reorder_gallery_images/
+   */
+  async reorderGalleryImages(id, orderList) {
+    const data = await dealerApiClient.post(`/vehicles/${id}/reorder_gallery_images/`, { order: orderList });
+    return {
+      success: true,
+      gallery_images: (data.gallery_images || []).map((g) => ({
+        ...g,
+        image: g.image?.startsWith('/') && !g.image.startsWith('http') ? `${getBackendBase()}${g.image}` : g.image
+      })),
+    };
   },
 
   /**

@@ -85,9 +85,24 @@ class Vehicle(models.Model):
 
 class VehicleImage(models.Model):
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='gallery_images')
-    image = models.ImageField(upload_to='vehicles/gallery/')
-    is_primary = models.BooleanField(default=False)
+    image = models.ImageField(upload_to='vehicles/gallery/', max_length=500)
+    is_primary = models.BooleanField(default=False, db_index=True)
+    order = models.PositiveIntegerField(default=0, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['order', 'created_at', 'id']
+
     def __str__(self):
-        return f"Image for {self.vehicle}"
+        return f"Image #{self.id} for {self.vehicle} (primary={self.is_primary})"
+
+    def delete(self, *args, **kwargs):
+        if self.image:
+            try:
+                storage = self.image.storage
+                if storage.exists(self.image.name):
+                    storage.delete(self.image.name)
+            except Exception:
+                pass
+        super().delete(*args, **kwargs)
+

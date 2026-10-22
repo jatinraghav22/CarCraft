@@ -3902,3 +3902,205 @@
   }
 }
 
+/* ==========================================================================
+   DEALER VEHICLE MULTI-PHOTO GALLERY MANAGER
+   ========================================================================== */
+
+.dealer-gallery-upload-box {
+  border: 2px dashed rgba(190, 242, 100, 0.35);
+  background: rgba(190, 242, 100, 0.025);
+  border-radius: 14px;
+  padding: 28px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.dealer-gallery-upload-box:hover,
+.dealer-gallery-upload-box.is-dragging {
+  border-color: var(--dealer-lime);
+  background: rgba(190, 242, 100, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 0 20px rgba(190, 242, 100, 0.15);
+}
+
+.dealer-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+@media (max-width: 640px) {
+  .dealer-gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+.dealer-gallery-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--dealer-border-subtle);
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.dealer-gallery-card:hover {
+  border-color: rgba(190, 242, 100, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.dealer-gallery-card.is-primary {
+  border: 2px solid var(--dealer-lime);
+  box-shadow: 0 0 18px rgba(190, 242, 100, 0.25);
+}
+
+.dealer-gallery-card-thumb-wrap {
+  position: relative;
+  width: 100%;
+  height: 130px;
+  background: #090d16;
+  overflow: hidden;
+}
+
+.dealer-gallery-card-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.dealer-gallery-card:hover .dealer-gallery-card-thumb {
+  transform: scale(1.04);
+}
+
+.dealer-gallery-primary-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: var(--dealer-lime);
+  color: #0c0a09;
+  font-family: var(--dealer-font-mono);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  z-index: 3;
+}
+
+.dealer-gallery-order-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #e2e8f0;
+  font-family: var(--dealer-font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  z-index: 3;
+}
+
+.dealer-gallery-card-body {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(18, 22, 34, 0.95);
+}
+
+.dealer-gallery-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  color: var(--dealer-text-muted);
+}
+
+.dealer-gallery-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+
+.dealer-gallery-icon-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--dealer-text-muted);
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dealer-gallery-icon-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.dealer-gallery-icon-btn.danger:hover:not(:disabled) {
+  background: rgba(244, 63, 94, 0.2);
+  color: var(--dealer-rose);
+  border-color: var(--dealer-rose);
+}
+
+.dealer-gallery-icon-btn.star:hover:not(:disabled),
+.dealer-gallery-icon-btn.star.active {
+  background: rgba(190, 242, 100, 0.2);
+  color: var(--dealer-lime);
+  border-color: var(--dealer-border-lime);
+}
+
+.dealer-gallery-icon-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.dealer-gallery-primary-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: var(--dealer-text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dealer-gallery-primary-btn:hover {
+  background: rgba(190, 242, 100, 0.15);
+  color: var(--dealer-lime);
+  border-color: var(--dealer-border-lime);
+}
+
