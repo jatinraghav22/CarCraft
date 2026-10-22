@@ -11,7 +11,7 @@ from .serializers import (
     VehicleDealerSerializer,
     VehicleImageSerializer,
 )
-from .validators import validate_image_file
+from .validators import validate_image_file, validate_image_url
 
 
 class VehiclePagination(PageNumberPagination):
@@ -258,6 +258,79 @@ class VehicleViewSet(viewsets.ModelViewSet):
             'message': f'{len(created_images)} image(s) uploaded successfully.',
             'images': VehicleImageSerializer(created_images, many=True, context=context).data,
             'image': VehicleImageSerializer(created_images[0], context=context).data if created_images else None,
+            'gallery_images': VehicleImageSerializer(vehicle.gallery_images.all(), many=True, context=context).data,
+            'vehicle': VehicleDealerSerializer(vehicle, context=context).data,
+        }, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['post'], permission_classes=[IsDealer])
+    def add_url_image(self, request, pk=None):
+        """
+        Add one or more external image URLs to the vehicle gallery.
+        Body (JSON or form): { "image_urls": ["https://...", ...], "is_primary": false }
+        Also accepts a single URL via { "image_url": "https://..." }.
+        """
+        vehicle = self.get_object()
+
+        # Accept both list (image_urls) and single (image_url)
+        raw_urls = request.data.get('image_urls') or []
+        if isinstance(raw_urls, str):
+            raw_urls = [raw_urls]
+        single = request.data.get('image_url')
+        if single and single not in raw_urls:
+            raw_urls = [single] + list(raw_urls)
+
+        if not raw_urls:
+            return Response(
+                {'success': False, 'message': 'No image_url(s) provided.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        is_primary_req = str(request.data.get('is_primary', 'false')).lower() in ('true', '1')
+        has_primary    = vehicle.gallery_images.filter(is_primary=True).exists()
+
+        validated_urls = []
+        for url in raw_urls:
+            try:
+                clean_url = validate_image_url(url)
+                validated_urls.append(clean_url)
+            except ValidationError as e:
+                msg = e.message if hasattr(e, 'message') else str(e)
+                return Response(
+                    {'success': False, 'message': f'Invalid image URL "{url}": {msg}'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        created_images = []
+        with transaction.atomic():
+            start_order = (vehicle.gallery_images.aggregate(m=models.Max('order'))['m'] or 0) + 1
+            for idx, url in enumerate(validated_urls):
+                make_primary = (
+                    (is_primary_req and idx == 0) or
+                    (not has_primary and not vehicle.gallery_images.exists() and idx == 0)
+                )
+                if make_primary:
+                    vehicle.gallery_images.filter(is_primary=True).update(is_primary=False)
+
+                img_obj = VehicleImage.objects.create(
+                    vehicle=vehicle,
+                    image_url=url,
+                    source=VehicleImage.Source.URL,
+                    is_primary=make_primary,
+                    order=start_order + idx,
+                )
+                if make_primary:
+                    # Update the legacy Vehicle.image_url field too
+                    vehicle.image_url = url
+                    vehicle.save(update_fields=['image_url'])
+
+                created_images.append(img_obj)
+                has_primary = has_primary or make_primary
+
+        context = {'request': request}
+        return Response({
+            'success': True,
+            'message': f'{len(created_images)} image URL(s) added successfully.',
+            'images': VehicleImageSerializer(created_images, many=True, context=context).data,
             'gallery_images': VehicleImageSerializer(vehicle.gallery_images.all(), many=True, context=context).data,
             'vehicle': VehicleDealerSerializer(vehicle, context=context).data,
         }, status=status.HTTP_201_CREATED)

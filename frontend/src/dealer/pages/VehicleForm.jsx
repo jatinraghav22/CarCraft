@@ -4,7 +4,7 @@
 // Reusable enterprise form with multi-photo gallery management
 // ==========================================================================
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   Car,
@@ -27,7 +27,10 @@ import {
   X,
   AlertCircle,
   FileImage,
-  RefreshCw
+  RefreshCw,
+  Link as LinkIcon,
+  Globe,
+  ExternalLink
 } from 'lucide-react';
 
 import { vehicleApi } from '../services/vehicleApi';
@@ -79,12 +82,17 @@ export default function VehicleForm({ mode = 'add' }) {
   const [toast, setToast] = useState(null);
 
   // Multi-image Gallery States
-  const [existingImages, setExistingImages] = useState([]); // [{ id, image, is_primary, order }]
+  const [existingImages, setExistingImages] = useState([]); // [{ id, image, is_primary, order, source }]
   const [newImageFiles, setNewImageFiles] = useState([]);   // [{ id, file, previewUrl, sizeFormatted, isPrimary }]
+  // URL-based images (pending, not yet saved)
+  const [newImageUrls, setNewImageUrls] = useState([]);     // [{ id, url, isPrimary, validating, error }]
+  const [urlInputValue, setUrlInputValue] = useState('');
   const [imageToDelete, setImageToDelete] = useState(null); // Image object to confirm removal
   const [deletingImageId, setDeletingImageId] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('');
+  // Tab: 'upload' | 'url'
+  const [photoTab, setPhotoTab] = useState('upload');
 
   // Pre-fill existing data in edit mode
   useEffect(() => {
@@ -129,6 +137,79 @@ export default function VehicleForm({ mode = 'add' }) {
       [name]: value
     }));
   };
+
+  // ── URL Image Handlers ──────────────────────────────────────────────────────
+
+  const isValidHttpUrl = (str) => {
+    try {
+      const u = new URL(str.trim());
+      return u.protocol === 'http:' || u.protocol === 'https:';
+    } catch { return false; }
+  };
+
+  const handleAddUrlEntry = () => {
+    const trimmed = urlInputValue.trim();
+    if (!trimmed) return;
+    if (!isValidHttpUrl(trimmed)) {
+      setToast({ type: 'error', message: 'Please enter a valid http:// or https:// URL.' });
+      return;
+    }
+    // Prevent duplicates
+    const allExistingUrls = [
+      ...existingImages.map((img) => img.image_url || img.image),
+      ...newImageUrls.map((item) => item.url),
+    ];
+    if (allExistingUrls.includes(trimmed)) {
+      setToast({ type: 'error', message: 'This URL is already in the gallery.' });
+      return;
+    }
+    const hasAnyPrimary =
+      existingImages.some((img) => img.is_primary) ||
+      newImageFiles.some((item) => item.isPrimary) ||
+      newImageUrls.some((item) => item.isPrimary);
+    setNewImageUrls((prev) => [
+      ...prev,
+      {
+        id: `url-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
+        url: trimmed,
+        isPrimary: !hasAnyPrimary && prev.length === 0,
+        validating: false,
+        error: null,
+      },
+    ]);
+    setUrlInputValue('');
+  };
+
+  const handleRemoveUrlEntry = (urlId) => {
+    setNewImageUrls((prev) => {
+      const removed = prev.find((item) => item.id === urlId);
+      const remaining = prev.filter((item) => item.id !== urlId);
+      if (removed?.isPrimary && remaining.length > 0) {
+        remaining[0].isPrimary = true;
+      }
+      return remaining;
+    });
+  };
+
+  const handleSetPrimaryUrl = (urlId) => {
+    setNewImageUrls((prev) =>
+      prev.map((item) => ({ ...item, isPrimary: item.id === urlId }))
+    );
+    setExistingImages((prev) => prev.map((img) => ({ ...img, is_primary: false })));
+    setNewImageFiles((prev) => prev.map((item) => ({ ...item, isPrimary: false })));
+  };
+
+  // Submit pending URL images immediately (edit mode only)
+  const flushPendingUrls = async (vehicleId) => {
+    if (newImageUrls.length === 0) return;
+    const urls = newImageUrls.map((item) => item.url);
+    const res = await vehicleApi.addGalleryImageByUrl(vehicleId, urls);
+    if (res.success) {
+      setExistingImages(res.gallery_images || []);
+      setNewImageUrls([]);
+    }
+  };
+
 
   const handleAddFeature = () => {
     if (!newFeature.trim()) return;
@@ -378,6 +459,18 @@ export default function VehicleForm({ mode = 'add' }) {
       if (isEdit) {
         const res = await vehicleApi.updateVehicle(id, submissionData);
         if (res.success) {
+          // After saving file-uploads, flush any pending URL images
+          if (newImageUrls.length > 0) {
+            try {
+              await flushPendingUrls(id);
+            } catch (urlErr) {
+              setToast({ type: 'error', message: `Vehicle saved, but some image URLs failed: ${urlErr.message}` });
+              setSaving(false);
+              submitLockRef.current = false;
+              setUploadStatus('');
+              return;
+            }
+          }
           refreshCounts();
           navigate('/dealer/vehicles', {
             state: { toast: { type: 'success', message: 'Vehicle specifications and multi-photo gallery updated successfully.' } }
@@ -386,6 +479,20 @@ export default function VehicleForm({ mode = 'add' }) {
       } else {
         const res = await vehicleApi.createVehicle(submissionData);
         if (res.success) {
+          const createdId = res.vehicle?.id;
+          // After creating, flush any pending URL images
+          if (newImageUrls.length > 0 && createdId) {
+            try {
+              await flushPendingUrls(createdId);
+            } catch (urlErr) {
+              // Vehicle was created; just warn about URLs
+              setToast({ type: 'error', message: `Vehicle created, but some image URLs failed: ${urlErr.message}` });
+              setSaving(false);
+              submitLockRef.current = false;
+              setUploadStatus('');
+              return;
+            }
+          }
           refreshCounts();
           navigate('/dealer/vehicles', {
             state: { toast: { type: 'success', message: 'Vehicle created successfully with gallery assets.' } }
@@ -406,18 +513,21 @@ export default function VehicleForm({ mode = 'add' }) {
   const estMargin = numPrice - numCost;
   const marginPct = numPrice ? ((estMargin / numPrice) * 100).toFixed(1) : 0;
 
-  // Active cover preview determination
-  const primaryPending = newImageFiles.find((item) => item.isPrimary);
-  const primaryExisting = existingImages.find((img) => img.is_primary);
+  // Active cover preview determination (file upload > URL > saved > fallback)
+  const primaryPending   = newImageFiles.find((item) => item.isPrimary);
+  const primaryPendingUrl = newImageUrls.find((item) => item.isPrimary);
+  const primaryExisting  = existingImages.find((img) => img.is_primary);
   const activeCoverPreview =
     primaryPending?.previewUrl ||
+    primaryPendingUrl?.url ||
     primaryExisting?.image ||
     newImageFiles[0]?.previewUrl ||
+    newImageUrls[0]?.url ||
     existingImages[0]?.image ||
     formData.image ||
     getVehicleFallback(formData.brand, formData.model);
 
-  const totalPhotosCount = existingImages.length + newImageFiles.length;
+  const totalPhotosCount = existingImages.length + newImageFiles.length + newImageUrls.length;
 
   if (loading) {
     return (
@@ -830,72 +940,223 @@ export default function VehicleForm({ mode = 'add' }) {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <h3 className="dealer-form-section-title">Showroom Multi-Photo Gallery</h3>
                   <span style={{ fontSize: '0.8rem', color: 'var(--dealer-lime)', fontFamily: 'var(--dealer-font-mono)', fontWeight: 700 }}>
-                    {totalPhotosCount} Photo{totalPhotosCount !== 1 ? 's' : ''} ({existingImages.length} Saved, {newImageFiles.length} Pending)
+                    {totalPhotosCount} Photo{totalPhotosCount !== 1 ? 's' : ''} ({existingImages.length} Saved, {newImageFiles.length + newImageUrls.length} Pending)
                   </span>
                 </div>
                 <p className="dealer-form-section-desc">
-                  Select and upload multiple high-resolution photos in one operation. Designate the primary cover photo for marketplace cards.
+                  Upload multiple high-resolution photos <strong>or</strong> paste direct image URLs. Designate the primary cover photo for marketplace listings.
                 </p>
               </div>
             </div>
 
-            {/* Drag & Drop File Selector */}
-            <div>
-              <input
-                type="file"
-                id="gallery-file-input"
-                multiple
-                accept="image/*"
-                style={{ display: 'none' }}
-                onChange={handleFileInputChange}
-              />
-              <div
-                className={`dealer-gallery-upload-box ${isDragging ? 'is-dragging' : ''}`}
-                onClick={() => document.getElementById('gallery-file-input')?.click()}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-              >
-                <div
+            {/* ── Photo Source Tabs ────────────────────────────────────────── */}
+            <div style={{
+              display: 'flex',
+              gap: '8px',
+              marginBottom: '14px',
+              borderBottom: '1px solid var(--dealer-border)',
+              paddingBottom: '0',
+            }}>
+              {[
+                { key: 'upload', label: 'Upload Photos', icon: <Upload size={14} /> },
+                { key: 'url',    label: 'Add by URL',    icon: <Globe size={14} /> },
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => setPhotoTab(tab.key)}
                   style={{
-                    width: '46px',
-                    height: '46px',
-                    borderRadius: '12px',
-                    background: 'rgba(190, 242, 100, 0.12)',
-                    border: '1px solid var(--dealer-border-lime)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'var(--dealer-lime)'
+                    display: 'flex', alignItems: 'center', gap: '6px',
+                    padding: '8px 18px',
+                    background: photoTab === tab.key ? 'var(--dealer-lime)' : 'transparent',
+                    color: photoTab === tab.key ? '#0c0a09' : 'var(--dealer-text-muted)',
+                    border: 'none',
+                    borderRadius: '8px 8px 0 0',
+                    fontWeight: 700,
+                    fontSize: '0.82rem',
+                    cursor: 'pointer',
+                    letterSpacing: '0.02em',
+                    transition: 'all 0.18s',
                   }}
                 >
-                  <Upload size={22} />
-                </div>
-                <div>
-                  <div style={{ fontWeight: 700, color: '#fff', fontSize: '0.95rem' }}>
-                    Click to select multiple photos or drag & drop files here
+                  {tab.icon}
+                  {tab.label}
+                  {tab.key === 'url' && newImageUrls.length > 0 && (
+                    <span style={{
+                      background: 'rgba(190,242,100,0.2)',
+                      color: 'var(--dealer-lime)',
+                      borderRadius: '10px',
+                      padding: '1px 7px',
+                      fontSize: '0.72rem',
+                    }}>{newImageUrls.length}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* ── Tab Panel: Upload ──────────────────────────────────────────── */}
+            {photoTab === 'upload' && (
+              <div>
+                <input
+                  type="file"
+                  id="gallery-file-input"
+                  multiple
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={handleFileInputChange}
+                />
+                <div
+                  className={`dealer-gallery-upload-box ${isDragging ? 'is-dragging' : ''}`}
+                  onClick={() => document.getElementById('gallery-file-input')?.click()}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
+                  <div
+                    style={{
+                      width: '46px', height: '46px', borderRadius: '12px',
+                      background: 'rgba(190, 242, 100, 0.12)',
+                      border: '1px solid var(--dealer-border-lime)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: 'var(--dealer-lime)',
+                    }}
+                  >
+                    <Upload size={22} />
                   </div>
-                  <div style={{ color: 'var(--dealer-text-muted)', fontSize: '0.78rem', marginTop: '4px' }}>
-                    Select several photos at once. Supported formats: JPG, PNG, WEBP, GIF (up to 10MB each).
+                  <div>
+                    <div style={{ fontWeight: 700, color: '#fff', fontSize: '0.95rem' }}>
+                      Click to select multiple photos or drag &amp; drop files here
+                    </div>
+                    <div style={{ color: 'var(--dealer-text-muted)', fontSize: '0.78rem', marginTop: '4px' }}>
+                      Supported: JPG, PNG, WEBP, GIF (up to 10 MB each). Select several photos at once.
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* Fallback Single Image URL */}
-            <div style={{ marginTop: '4px' }}>
-              <label className="dealer-form-label" style={{ fontSize: '0.78rem' }}>
-                External Image URL (Fallback / Unsplash / CDN)
-              </label>
-              <input
-                type="url"
-                name="image"
-                className="dealer-form-input"
-                placeholder="https://images.unsplash.com/photo-..."
-                value={formData.image || ''}
-                onChange={handleChange}
-              />
-            </div>
+            {/* ── Tab Panel: Add by URL ─────────────────────────────────────── */}
+            {photoTab === 'url' && (
+              <div>
+                {/* URL Input Row */}
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                  <div style={{ flex: 1, position: 'relative' }}>
+                    <Globe
+                      size={15}
+                      style={{ position: 'absolute', left: '12px', top: '11px', color: 'var(--dealer-text-muted)', pointerEvents: 'none' }}
+                    />
+                    <input
+                      type="url"
+                      className="dealer-form-input"
+                      placeholder="https://images.unsplash.com/photo-... or any direct image URL"
+                      value={urlInputValue}
+                      onChange={(e) => setUrlInputValue(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddUrlEntry(); } }}
+                      style={{ paddingLeft: '34px' }}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="dealer-btn-primary"
+                    onClick={handleAddUrlEntry}
+                    style={{ whiteSpace: 'nowrap', padding: '9px 18px', fontSize: '0.84rem' }}
+                  >
+                    <Plus size={15} /> Add URL
+                  </button>
+                </div>
+                <div style={{ color: 'var(--dealer-text-muted)', fontSize: '0.74rem', marginTop: '6px' }}>
+                  Paste a direct link to a JPG, PNG, WEBP, GIF, or AVIF image. The URL must be publicly accessible.
+                  Press <kbd style={{ background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: '4px' }}>Enter</kbd> or click Add URL.
+                </div>
+
+                {/* Pending URL Thumbnail Cards */}
+                {newImageUrls.length > 0 && (
+                  <div style={{ marginTop: '14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--dealer-amber)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <LinkIcon size={14} /> Pending URL Images ({newImageUrls.length} — will save on submit)
+                      </span>
+                      <button
+                        type="button"
+                        style={{ background: 'none', border: 'none', color: 'var(--dealer-text-muted)', fontSize: '0.75rem', cursor: 'pointer', textDecoration: 'underline' }}
+                        onClick={() => setNewImageUrls([])}
+                      >
+                        Clear All
+                      </button>
+                    </div>
+
+                    <div className="dealer-gallery-grid">
+                      {newImageUrls.map((item, index) => (
+                        <div
+                          key={item.id}
+                          className={`dealer-gallery-card ${item.isPrimary ? 'is-primary' : ''}`}
+                        >
+                          <div className="dealer-gallery-card-thumb-wrap">
+                            <img
+                              src={item.url}
+                              alt={`URL preview ${index + 1}`}
+                              className="dealer-gallery-card-thumb"
+                              onError={(e) => {
+                                e.target.src = getVehicleFallback(formData.brand, formData.model);
+                              }}
+                            />
+                            {item.isPrimary && (
+                              <div className="dealer-gallery-primary-badge">
+                                <Star size={11} fill="#0c0a09" />
+                                <span>PRIMARY</span>
+                              </div>
+                            )}
+                            <div className="dealer-gallery-order-badge" style={{ background: 'rgba(99,179,237,0.85)' }}>
+                              URL
+                            </div>
+                          </div>
+
+                          <div className="dealer-gallery-card-body">
+                            <div className="dealer-gallery-card-meta">
+                              <span
+                                style={{ maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.7rem' }}
+                                title={item.url}
+                              >
+                                {item.url.replace(/^https?:\/\//, '')}
+                              </span>
+                            </div>
+                            <div className="dealer-gallery-card-actions">
+                              <button
+                                type="button"
+                                className={`dealer-gallery-primary-btn ${item.isPrimary ? 'active' : ''}`}
+                                onClick={() => handleSetPrimaryUrl(item.id)}
+                                title="Set as primary cover photo"
+                              >
+                                <Star size={12} fill={item.isPrimary ? 'var(--dealer-lime)' : 'none'} color={item.isPrimary ? 'var(--dealer-lime)' : 'currentColor'} />
+                                <span>{item.isPrimary ? 'Cover' : 'Make Cover'}</span>
+                              </button>
+                              <a
+                                href={item.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="dealer-gallery-icon-btn"
+                                title="Open URL in new tab"
+                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                              >
+                                <ExternalLink size={13} />
+                              </a>
+                              <button
+                                type="button"
+                                className="dealer-gallery-icon-btn danger"
+                                onClick={() => handleRemoveUrlEntry(item.id)}
+                                title="Remove this URL"
+                              >
+                                <X size={14} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Pending (Newly Selected) Images */}
             {newImageFiles.length > 0 && (

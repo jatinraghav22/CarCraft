@@ -513,6 +513,29 @@ export const vehicleApi = {
   },
 
   /**
+   * Adds one or more external image URLs to a vehicle's gallery.
+   * Endpoint: POST /api/vehicles/:id/add_url_image/
+   */
+  async addGalleryImageByUrl(id, imageUrls, isPrimary = false) {
+    const urls = Array.isArray(imageUrls) ? imageUrls : [imageUrls];
+    const data = await dealerApiClient.post(`/vehicles/${id}/add_url_image/`, {
+      image_urls: urls,
+      is_primary: isPrimary,
+    });
+    const backendBase = getBackendBase();
+    const normalizeImg = (g) => ({
+      ...g,
+      image: g.image?.startsWith('/') && !g.image.startsWith('http') ? `${backendBase}${g.image}` : g.image,
+    });
+    return {
+      success: true,
+      images: (data.images || []).map(normalizeImg),
+      gallery_images: (data.gallery_images || []).map(normalizeImg),
+      vehicle: data.vehicle ? normalizeApiVehicle(data.vehicle) : null,
+    };
+  },
+
+  /**
    * Removes a specific gallery image from a vehicle.
    * Endpoint: POST /api/vehicles/:id/delete_gallery_image/
    */

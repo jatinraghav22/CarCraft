@@ -84,20 +84,46 @@ class Vehicle(models.Model):
 
 
 class VehicleImage(models.Model):
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='gallery_images')
-    image = models.ImageField(upload_to='vehicles/gallery/', max_length=500)
+    class Source(models.TextChoices):
+        UPLOAD = 'upload', 'Uploaded File'
+        URL    = 'url',    'External URL'
+
+    vehicle   = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='gallery_images')
+    # File-upload path — nullable so URL-only images don't need a file
+    image     = models.ImageField(upload_to='vehicles/gallery/', max_length=500, blank=True, null=True)
+    # External / CDN / Unsplash URL supplied by the dealer
+    image_url = models.URLField(max_length=2000, blank=True, default='', help_text="External image URL")
+    source    = models.CharField(
+        max_length=10,
+        choices=Source.choices,
+        default=Source.UPLOAD,
+        db_index=True,
+        help_text="Whether the image was uploaded as a file or supplied as a URL"
+    )
     is_primary = models.BooleanField(default=False, db_index=True)
-    order = models.PositiveIntegerField(default=0, db_index=True)
+    order      = models.PositiveIntegerField(default=0, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['order', 'created_at', 'id']
 
     def __str__(self):
-        return f"Image #{self.id} for {self.vehicle} (primary={self.is_primary})"
+        src = self.image_url if self.source == self.Source.URL else (self.image.name if self.image else '')
+        return f"Image #{self.id} for {self.vehicle} [{self.source}] (primary={self.is_primary})"
+
+    def get_image_url(self, request=None):
+        """Return the best resolved URL for this image regardless of source."""
+        if self.source == self.Source.URL:
+            return self.image_url
+        if self.image:
+            if request:
+                return request.build_absolute_uri(self.image.url)
+            return self.image.url
+        return self.image_url or ''
 
     def delete(self, *args, **kwargs):
-        if self.image:
+        # Only delete the stored file for upload-sourced images
+        if self.source == self.Source.UPLOAD and self.image:
             try:
                 storage = self.image.storage
                 if storage.exists(self.image.name):

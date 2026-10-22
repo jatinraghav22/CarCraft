@@ -3,19 +3,17 @@ from .models import Vehicle, VehicleImage
 
 
 class VehicleImageSerializer(serializers.ModelSerializer):
+    """Serializer for a single gallery image (upload OR external URL)."""
     image = serializers.SerializerMethodField()
 
     class Meta:
         model = VehicleImage
-        fields = ['id', 'image', 'is_primary', 'order', 'created_at']
+        fields = ['id', 'image', 'image_url', 'source', 'is_primary', 'order', 'created_at']
 
     def get_image(self, obj):
-        if obj.image:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.image.url)
-            return obj.image.url
-        return ''
+        """Always return the most appropriate resolved URL for this image entry."""
+        request = self.context.get('request')
+        return obj.get_image_url(request=request)
 
 
 class VehicleCustomerSerializer(serializers.ModelSerializer):
@@ -58,19 +56,17 @@ class VehicleCustomerSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at']
 
     def get_image(self, obj):
+        request = self.context.get('request')
+        # Use primary gallery image first (supports both upload and URL sources)
         primary = obj.gallery_images.filter(is_primary=True).first()
-        if primary and primary.image:
-            request = self.context.get('request')
-            return request.build_absolute_uri(primary.image.url) if request else primary.image.url
+        if primary:
+            return primary.get_image_url(request=request)
         first_img = obj.gallery_images.first()
-        if first_img and first_img.image:
-            request = self.context.get('request')
-            return request.build_absolute_uri(first_img.image.url) if request else first_img.image.url
+        if first_img:
+            return first_img.get_image_url(request=request)
+        # Fall back to legacy Vehicle.image or Vehicle.image_url
         if obj.image:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.image.url)
-            return obj.image.url
+            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
         return obj.image_url or ''
 
 
@@ -214,25 +210,21 @@ class VehicleDealerSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
-        # Ensure image representation prioritizes primary gallery image
+        request = self.context.get('request')
+        # Resolve primary (or first) gallery image using the model helper (works for both upload & URL)
         primary = instance.gallery_images.filter(is_primary=True).first()
-        if primary and primary.image:
-            request = self.context.get('request')
-            ret['image'] = request.build_absolute_uri(primary.image.url) if request else primary.image.url
-        elif instance.gallery_images.first() and instance.gallery_images.first().image:
-            first_img = instance.gallery_images.first()
-            request = self.context.get('request')
-            ret['image'] = request.build_absolute_uri(first_img.image.url) if request else first_img.image.url
-        elif instance.image:
-            request = self.context.get('request')
-            if request:
-                ret['image'] = request.build_absolute_uri(instance.image.url)
-            else:
-                ret['image'] = instance.image.url
-        elif instance.image_url:
-            ret['image'] = instance.image_url
+        if primary:
+            ret['image'] = primary.get_image_url(request=request)
         else:
-            ret['image'] = ''
+            first_img = instance.gallery_images.first()
+            if first_img:
+                ret['image'] = first_img.get_image_url(request=request)
+            elif instance.image:
+                ret['image'] = request.build_absolute_uri(instance.image.url) if request else instance.image.url
+            elif instance.image_url:
+                ret['image'] = instance.image_url
+            else:
+                ret['image'] = ''
         return ret
 
     def validate_price(self, value):
