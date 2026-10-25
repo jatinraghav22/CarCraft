@@ -70,6 +70,10 @@ export default function Profile() {
         </div>
 
         <div style={{ display: 'flex', gap: '10px' }}>
+          <button type="button" className="dealer-btn-secondary" onClick={() => navigate('/dealer/security')}>
+            <ShieldCheck size={15} color="var(--dealer-lime)" />
+            <span>2FA SECURITY</span>
+          </button>
           <button type="button" className="dealer-btn-secondary" onClick={() => setPasswordModalOpen(true)}>
             <KeyRound size={15} />
             <span>CHANGE PASSWORD</span>
