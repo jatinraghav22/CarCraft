@@ -17,6 +17,8 @@ db.sqlite3
 *.sqlite3
 staticfiles/
 media/
+*qr*.png
+*.qr.png
 
 # Node & Frontend
 node_modules/
