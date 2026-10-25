@@ -73,7 +73,15 @@ export default function SecurityMFA() {
         });
       }
     } catch (err) {
-      // Fallback
+      const errMsg =
+        err.response?.data?.errors?.detail ||
+        err.response?.data?.detail ||
+        err.response?.data?.message ||
+        (err.response?.status === 401 ? 'Session expired. Please sign in again.' : '') ||
+        (err.response?.status === 403 ? 'Access denied. Authorized dealer permissions required.' : '');
+      if (errMsg) {
+        setToast({ type: 'error', message: errMsg });
+      }
     } finally {
       setStatusLoading(false);
     }
@@ -93,7 +101,10 @@ export default function SecurityMFA() {
   // Step 2: Verify password and retrieve QR code & secret from backend
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-    if (!password) return;
+    if (!password) {
+      setToast({ type: 'error', message: 'Please enter your current dealer password.' });
+      return;
+    }
 
     setActionLoading(true);
     try {
@@ -101,13 +112,38 @@ export default function SecurityMFA() {
       if (res?.success) {
         setSetupData(res);
         setWorkflowState('scan');
+        setPassword('');
         setToast({ type: 'success', message: 'Authenticator setup key generated. Scan QR code.' });
+      } else {
+        setToast({ type: 'error', message: res?.message || 'Password verification failed. Please try again.' });
       }
     } catch (err) {
-      const errMsg =
-        err.response?.data?.errors?.password?.[0] ||
-        err.response?.data?.message ||
-        'Password verification failed. Please try again.';
+      let errMsg = '';
+      if (!err.response) {
+        errMsg = 'Unable to connect to the server. Please check your network connection.';
+      } else {
+        const data = err.response.data;
+        const statusCode = err.response.status;
+
+        if (statusCode === 401) {
+          errMsg = data?.detail || 'Session expired. Please sign in again to continue.';
+        } else if (statusCode === 403) {
+          errMsg = data?.detail || data?.message || 'Access denied. Only authorized dealer accounts can configure MFA.';
+        } else if (statusCode >= 500) {
+          errMsg = 'Internal server error while verifying credentials. Please try again later.';
+        } else {
+          errMsg =
+            data?.errors?.password?.[0] ||
+            data?.errors?.current_password?.[0] ||
+            data?.errors?.detail ||
+            data?.errors?.non_field_errors?.[0] ||
+            data?.password?.[0] ||
+            data?.current_password?.[0] ||
+            data?.detail ||
+            data?.message ||
+            'Password verification failed. Please verify your dealer credentials and try again.';
+        }
+      }
       setToast({ type: 'error', message: errMsg });
     } finally {
       setActionLoading(false);
@@ -117,7 +153,7 @@ export default function SecurityMFA() {
   // Step 3: Confirm TOTP code to finalize enrollment
   const handleConfirmSubmit = async (e) => {
     e.preventDefault();
-    const cleanCode = confirmCode.trim();
+    const cleanCode = confirmCode.trim().replace(/\s+/g, '');
     if (cleanCode.length !== 6) {
       setToast({ type: 'error', message: 'Please enter a valid 6-digit code.' });
       return;
@@ -129,14 +165,26 @@ export default function SecurityMFA() {
       if (res?.success) {
         setRecoveryCodes(res.recovery_codes || []);
         setWorkflowState('recovery_display');
+        setConfirmCode('');
         setToast({ type: 'success', message: 'Two-Factor Authentication is now active!' });
         fetchStatus();
+      } else {
+        setToast({ type: 'error', message: res?.message || 'Failed to verify authenticator code.' });
       }
     } catch (err) {
-      const errMsg =
-        err.response?.data?.errors?.code?.[0] ||
-        err.response?.data?.message ||
-        'Invalid verification code. Please check your authenticator application.';
+      let errMsg = '';
+      if (!err.response) {
+        errMsg = 'Unable to connect to the server. Please check your network connection.';
+      } else {
+        const data = err.response.data;
+        errMsg =
+          data?.errors?.code?.[0] ||
+          data?.errors?.detail ||
+          data?.code?.[0] ||
+          data?.detail ||
+          data?.message ||
+          'Invalid verification code. Please check your authenticator application.';
+      }
       setToast({ type: 'error', message: errMsg });
     } finally {
       setActionLoading(false);
@@ -228,13 +276,26 @@ export default function SecurityMFA() {
         setDisablePassword('');
         setDisableCode('');
         fetchStatus();
+      } else {
+        setToast({ type: 'error', message: res?.message || 'Failed to disable Two-Factor Authentication.' });
       }
     } catch (err) {
-      const errMsg =
-        err.response?.data?.errors?.password?.[0] ||
-        err.response?.data?.errors?.code?.[0] ||
-        err.response?.data?.message ||
-        'Failed to disable Two-Factor Authentication. Please verify credentials.';
+      let errMsg = '';
+      if (!err.response) {
+        errMsg = 'Unable to connect to the server. Please check your network connection.';
+      } else {
+        const data = err.response.data;
+        errMsg =
+          data?.errors?.password?.[0] ||
+          data?.errors?.current_password?.[0] ||
+          data?.errors?.code?.[0] ||
+          data?.errors?.detail ||
+          data?.password?.[0] ||
+          data?.code?.[0] ||
+          data?.detail ||
+          data?.message ||
+          'Failed to disable Two-Factor Authentication. Please verify credentials.';
+      }
       setToast({ type: 'error', message: errMsg });
     } finally {
       setActionLoading(false);

@@ -1,4 +1,4 @@
-﻿"""
+"""
 Django settings for CarCraft project.
 """
 
@@ -19,8 +19,15 @@ load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-fallback-change-in-production')
 DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS_RAW = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1')
+ALLOWED_HOSTS_RAW = os.environ.get(
+    'ALLOWED_HOSTS',
+    'localhost,127.0.0.1,car-craft-an93.onrender.com,car-craft.onrender.com,.onrender.com,.vercel.app'
+)
 ALLOWED_HOSTS = [h.strip() for h in ALLOWED_HOSTS_RAW.split(',') if h.strip()]
+for _default_host in ('localhost', '127.0.0.1', 'car-craft-an93.onrender.com', 'car-craft.onrender.com', '.onrender.com', '.vercel.app'):
+    if _default_host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(_default_host)
+
 
 # ---------------------------------------------------------------------------
 # Installed Applications
@@ -104,15 +111,14 @@ if DB_ENGINE == 'mysql':
             },
         }
     }
-    # Use PyMySQL as the MySQL driver when mysqlclient is unavailable
+    # Use PyMySQL as the MySQLdb driver when native mysqlclient/MySQLdb is unavailable
     try:
-        import mysqlclient  # noqa: F401
-    except ImportError:
-        try:
+        import importlib.util
+        if importlib.util.find_spec('MySQLdb') is None:
             import pymysql
             pymysql.install_as_MySQLdb()
-        except ImportError:
-            pass
+    except Exception:
+        pass
 else:
     DATABASES = {
         'default': {
@@ -200,9 +206,18 @@ SIMPLE_JWT = {
 # ---------------------------------------------------------------------------
 CORS_ALLOWED_ORIGINS_RAW = os.environ.get(
     'CORS_ALLOWED_ORIGINS',
-    'http://localhost:5173,http://127.0.0.1:5173'
+    'http://localhost:5173,http://127.0.0.1:5173,https://car-craft.vercel.app'
 )
 CORS_ALLOWED_ORIGINS = [o.strip() for o in CORS_ALLOWED_ORIGINS_RAW.split(',') if o.strip()]
+for _default_origin in ('http://localhost:5173', 'http://127.0.0.1:5173', 'https://car-craft.vercel.app'):
+    if _default_origin not in CORS_ALLOWED_ORIGINS:
+        CORS_ALLOWED_ORIGINS.append(_default_origin)
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.vercel\.app$",
+    r"^http://localhost:\d+$",
+    r"^http://127\.0\.0\.1:\d+$",
+]
 CORS_ALLOW_CREDENTIALS = True
 
 # ---------------------------------------------------------------------------

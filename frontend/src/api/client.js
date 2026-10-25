@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
+const defaultBaseUrl =
+  typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')
+    ? 'https://car-craft-an93.onrender.com/api'
+    : 'http://127.0.0.1:8000/api';
+const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || defaultBaseUrl;
 const cleanBaseUrl = rawBaseUrl.replace(/\/$/, '');
 const API_BASE_URL = cleanBaseUrl.endsWith('/api') ? cleanBaseUrl : `${cleanBaseUrl}/api`;
 
@@ -14,11 +18,23 @@ export const apiClient = axios.create({
 // Request interceptor to automatically attach JWT Bearer token
 apiClient.interceptors.request.use(
   (config) => {
-    // Check customer token first, then dealer token
-    const token =
-      localStorage.getItem('carcraft_access_token') ||
-      sessionStorage.getItem('carcraft_dealer_token') ||
-      localStorage.getItem('carcraft_dealer_token');
+    // Determine whether this request targets the dealer portal
+    const isDealerContext =
+      Boolean(config.url && (config.url.includes('/dealer/') || config.url.includes('/auth/dealer/'))) ||
+      (typeof window !== 'undefined' && window.location.pathname.startsWith('/dealer'));
+
+    let token = null;
+    if (isDealerContext) {
+      token =
+        sessionStorage.getItem('carcraft_dealer_token') ||
+        localStorage.getItem('carcraft_dealer_token') ||
+        localStorage.getItem('carcraft_access_token');
+    } else {
+      token =
+        localStorage.getItem('carcraft_access_token') ||
+        sessionStorage.getItem('carcraft_dealer_token') ||
+        localStorage.getItem('carcraft_dealer_token');
+    }
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -56,9 +72,17 @@ apiClient.interceptors.response.use(
 
     // Handle 401 Unauthorized token expiration
     if (error.response?.status === 401 && !originalRequest._retry) {
-      const refreshToken =
-        localStorage.getItem('carcraft_refresh_token') ||
-        sessionStorage.getItem('carcraft_dealer_refresh_token');
+      const isDealerContext =
+        Boolean(originalRequest.url && (originalRequest.url.includes('/dealer/') || originalRequest.url.includes('/auth/dealer/'))) ||
+        (typeof window !== 'undefined' && window.location.pathname.startsWith('/dealer'));
+
+      const refreshToken = isDealerContext
+        ? (sessionStorage.getItem('carcraft_dealer_refresh_token') ||
+           localStorage.getItem('carcraft_dealer_refresh_token') ||
+           localStorage.getItem('carcraft_refresh_token'))
+        : (localStorage.getItem('carcraft_refresh_token') ||
+           sessionStorage.getItem('carcraft_dealer_refresh_token') ||
+           localStorage.getItem('carcraft_dealer_refresh_token'));
 
       // Do not attempt refresh on auth login endpoints
       if (!refreshToken || originalRequest.url.includes('/auth/login') || originalRequest.url.includes('/auth/dealer/login')) {
@@ -85,9 +109,13 @@ apiClient.interceptors.response.use(
         });
 
         const newAccessToken = res.data.access;
-        localStorage.setItem('carcraft_access_token', newAccessToken);
-        if (sessionStorage.getItem('carcraft_dealer_token')) {
+        if (isDealerContext) {
           sessionStorage.setItem('carcraft_dealer_token', newAccessToken);
+          if (localStorage.getItem('carcraft_dealer_token')) {
+            localStorage.setItem('carcraft_dealer_token', newAccessToken);
+          }
+        } else {
+          localStorage.setItem('carcraft_access_token', newAccessToken);
         }
 
         apiClient.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
@@ -96,9 +124,14 @@ apiClient.interceptors.response.use(
       } catch (refreshErr) {
         processQueue(refreshErr, null);
         // Clear invalid tokens
-        localStorage.removeItem('carcraft_access_token');
-        localStorage.removeItem('carcraft_refresh_token');
-        sessionStorage.removeItem('carcraft_dealer_token');
+        if (isDealerContext) {
+          sessionStorage.removeItem('carcraft_dealer_token');
+          sessionStorage.removeItem('carcraft_dealer_refresh_token');
+          localStorage.removeItem('carcraft_dealer_token');
+        } else {
+          localStorage.removeItem('carcraft_access_token');
+          localStorage.removeItem('carcraft_refresh_token');
+        }
         return Promise.reject(refreshErr);
       } finally {
         isRefreshing = false;

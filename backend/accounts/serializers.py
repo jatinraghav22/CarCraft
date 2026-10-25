@@ -299,13 +299,27 @@ class AdminMFAVerifySerializer(serializers.Serializer):
 
 
 class AdminMFASetupSerializer(serializers.Serializer):
-    password = serializers.CharField(required=True, write_only=True)
+    password = serializers.CharField(required=False, write_only=True, allow_blank=False)
+    current_password = serializers.CharField(required=False, write_only=True, allow_blank=False)
 
-    def validate_password(self, value):
-        user = self.context['request'].user
-        if not user.check_password(value):
-            raise serializers.ValidationError("Incorrect password. Reauthentication required.")
-        return value
+    def validate(self, attrs):
+        submitted_password = attrs.get('password') or attrs.get('current_password')
+        if not submitted_password:
+            raise serializers.ValidationError({'password': ["Current dealer password is required."]})
+
+        request = self.context.get('request')
+        if not request or not request.user or not request.user.is_authenticated:
+            raise serializers.ValidationError({'detail': "Authentication credentials were not provided."})
+
+        user = request.user
+        if not user.is_dealer:
+            raise serializers.ValidationError({'detail': "Access denied. Only authorized dealer accounts are permitted."})
+
+        if not user.check_password(submitted_password):
+            raise serializers.ValidationError({'password': ["Incorrect password. Reauthentication required."]})
+
+        attrs['password'] = submitted_password
+        return attrs
 
 
 class AdminMFAConfirmSerializer(serializers.Serializer):
@@ -313,25 +327,53 @@ class AdminMFAConfirmSerializer(serializers.Serializer):
 
 
 class AdminMFADisableSerializer(serializers.Serializer):
-    password = serializers.CharField(required=True, write_only=True)
+    password = serializers.CharField(required=False, write_only=True, allow_blank=False)
+    current_password = serializers.CharField(required=False, write_only=True, allow_blank=False)
     code = serializers.CharField(required=True, max_length=64, trim_whitespace=True)
 
-    def validate_password(self, value):
-        user = self.context['request'].user
-        if not user.check_password(value):
-            raise serializers.ValidationError("Incorrect password. Reauthentication required.")
-        return value
+    def validate(self, attrs):
+        submitted_password = attrs.get('password') or attrs.get('current_password')
+        if not submitted_password:
+            raise serializers.ValidationError({'password': ["Current dealer password is required."]})
+
+        request = self.context.get('request')
+        if not request or not request.user or not request.user.is_authenticated:
+            raise serializers.ValidationError({'detail': "Authentication credentials were not provided."})
+
+        user = request.user
+        if not user.is_dealer:
+            raise serializers.ValidationError({'detail': "Access denied. Only authorized dealer accounts are permitted."})
+
+        if not user.check_password(submitted_password):
+            raise serializers.ValidationError({'password': ["Incorrect password. Reauthentication required."]})
+
+        attrs['password'] = submitted_password
+        return attrs
 
 
 class AdminMFARecoveryRegenerateSerializer(serializers.Serializer):
-    password = serializers.CharField(required=True, write_only=True)
+    password = serializers.CharField(required=False, write_only=True, allow_blank=False)
+    current_password = serializers.CharField(required=False, write_only=True, allow_blank=False)
     code = serializers.CharField(required=True, max_length=64, trim_whitespace=True)
 
-    def validate_password(self, value):
-        user = self.context['request'].user
-        if not user.check_password(value):
-            raise serializers.ValidationError("Incorrect password. Reauthentication required.")
-        return value
+    def validate(self, attrs):
+        submitted_password = attrs.get('password') or attrs.get('current_password')
+        if not submitted_password:
+            raise serializers.ValidationError({'password': ["Current dealer password is required."]})
+
+        request = self.context.get('request')
+        if not request or not request.user or not request.user.is_authenticated:
+            raise serializers.ValidationError({'detail': "Authentication credentials were not provided."})
+
+        user = request.user
+        if not user.is_dealer:
+            raise serializers.ValidationError({'detail': "Access denied. Only authorized dealer accounts are permitted."})
+
+        if not user.check_password(submitted_password):
+            raise serializers.ValidationError({'password': ["Incorrect password. Reauthentication required."]})
+
+        attrs['password'] = submitted_password
+        return attrs
 
 
 

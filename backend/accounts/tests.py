@@ -252,15 +252,19 @@ class AdminMFATests(TestCase):
         token = login_resp.data['tokens']['access']
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
 
-        # Setup without password fails
+        # Setup without password fails with clear validation response
         resp_no_pwd = self.client.post(reverse('auth-dealer-mfa-setup'), {}, format='json')
         self.assertEqual(resp_no_pwd.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(resp_no_pwd.data['success'])
+        self.assertIn('password', resp_no_pwd.data['errors'])
 
-        # Setup with wrong password fails
+        # Setup with wrong password fails without generating secret
         resp_wrong_pwd = self.client.post(reverse('auth-dealer-mfa-setup'), {
             'password': 'WrongPassword@000'
         }, format='json')
         self.assertEqual(resp_wrong_pwd.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(resp_wrong_pwd.data['success'])
+        self.assertNotIn('secret', resp_wrong_pwd.data)
 
         # Setup with correct password succeeds
         resp_ok = self.client.post(reverse('auth-dealer-mfa-setup'), {
@@ -276,6 +280,71 @@ class AdminMFATests(TestCase):
         device = AdminTOTPDevice.objects.get(user=self.admin)
         self.assertFalse(device.is_enabled)
         self.assertIsNotNone(device.encrypted_pending_secret)
+
+    def test_admin_mfa_setup_with_current_password_alias_succeeds(self):
+        """Verify that current_password field name is supported alongside password."""
+        login_resp = self.client.post(reverse('auth-dealer-login'), {
+            'login': 'atelier_admin',
+            'password': 'AdminPassword@2026'
+        }, format='json')
+        token = login_resp.data['tokens']['access']
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+
+        resp_alias = self.client.post(reverse('auth-dealer-mfa-setup'), {
+            'current_password': 'AdminPassword@2026'
+        }, format='json')
+        self.assertEqual(resp_alias.status_code, status.HTTP_200_OK)
+        self.assertTrue(resp_alias.data['success'])
+        self.assertIn('secret', resp_alias.data)
+
+    def test_admin_mfa_setup_unauthenticated_request_rejected(self):
+        """Unauthenticated requests must be rejected with 401."""
+        self.client.credentials()  # Remove any credentials
+        resp = self.client.post(reverse('auth-dealer-mfa-setup'), {
+            'password': 'AdminPassword@2026'
+        }, format='json')
+        self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_admin_mfa_setup_customer_account_rejected(self):
+        """Authenticated customer token without dealer permissions must receive 403 Forbidden."""
+        login_resp = self.client.post(reverse('auth-login'), {
+            'login': 'vip_client',
+            'password': 'ClientPassword@123'
+        }, format='json')
+        customer_token = login_resp.data['tokens']['access']
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {customer_token}')
+
+        resp = self.client.post(reverse('auth-dealer-mfa-setup'), {
+            'password': 'ClientPassword@123'
+        }, format='json')
+        self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_admin_mfa_setup_wrong_account_password_rejected(self):
+        """Authenticated dealer cannot verify password belonging to a different user."""
+        # Create a second dealer user
+        dealer2 = User.objects.create_user(
+            username='dealer2_other',
+            email='dealer2@carcraft.internal',
+            password='Dealer2Password@999',
+            role=User.Role.DEALER
+        )
+        DealerProfile.objects.create(user=dealer2, dealership_name='CarCraft Second')
+
+        # Authenticate as dealer1 (atelier_admin)
+        login_resp = self.client.post(reverse('auth-dealer-login'), {
+            'login': 'atelier_admin',
+            'password': 'AdminPassword@2026'
+        }, format='json')
+        token = login_resp.data['tokens']['access']
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+
+        # Attempt to verify using dealer2's password
+        resp = self.client.post(reverse('auth-dealer-mfa-setup'), {
+            'password': 'Dealer2Password@999'
+        }, format='json')
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(resp.data['success'])
+
 
     def test_admin_mfa_confirm_with_valid_totp_enables_mfa(self):
         login_resp = self.client.post(reverse('auth-dealer-login'), {
