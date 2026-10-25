@@ -83,10 +83,23 @@ export function DealerAuthProvider({ children }) {
 
       const res = await authApi.dealerLogin(email, password);
 
+      // Check if MFA Authenticator App verification is required
+      if (res?.mfa_required) {
+        return {
+          success: false,
+          mfaRequired: true,
+          challengeToken: res.challenge_token,
+          expiresIn: res.expires_in || 300,
+          message: res.message || 'Two-factor authenticator verification required.',
+          email,
+          rememberMe,
+        };
+      }
+
+      // Safe bootstrap flow (when admin has not enrolled 2FA yet)
       if (res?.tokens) {
         const u = res.user;
 
-        // Step 11: Validate Dealer / Admin role explicitly
         const isAuthorizedDealer = Boolean(u?.is_dealer || u?.role === 'DEALER' || u?.is_superuser);
         if (!isAuthorizedDealer) {
           return { success: false, error: 'You are not authorized as a Dealer.' };
@@ -121,6 +134,7 @@ export function DealerAuthProvider({ children }) {
           status: 'ACTIVE',
           tier: 'Flagship Principal Dealer',
           role: u.role,
+          isMfaEnabled: Boolean(u.is_mfa_enabled),
         };
 
         setDealer(verifiedDealer);
@@ -134,13 +148,11 @@ export function DealerAuthProvider({ children }) {
     } catch (err) {
       let errMsg = '';
       if (!err.response) {
-        // Network connection failure (e.g. backend server stopped, ECONNREFUSED)
         errMsg = 'Unable to connect to the server.';
       } else {
         const status = err.response.status;
         const data = err.response.data;
 
-        // Extract detailed validation message if provided by Django REST Framework
         const rawDetail =
           data?.errors?.detail ||
           data?.errors?.non_field_errors ||
@@ -173,6 +185,113 @@ export function DealerAuthProvider({ children }) {
   };
 
   /**
+   * Step 2: Verify Authenticator TOTP or Recovery Code
+   * Connects to POST /api/auth/dealer/mfa/verify/
+   */
+  const verifyMFA = async ({ challengeToken, code, rememberMe = false, email = '' }) => {
+    setLoading(true);
+    try {
+      if (!challengeToken || !code) {
+        throw new Error('Please enter the authenticator verification code.');
+      }
+
+      const res = await authApi.dealerVerifyMFA(challengeToken, code);
+
+      if (res?.tokens) {
+        const u = res.user;
+        const isAuthorizedDealer = Boolean(u?.is_dealer || u?.role === 'DEALER' || u?.is_superuser);
+        if (!isAuthorizedDealer) {
+          return { success: false, error: 'You are not authorized as a Dealer.' };
+        }
+
+        const token = res.tokens.access;
+        const refreshToken = res.tokens.refresh;
+
+        sessionStorage.setItem('carcraft_dealer_token', token);
+        sessionStorage.setItem('carcraft_dealer_refresh_token', refreshToken);
+        sessionStorage.setItem(DEALER_AUTH_KEY, 'true');
+
+        if (rememberMe && email) {
+          localStorage.setItem(DEALER_REMEMBER_EMAIL_KEY, email);
+          localStorage.setItem('carcraft_dealer_token', token);
+          setRememberedEmail(email);
+        }
+
+        const profile = u.dealer_profile || u.profile || {};
+        const verifiedDealer = {
+          dealerId: `DLR-${u.id}`,
+          name: [u.first_name, u.last_name].filter(Boolean).join(' ') || u.username,
+          username: u.username,
+          email: u.email,
+          phone: u.phone || '+91 98450 12890',
+          businessName: profile.dealership_name || 'CarCraft Atelier & Master Dealership',
+          licenseNumber: profile.license_number || 'CC-IN-88291',
+          status: 'ACTIVE',
+          tier: 'Flagship Principal Dealer',
+          role: u.role,
+          isMfaEnabled: true,
+        };
+
+        setDealer(verifiedDealer);
+        sessionStorage.setItem('carcraft_dealer_profile', JSON.stringify(verifiedDealer));
+        setIsDealerAuthenticated(true);
+
+        return { success: true };
+      } else {
+        throw new Error('Verification failed. Invalid server response.');
+      }
+    } catch (err) {
+      let errMsg = '';
+      if (!err.response) {
+        errMsg = 'Unable to connect to the authentication server.';
+      } else {
+        const data = err.response.data;
+        const rawDetail =
+          data?.errors?.detail ||
+          data?.errors?.code?.[0] ||
+          data?.errors?.challenge_token?.[0] ||
+          data?.message ||
+          data?.error;
+        errMsg = typeof rawDetail === 'string' ? rawDetail : 'Invalid or expired verification code.';
+      }
+      return { success: false, error: errMsg };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Dealer 2FA Management Actions
+   */
+  const setupMFA = async (password) => {
+    return authApi.dealerSetupMFA(password);
+  };
+
+  const confirmMFA = async (code) => {
+    const res = await authApi.dealerConfirmMFA(code);
+    if (res?.success) {
+      setDealer((prev) => ({ ...prev, isMfaEnabled: true }));
+    }
+    return res;
+  };
+
+  const getMFAStatus = async () => {
+    return authApi.dealerGetMFAStatus();
+  };
+
+  const disableMFA = async (password, code) => {
+    const res = await authApi.dealerDisableMFA(password, code);
+    if (res?.success) {
+      setDealer((prev) => ({ ...prev, isMfaEnabled: false }));
+    }
+    return res;
+  };
+
+  const regenerateRecoveryCodes = async (password, code) => {
+    return authApi.dealerRegenerateRecoveryCodes(password, code);
+  };
+
+  /**
    * Dealer Logout action
    */
   const logout = () => {
@@ -192,6 +311,12 @@ export function DealerAuthProvider({ children }) {
         dealer,
         isDealerAuthenticated,
         login,
+        verifyMFA,
+        setupMFA,
+        confirmMFA,
+        getMFAStatus,
+        disableMFA,
+        regenerateRecoveryCodes,
         logout,
         loading,
         rememberedEmail

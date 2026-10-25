@@ -14,6 +14,7 @@ import {
   Users,
   FileBarChart,
   UserCheck,
+  ShieldCheck,
   LogOut,
   Sparkles,
   X
@@ -80,7 +81,8 @@ export default function DealerSidebar({ isOpen, onClose }) {
     {
       title: 'Identity',
       items: [
-        { name: 'Dealer Profile', path: '/dealer/profile', icon: UserCheck }
+        { name: 'Dealer Profile', path: '/dealer/profile', icon: UserCheck },
+        { name: '2FA Security', path: '/dealer/security', icon: ShieldCheck }
       ]
     }
   ];

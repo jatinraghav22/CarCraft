@@ -19,6 +19,7 @@ import DealerProfitLoss from './dealer/pages/ProfitLoss';
 import DealerCustomers from './dealer/pages/Customers';
 import DealerReports from './dealer/pages/Reports';
 import DealerProfile from './dealer/pages/Profile';
+import DealerSecurityMFA from './dealer/pages/SecurityMFA';
 import PlaceholderModule from './dealer/components/PlaceholderModule';
 import ShowroomHomepage from './components/ShowroomHomepage';
 import Footer from './components/Footer';
@@ -413,6 +414,20 @@ export default function App() {
                               </DealerLayout>
                             </DealerProtectedRoute>
                           }
+                        />
+                        <Route
+                          path="/dealer/security"
+                          element={
+                            <DealerProtectedRoute>
+                              <DealerLayout>
+                                <DealerSecurityMFA />
+                              </DealerLayout>
+                            </DealerProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/dealer/mfa"
+                          element={<Navigate to="/dealer/security" replace />}
                         />
 
                         {/* Fallback / 404 Route */}

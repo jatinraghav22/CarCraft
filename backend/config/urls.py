@@ -39,6 +39,10 @@ def api_root(request):
         },
         'dealer_endpoints': {
             'dealer_login': request.build_absolute_uri('/api/auth/dealer/login/'),
+            'dealer_mfa_verify': request.build_absolute_uri('/api/auth/dealer/mfa/verify/'),
+            'dealer_mfa_setup': request.build_absolute_uri('/api/auth/dealer/mfa/setup/'),
+            'dealer_mfa_confirm': request.build_absolute_uri('/api/auth/dealer/mfa/confirm/'),
+            'dealer_mfa_status': request.build_absolute_uri('/api/auth/dealer/mfa/status/'),
             'dashboard': request.build_absolute_uri('/api/dealer/dashboard/'),
             'manage_vehicles': request.build_absolute_uri('/api/vehicles/'),
             'manage_parts': request.build_absolute_uri('/api/parts/'),

@@ -262,3 +262,7 @@ SIMPLE_JWT = {
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# TOTP Two-Factor Authentication Secret Encryption Key
+TOTP_ENCRYPTION_KEY = os.environ.get('TOTP_ENCRYPTION_KEY')
+
