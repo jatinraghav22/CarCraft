@@ -1,209 +1,124 @@
-# 🚗 CarCraft - Automotive Inventory & Dealership Suite
+# 💻 CoCode – Real-Time Collaborative Code Editor
 
-### Modern Vehicle Dealership, Inventory, E-Commerce & Service Management Platform
+### A Full-Stack Collaborative Coding Platform
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-CarCraft-blue?style=for-the-badge)](https://car-craft.vercel.app/)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge\&logo=github)](https://github.com/jatinraghav22/CarCraft)
-[![React](https://img.shields.io/badge/Frontend-React-61DAFB?style=for-the-badge\&logo=react\&logoColor=black)](https://react.dev/)
-[![Django](https://img.shields.io/badge/Backend-Django-092E20?style=for-the-badge\&logo=django)](https://www.djangoproject.com/)
-[![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-4169E1?style=for-the-badge\&logo=postgresql\&logoColor=white)](https://www.postgresql.org/)
+<p align="center">
+  **Code Together. Learn Together. Build Together.**
+</p>
+
+<p align="center">
+  A collaborative coding platform that brings developers and learners together in a shared coding environment with real-time communication and an interactive code editor.
+</p>
+
+<p align="center">
+  <a href="https://cocode-two.vercel.app/">🌐 Live Demo</a> •
+  <a href="https://github.com/jatinraghav22/CoCode">📂 GitHub Repository</a> •
+  <a href="https://cocode-2l13.onrender.com/">⚙️ Backend Server</a>
+</p>
 
 ---
 
-## 🌐 Live Demo
+# 🌐 Live Demo
 
-🚘 **Live Website:**
-https://car-craft.vercel.app/
-
-📂 **GitHub Repository:**
-https://github.com/jatinraghav22/CarCraft
+- **Frontend:** https://cocode-two.vercel.app/
+- **Backend:** https://cocode-2l13.onrender.com/
+- **GitHub:** https://github.com/jatinraghav22/CoCode
 
 ---
 
 # 🚀 Overview
 
-**CarCraft** is a full-stack automotive inventory and dealership management platform designed to bring vehicle sales, inventory management, parts & accessories e-commerce, service appointments, customer management, and financial tracking into a unified system.
+**CoCode** is a full-stack, web-based collaborative coding platform designed to make programming collaboration easier and more accessible.
 
-The platform provides two primary interfaces:
+It provides a shared coding environment where users can create coding rooms, join collaborative sessions, and work together on programming tasks.
 
-* 👤 **Customer Interface** — Browse vehicles, explore parts and accessories, manage purchases, book services, and interact with dealership services.
-* 🛠️ **Admin Dashboard** — Manage vehicles, customers, sales, services, parts, orders, revenue, expenses, and dealership operations.
+The platform combines a modern code editor with real-time communication technologies to provide an interactive coding experience.
 
-CarCraft combines a modern **React frontend** with a **Django REST API backend**, providing a scalable architecture for automotive dealership operations.
-
----
-
-# ✨ Features
-
-## 👤 Customer Features
-
-* 🚘 Browse available vehicles
-* 🔍 Explore vehicle details
-* 🏷️ View vehicle pricing and specifications
-* 🛒 Browse automotive parts and accessories
-* 🛍️ Add parts to cart
-* 📦 Manage orders
-* 🔧 Book vehicle service appointments
-* 📅 View service information
-* 👤 Customer account management
-* 🔐 Secure authentication
-* 📱 Responsive customer interface
-* 🎨 Modern automotive-focused UI
+Whether you are a student practising programming, a developer collaborating with teammates, or a learner working on coding challenges, CoCode provides a common workspace to code and collaborate.
 
 ---
 
-## 🛠️ Admin Features
+# ✨ Key Features
 
-* 📊 Admin dashboard
-* 🚘 Vehicle inventory management
-* ➕ Add new vehicles
-* ✏️ Update vehicle information
-* 🗑️ Remove vehicles
-* 👥 Customer management
-* 💰 Sales management
-* 🔧 Service appointment management
-* 🛒 Parts & accessories management
-* 📦 Order management
-* 💵 Revenue tracking
-* 💸 Expense tracking
-* 📈 Financial analytics
-* 📊 Revenue vs expenditure visualization
-* 🧮 Net profit calculation
-* 📋 Operational status tracking
+## 👤 User Features
 
----
+- 🔐 User Registration and Login.
+- 👤 User Account Management.
+- 🏠 Personalized Dashboard.
+- 🚪 Create Collaborative Coding Rooms.
+- 🔗 Join Existing Coding Rooms.
+- 💻 Shared Coding Environment.
+- ⚡ Real-Time Communication.
+- 📝 Interactive Code Editing.
+- 📱 Responsive User Interface.
 
-# 📊 Financial Dashboard
+## 💻 Code Editor Features
 
-CarCraft includes a financial analytics dashboard designed to provide a clear view of dealership finances.
+- Monaco Editor integration.
+- Professional code-editing experience.
+- Syntax highlighting.
+- Structured coding workspace.
+- Support for collaborative programming workflows.
 
-## Financial Trajectory & Inflow
+## 🤝 Collaboration Features
 
-**Inflow (Revenue) vs Expenditure (MONTHLY Interval)**
-
-Available views:
-
-* 📅 Monthly
-* 📆 Weekly
-* 📊 Yearly
-* 🗓️ Custom
-
-### Financial Metrics
-
-| Metric            | Description             |
-| ----------------- | ----------------------- |
-| 💰 Total Revenue  | Total income generated  |
-| 💸 Total Expenses | Total recorded expenses |
-| 📈 Net Profit     | Revenue minus expenses  |
-
-### Formula
-
-```text
-Net Profit = Total Revenue - Total Expenses
-```
-
----
-
-# 🔄 Business Workflows
-
-## 🚘 Vehicle Sales Workflow
-
-```text
-Inquiry
-   ↓
-Booking
-   ↓
-Sold
-   ↓
-Delivered
-```
-
----
-
-## 🔧 Service Workflow
-
-```text
-Scheduled
-   ↓
-In Progress
-   ↓
-Completed
-```
-
----
-
-## 🛒 Parts & Accessories Workflow
-
-```text
-Browse Products
-      ↓
-Product Details
-      ↓
-Add to Cart
-      ↓
-Place Order
-      ↓
-Order Management
-```
+- Create dedicated coding rooms.
+- Join coding sessions with other users.
+- Real-time communication using Socket.IO.
+- Shared workspace for collaborative development.
+- Room-based collaboration.
 
 ---
 
 # 🏗️ System Architecture
 
-CarCraft follows a modern full-stack architecture:
+CoCode follows a full-stack client-server architecture.
 
 ```text
-                 ┌─────────────────────────┐
-                 │       Customer          │
-                 │      Web Interface      │
-                 └────────────┬────────────┘
-                              │
-                              ▼
-                 ┌─────────────────────────┐
-                 │      React Frontend     │
-                 │                         │
-                 │ React + Vite             │
-                 │ React Router             │
-                 │ Axios                    │
-                 │ Three.js / R3F           │
-                 │ GSAP / Lenis             │
-                 └────────────┬────────────┘
-                              │
-                         REST API
-                              │
-                              ▼
-                 ┌─────────────────────────┐
-                 │     Django Backend      │
-                 │                         │
-                 │ Django 5.2              │
-                 │ Django REST Framework   │
-                 │ SimpleJWT               │
-                 │ CORS                    │
-                 └────────────┬────────────┘
-                              │
-                              ▼
-                 ┌─────────────────────────┐
-                 │        Database         │
-                 │                         │
-                 │ PostgreSQL (Production) │
-                 │ SQLite (Local Default)  │
-                 │ MySQL (Optional Local)  │
-                 └─────────────────────────┘
+                USER
+                  |
+                  v
+           REACT FRONTEND
+              (Vite)
+                  |
+          -----------------
+          |               |
+          v               v
+       REST API       SOCKET.IO
+          |               |
+          v               v
+       EXPRESS         REAL-TIME
+        SERVER       COMMUNICATION
+          |
+          v
+       PRISMA ORM
+          |
+          v
+         MYSQL
 ```
 
-The admin interface follows the same API-driven architecture:
+### Application Workflow
 
 ```text
-Admin
-  │
-  ▼
-React Admin Dashboard
-  │
-  ▼
-Django REST API
-  │
-  ▼
-Database
+User Registration / Login
+          |
+          v
+   Authentication
+          |
+          v
+      Dashboard
+          |
+          v
+  Create / Join Room
+          |
+          v
+ Collaborative Workspace
+          |
+          v
+     Monaco Editor
+          |
+          v
+ Real-Time Communication
 ```
 
 ---
@@ -212,894 +127,309 @@ Database
 
 ## Frontend
 
-| Technology           | Purpose                    |
-| -------------------- | -------------------------- |
-| ⚛️ React             | User interface             |
-| ⚡ Vite               | Frontend build tool        |
-| 🧭 React Router      | Client-side routing        |
-| 📡 Axios             | API communication          |
-| 🎨 GSAP              | Animations                 |
-| 🌀 Lenis             | Smooth scrolling           |
-| 🧊 Three.js          | 3D graphics                |
-| 🔺 React Three Fiber | React-based 3D rendering   |
-| 🧩 Drei              | Three.js helper components |
-| 🎯 Lucide React      | Icons                      |
-
----
+| Technology | Purpose |
+|---|---|
+| React.js | User interface development |
+| Vite | Frontend development and build tool |
+| JavaScript | Application logic |
+| CSS | Styling and responsive layouts |
+| Monaco Editor | Code editing experience |
 
 ## Backend
 
-| Technology               | Purpose                        |
-| ------------------------ | ------------------------------ |
-| 🐍 Python                | Backend programming language   |
-| 🟢 Django                | Web framework                  |
-| 🔌 Django REST Framework | REST API development           |
-| 🔐 SimpleJWT             | JWT authentication             |
-| 🌐 django-cors-headers   | Frontend-backend CORS handling |
-
----
+| Technology | Purpose |
+|---|---|
+| Node.js | JavaScript runtime |
+| Express.js | Backend framework |
+| Socket.IO | Real-time communication |
+| JWT | Authentication |
+| REST APIs | Client-server communication |
 
 ## Database
 
-```text
-PostgreSQL in production through DATABASE_URL (Render PostgreSQL)
-```
+| Technology | Purpose |
+|---|---|
+| MySQL | Relational database |
+| Prisma ORM | Database management and queries |
 
-SQLite is the default for local development. MySQL remains available as an optional local database backend.
+## Deployment & Development Tools
 
----
-
-# 🔐 Authentication
-
-CarCraft uses token-based authentication through **SimpleJWT**.
-
-The authentication flow can be represented as:
-
-```text
-User
-  ↓
-Login / Register
-  ↓
-Django Authentication
-  ↓
-JWT Access Token
-  ↓
-Authenticated API Requests
-  ↓
-Customer / Admin Interface
-```
-
-Protected functionality can be accessed according to the authenticated user's role.
+- Git
+- GitHub
+- Vercel
+- Render
+- Visual Studio Code
+- npm
 
 ---
 
-# 👥 User Roles
+# 🔐 Authentication & User Management
 
-CarCraft uses two primary roles.
+CoCode includes an authentication system to manage user access.
 
-## 👤 Customer
+### Authentication Features
 
-Customers can:
+- User registration.
+- User login.
+- JWT-based authentication.
+- Protected application routes.
+- Authenticated access to collaborative features.
+- User session management.
 
-* Browse vehicles
-* View vehicle details
-* Explore parts
-* Purchase accessories
-* Manage orders
-* Book services
-* Manage their account
-* View relevant information
+Authentication helps ensure that collaborative room functionality is available to authorized users.
 
 ---
 
-## 🛠️ Admin
+# 🤝 Collaborative Coding Workflow
 
-Admins can:
+### Room Creation
 
-* Manage vehicles
-* Manage customers
-* Manage parts
-* Manage orders
-* Manage services
-* Manage sales
-* Track revenue
-* Track expenses
-* View financial analytics
-* Update dealership information
+Users can create a dedicated coding room to start a collaborative programming session.
 
----
+### Room Joining
 
-# 📋 Prerequisites
+Other users can join an existing room and participate in the coding session.
 
-Before running CarCraft locally, make sure you have the following installed.
+### Collaborative Workspace
 
-### Required
+Users access a shared coding environment powered by Monaco Editor and real-time communication technologies.
 
-* Python 3.10+
-* Node.js
-* npm
-* Git
+### Real-Time Communication
 
-### Recommended
-
-* Visual Studio Code
-* MySQL Workbench
-* Modern web browser
-
-MySQL is optional. SQLite is used by default locally, and Render PostgreSQL is selected through `DATABASE_URL` in production.
-
-Verify installations:
-
-```bash
-python --version
-```
-
-```bash
-node --version
-```
-
-```bash
-npm --version
-```
-
-```bash
-git --version
-```
-
-```bash
-mysql --version
-```
-
-This check is optional when using the default SQLite setup.
+Socket.IO provides the communication layer between connected clients and the backend server.
 
 ---
 
-# 📦 Installation
+# 🛠️ Getting Started
+
+Follow these instructions to run CoCode locally.
+
+## Prerequisites
+
+Make sure the following tools are installed:
+
+- Node.js
+- npm
+- MySQL
+- Git
+- Visual Studio Code (recommended)
+
+---
 
 ## 1. Clone the Repository
 
 ```bash
-git clone https://github.com/jatinraghav22/CarCraft.git
+git clone https://github.com/jatinraghav22/CoCode.git
 ```
 
+Navigate to the project:
+
 ```bash
-cd CarCraft
+cd CoCode
 ```
 
 ---
 
-# ⚙️ Backend Setup
+## 2. Backend Setup
 
-Navigate to the backend:
-
-```bash
-cd backend
-```
-
-## Create Virtual Environment
-
-### Windows
-
-```powershell
-python -m venv venv
-```
-
-Activate it:
-
-```powershell
-venv\Scripts\activate
-```
-
-### macOS / Linux
+Navigate to the server directory:
 
 ```bash
-python3 -m venv venv
+cd server
 ```
 
-```bash
-source venv/bin/activate
-```
-
----
-
-## Install Backend Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-# 🗄️ Database Configuration
-
-CarCraft uses PostgreSQL in production when Render supplies `DATABASE_URL`. SQLite is the default local database.
-
-For an optional local MySQL database, create the database:
-
-```sql
-CREATE DATABASE carcraft_db;
-```
-
-Configure your database settings using environment variables.
-
-Example:
-
-```env
-DB_ENGINE=mysql
-DB_NAME=carcraft_db
-DB_USER=root
-DB_PASSWORD=your_password
-DB_HOST=localhost
-DB_PORT=3306
-```
-
-With uv installed and the local virtual environment activated, install the optional MySQL driver and explicitly set `DB_ENGINE=mysql`:
-
-```bash
-uv sync --active --extra mysql
-```
-
-The optional extra is also required by `clean_legacy_tables.py`, which directly uses MySQLdb.
-
----
-
-# 🔐 Backend Environment Variables
-
-Create a `.env` file inside the backend directory.
-
-Example:
-
-```env
-SECRET_KEY=your_secret_key
-
-DEBUG=True
-
-DB_ENGINE=mysql
-DB_NAME=carcraft_db
-DB_USER=root
-DB_PASSWORD=your_password
-DB_HOST=localhost
-DB_PORT=3306
-
-CORS_ALLOWED_ORIGINS=http://localhost:5173
-```
-
-> ⚠️ Never commit your `.env` file or real credentials to GitHub.
-
----
-
-# 🧱 Run Database Migrations
-
-```bash
-python manage.py makemigrations
-```
-
-```bash
-python manage.py migrate
-```
-
----
-
-# 👨‍💼 Create Admin User
-
-Create a Django superuser:
-
-```bash
-python manage.py createsuperuser
-```
-
-Follow the terminal instructions.
-
----
-
-# ▶️ Start Backend Server
-
-```bash
-python manage.py runserver
-```
-
-The Django backend will normally be available at:
-
-```text
-http://127.0.0.1:8000/
-```
-
----
-
-# 💻 Frontend Setup
-
-Open another terminal.
-
-Navigate to:
-
-```bash
-cd frontend
-```
-
-Install dependencies:
+Install backend dependencies:
 
 ```bash
 npm install
 ```
 
----
+### Configure Environment Variables
 
-# 🔐 Frontend Environment Variables
-
-Create a `.env` or `.env.local` file inside the frontend directory.
+Create a `.env` file inside the server directory.
 
 Example:
 
 ```env
-VITE_API_URL=http://127.0.0.1:8000
+PORT=5000
+DATABASE_URL="mysql://USER:PASSWORD@localhost:3306/cocode_db"
+JWT_SECRET="your_secret_key"
 ```
 
-If your frontend uses a different API variable name, keep the variable name consistent with the existing Axios/API configuration in the project.
+Replace the database username, password and other values with your local configuration.
 
----
+Never upload actual credentials or secret keys to GitHub.
 
-# ▶️ Start Frontend
+### Configure Prisma
+
+Generate the Prisma Client:
+
+```bash
+npx prisma generate
+```
+
+Synchronize the database schema:
+
+```bash
+npx prisma db push
+```
+
+### Start Backend Server
 
 ```bash
 npm run dev
 ```
 
-Vite will provide the local development URL in the terminal, typically:
+The backend will run on the configured local port.
+
+---
+
+## 3. Frontend Setup
+
+Open another terminal.
+
+Navigate to the client directory:
+
+```bash
+cd CoCode/client
+```
+
+Install frontend dependencies:
+
+```bash
+npm install
+```
+
+### Configure Frontend Environment
+
+Create a `.env` file inside the client directory.
+
+Example:
+
+```env
+VITE_API_URL=http://localhost:5000
+```
+
+Use the environment variable name configured in the frontend API service.
+
+### Start Frontend
+
+```bash
+npm run dev
+```
+
+Open the local URL provided by Vite in your browser.
+
+Usually:
 
 ```text
 http://localhost:5173/
 ```
-
-Open the URL in your browser.
 
 ---
 
 # 📁 Project Structure
 
 ```text
-CarCraft/
+CoCode/
 │
-├── backend/
-│   │
-│   ├── manage.py
-│   ├── requirements.txt
-│   ├── .env
-│   │
-│   ├── config/
-│   │   ├── settings.py
-│   │   ├── urls.py
-│   │   ├── asgi.py
-│   │   └── wsgi.py
-│   │
-│   ├── apps/
-│   │   ├── dashboard/
-│   │   ├── inventory/
-│   │   ├── customers/
-│   │   ├── sales/
-│   │   ├── service/
-│   │   └── parts/
-│   │
-│   └── ...
-│
-├── frontend/
-│   │
+├── client/
+│   ├── public/
 │   ├── src/
+│   │   ├── assets/
 │   │   ├── components/
 │   │   ├── pages/
-│   │   ├── layouts/
-│   │   ├── services/
-│   │   ├── hooks/
-│   │   ├── context/
-│   │   ├── assets/
-│   │   ├── utils/
-│   │   ├── App.jsx
-│   │   └── main.jsx
+│   │   ├── ...
 │   │
-│   ├── public/
 │   ├── package.json
-│   ├── vite.config.js
+│   └── vite.config.js
+│
+├── server/
+│   ├── prisma/
+│   │   └── schema.prisma
+│   │
+│   ├── server.js
+│   ├── package.json
 │   └── ...
 │
 ├── .gitignore
 └── README.md
 ```
 
-> The exact internal filenames may vary as the project evolves.
-
 ---
 
-# 🔌 API Architecture
+# 🧪 Testing & Validation
 
-The React frontend communicates with Django through REST APIs.
+The application can be validated through the following development and integration checks:
 
-```text
-React
-  │
-  │ HTTP Request
-  ▼
-Django REST Framework
-  │
-  │ Business Logic
-  ▼
-Django Models
-  │
-  ▼
-PostgreSQL (production) / SQLite (local default)
-```
-
-Responses are returned to the frontend as JSON.
-
-```text
-Database
-    ↓
-Django
-    ↓
-REST API
-    ↓
-Axios
-    ↓
-React UI
-```
-
----
-
-# 🚘 Vehicle Inventory Management
-
-The inventory module allows administrators to maintain vehicle information.
-
-Typical vehicle information can include:
-
-```text
-Vehicle
-├── Name
-├── Brand
-├── Model
-├── Variant
-├── Price
-├── Year
-├── Fuel Type
-├── Transmission
-├── Mileage
-├── Images
-└── Availability
-```
-
-Administrators can manage vehicle records while customers can browse available vehicles through the customer interface.
-
----
-
-# 🔧 Service Management
-
-Customers can request/book vehicle services.
-
-The service lifecycle is:
-
-```text
-Scheduled
-     ↓
-In Progress
-     ↓
-Completed
-```
-
-The admin dashboard can be used to manage service appointments and update their status.
-
----
-
-# 🛒 Parts & Accessories
-
-CarCraft also provides an e-commerce experience for automotive parts and accessories.
-
-```text
-Product Catalog
-      ↓
-Product Details
-      ↓
-Shopping Cart
-      ↓
-Order
-      ↓
-Admin Order Management
-```
-
-Products can contain information such as:
-
-```text
-Product
-├── Name
-├── SKU
-├── Category
-├── Price
-├── Stock Quantity
-└── Product Image
-```
-
----
-
-# 💰 Sales Management
-
-Vehicle sales can be managed through a structured lifecycle:
-
-```text
-Inquiry
-   ↓
-Booking
-   ↓
-Sold
-   ↓
-Delivered
-```
-
-This provides a clear way to track the progress of vehicle transactions.
-
----
-
-# 📈 Financial Management
-
-CarCraft connects sales and expenses with the financial dashboard.
-
-```text
-Vehicle Sales ──────┐
-                    │
-Parts Orders ───────┼──→ Revenue
-                    │
-                    ▼
-               Financial Data
-                    ▲
-                    │
-Expenses ───────────┘
-```
-
-The dashboard calculates:
-
-```text
-Total Revenue
-      -
-Total Expenses
-      =
-Net Profit
-```
-
----
-
-# 🎨 UI / UX
-
-CarCraft focuses on a modern automotive experience.
-
-### Design Characteristics
-
-* 🚘 Automotive-focused visual identity
-* 🌑 Modern interface
-* ✨ Smooth animations
-* 🧊 3D visual elements
-* 📱 Responsive layouts
-* 🧭 Clear navigation
-* 📊 Dashboard-based information
-* 🎯 Customer-focused browsing
-* 🛠️ Admin-focused management tools
-
-### Animation & Interaction
-
-The frontend uses technologies such as:
-
-* GSAP
-* Lenis
-* Three.js
-* React Three Fiber
-* Drei
-
-These technologies are used to create interactive and visually engaging experiences.
-
----
-
-# 🧪 Testing
-
-The project was tested across major functional areas.
-
-## Automated Test Summary
-
-| Category    | Result |
-| ----------- | -----: |
-| Total Tests |    100 |
-| Passed      |     94 |
-| Failed      |      0 |
-| Skipped     |      0 |
-| Manual      |      6 |
-| Pass Rate   |  94.0% |
-
----
-
-## Connectivity Validation
-
-The major system connections were validated across:
-
-```text
-Customer → Backend
-Dealer/Admin → Backend
-Admin → Database
-Customer → Database
-Vehicle → Customer
-Test Drive → Admin
-Admin Approval → Customer
-Service → Admin
-Order → Admin
-Sales → Financials
-Expense → P&L
-```
-
----
-
-## Manual Validation
-
-Manual validation included UI/interactive functionality such as:
-
-* 🎬 Cinematic video completion
-* 🧊 Showroom 3D canvas
-
----
-
-# 📱 Responsive Design
-
-CarCraft is designed to work across:
-
-* 💻 Desktop
-* 💻 Laptop
-* 📱 Mobile
-* 📟 Tablet
-
-The interface adapts its layout and components according to screen size.
+- User registration and login.
+- Authentication and protected routes.
+- Coding room creation.
+- Coding room joining.
+- Frontend-backend API communication.
+- Socket.IO connection.
+- Database connectivity.
+- Prisma integration.
+- Deployment connectivity.
 
 ---
 
 # 🚀 Deployment
 
-## Frontend — Vercel
+CoCode is deployed using separate frontend and backend hosting platforms.
 
-The CarCraft customer-facing frontend is deployed through Vercel.
-
-🌐 **Live Website:**
-
-https://car-craft.vercel.app/
-
-### General deployment process
-
-```text
-GitHub Repository
-       ↓
-Connect Repository to Vercel
-       ↓
-Configure Environment Variables
-       ↓
-Build React Application
-       ↓
-Deploy
-       ↓
-Live Website
-```
-
-Typical build command:
-
-```bash
-npm run build
-```
+| Component | Platform | Link |
+|---|---|---|
+| Frontend | Vercel | [Live Website](https://cocode-two.vercel.app/) |
+| Backend | Render | [Backend Server](https://cocode-2l13.onrender.com/) |
+| Source Code | GitHub | [CoCode Repository](https://github.com/jatinraghav22/CoCode) |
 
 ---
 
-# 🔧 Production Environment Variables
+# 🔮 Future Enhancements
 
-Before deployment, configure your production API endpoint.
-
-Example:
-
-```env
-VITE_API_URL=your_production_backend_url
-```
-
-Do not expose sensitive backend secrets in frontend environment variables.
-
----
-
-# 🔒 Security Considerations
-
-CarCraft follows several basic security practices:
-
-* 🔐 JWT-based authentication
-* 🔑 Environment-based secret configuration
-* 🚫 `.env` excluded from Git
-* 🌐 CORS configuration
-* 🛡️ Protected API functionality
-* 👥 Role-based access considerations
-* 🔒 Secure API communication
+- Advanced real-time code synchronization.
+- Support for multiple programming languages.
+- Integrated code execution environment.
+- Collaborative debugging tools.
+- Voice and video communication.
+- Improved user profiles.
+- Room access management.
+- Enhanced coding session management.
+- Improved application performance and scalability.
 
 ---
 
-# 🧩 Key Modules
+# 🎓 Learning Outcomes
 
-```text
-CarCraft
-│
-├── Authentication
-│
-├── Customer Management
-│
-├── Vehicle Inventory
-│
-├── Vehicle Sales
-│
-├── Parts & Accessories
-│
-├── Orders
-│
-├── Service Appointments
-│
-├── Financial Management
-│
-└── Admin Dashboard
-```
+Developing CoCode provides practical experience in:
+
+- Full-stack web application development.
+- React component-based architecture.
+- Node.js and Express backend development.
+- REST API integration.
+- Real-time communication using Socket.IO.
+- Monaco Editor integration.
+- Relational database management.
+- Prisma ORM.
+- JWT authentication.
+- Frontend-backend integration.
+- Cloud deployment.
+- Git and GitHub version control.
 
 ---
 
-# 📚 What I Learned
+# 👨‍💻 Author
 
-Building CarCraft helped me gain practical experience in:
+**Jatin Raghav**
 
-* ⚛️ React application development
-* 🐍 Django backend development
-* 🔌 REST API integration
-* 🔐 JWT authentication
-* 🗄️ Database management
-* 🧩 Full-stack architecture
-* 📡 Frontend-backend communication
-* 📊 Dashboard development
-* 💰 Financial data handling
-* 🛒 E-commerce workflows
-* 🚘 Inventory management
-* 🔧 Service management
-* 🎨 Modern UI/UX development
-* 🧊 3D web experiences
-* ✨ Web animations
-* 🚀 Deployment and production workflows
+B.Tech – Computer Science & Engineering
+
+- GitHub: [@jatinraghav22](https://github.com/jatinraghav22)
+- LinkedIn: [Jatin Raghav](https://www.linkedin.com/in/jatin-raghav-a9a060357/)
 
 ---
 
-# 🔮 Future Improvements
-
-Potential future enhancements include:
-
-* 🤖 AI-powered vehicle recommendations
-* 🔍 Advanced vehicle search and filtering
-* 💳 Online payment gateway integration
-* 📧 Automated email notifications
-* 📱 Customer notification system
-* 📊 Advanced business analytics
-* 📈 Sales forecasting
-* 🧠 AI-based service recommendations
-* 📄 Automated invoices
-* 📑 Downloadable sales/service reports
-* 🌍 Multi-dealership support
-* 🔔 Real-time notifications
-* 🗺️ Dealership location integration
-
----
-
-# 🤝 Contributing
-
-Contributions are welcome.
-
-### 1. Fork the Repository
-
-```bash
-git clone https://github.com/jatinraghav22/CarCraft.git
-```
-
-### 2. Create a Feature Branch
-
-```bash
-git checkout -b feature/new-feature
-```
-
-### 3. Make Your Changes
-
-Implement and test your changes locally.
-
-### 4. Commit Changes
-
-```bash
-git add .
-```
-
-```bash
-git commit -m "Add new feature"
-```
-
-### 5. Push Your Branch
-
-```bash
-git push origin feature/new-feature
-```
-
-### 6. Open a Pull Request
-
-Create a Pull Request with a clear explanation of your changes.
-
----
-
-# 📌 Development Guidelines
-
-* Write clean and readable code
-* Keep components modular
-* Follow existing project structure
-* Use meaningful variable and function names
-* Test features before committing
-* Keep API logic organized
-* Never commit `.env` files
-* Keep frontend and backend responsibilities separated
-* Update documentation when adding major features
-
----
-
-# 👨‍💻 Developer
-
-## Jatin Raghav
-
-**B.Tech Computer Science & Engineering**
-
-ABES Engineering College, Ghaziabad
-
-### Technologies & Interests
-
-```text
-C++
-C
-Python
-JavaScript
-React.js
-Django
-REST APIs
-MySQL
-Git
-GitHub
-Data Structures & Algorithms
-Full Stack Development
-Cloud Computing
-```
-
-### Connect With Me
-
-* 💼 **LinkedIn:**
-  https://www.linkedin.com/in/jatin-raghav-a9a060357/
-
-* 💻 **GitHub:**
-  https://github.com/jatinraghav22
-
-* 🌐 **Portfolio:**
-  https://jatinraghav.vercel.app/
-
-* 🚗 **CarCraft:**
-  https://car-craft.vercel.app/
-
----
-
-# 📄 License
-
-This project is intended as an academic and portfolio full-stack development project.
-
----
-
-# ⭐ Support
-
-If you found **CarCraft** useful or interesting, consider giving the repository a ⭐ on GitHub.
-
----
-
-<div align="center">
-
-### 🚗 CarCraft
-
-**Automotive Inventory • Dealership Management • E-Commerce • Service Management**
-
-Built with ❤️ using **React + Django + PostgreSQL**
-
-**© 2026 Jatin Raghav**
-
-</div>
+<p align="center">
+  **💻 CoCode – Code Together. Grow Together. 🚀**
+</p>
